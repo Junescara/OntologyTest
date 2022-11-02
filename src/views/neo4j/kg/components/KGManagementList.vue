@@ -8,7 +8,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="4" v-for="(o, index) in 4" :key="o" :offset="index > 0 ? 2 : 0">
+      <el-col v-for="(o, index) in 4" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
         <el-card :body-style="{ padding: '0px' }">
           <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image">
           <div style="padding: 14px;">
@@ -22,7 +22,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="4" v-for="(o, index) in 4" :key="o" :offset="index > 0 ? 2 : 0">
+      <el-col v-for="(o, index) in 4" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
         <el-card :body-style="{ padding: '0px' }">
           <img src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" class="image">
           <div style="padding: 14px;">
@@ -40,16 +40,17 @@
 
 <script>
 export default {
-  name: "KGManagementList",
+  name: 'KGManagementList',
   data() {
     return {
       currentDate: new Date()
-    };
+    }
   },
   methods: {
-    childClick(){
+    childClick() {
       const data = 1
-      this.$emit('toDetails',data)
+      // this.$emit('toDetails',data)
+      this.$router.push('KGInstance')
     }
   }
 }

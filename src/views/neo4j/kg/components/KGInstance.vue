@@ -7,19 +7,16 @@
  -->
 <template>
   <div>
-    <el-row style="margin-bottom: 20px;margin-left: 20px">
-      <el-button type="danger" @click="goBack">返回</el-button>
-    </el-row>
     <el-card>
       <el-row :gutter="20">
         <el-col :span="4">
           <el-image
-            style="width: 200px; height: 150px"
             :src="url"
-            :fit="'contain'"></el-image>
+            :fit="'contain'"
+            style="width: 200px; height: 150px"/>
         </el-col>
         <el-col :span="6">
-          <el-descriptions title="图谱信息" :column="2">
+          <el-descriptions :column="2" title="图谱信息">
             <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
             <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
             <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
@@ -39,23 +36,22 @@
         </div>
         <div>
           <el-radio-group>
-            <el-radio-button label="实体"></el-radio-button>
-            <el-radio-button label="关系"></el-radio-button>
+            <el-radio-button label="实体"/>
+            <el-radio-button label="关系"/>
           </el-radio-group>
           <el-select v-model="value" placeholder="请选择实体类型" style="margin-top: 20px">
             <el-option
               v-for="item in options"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"/>
           </el-select>
           <div style="margin-top: 15px;">
             <el-input placeholder="请输入内容" class="input-with-select">
-              <el-button slot="append" icon="el-icon-search"></el-button>
+              <el-button slot="append" icon="el-icon-search"/>
             </el-input>
           </div>
-          <el-empty description="描述文字"></el-empty>
+          <el-empty description="描述文字"/>
         </div>
       </el-card>
       <el-card class="box-card-2">
@@ -63,7 +59,8 @@
           <span>知识图谱</span>
           <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
         </div>
-        <el-empty description="描述文字"></el-empty>
+        <!--        <el-empty description="描述文字"></el-empty>-->
+        <KGVisible/>
       </el-card>
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
@@ -76,7 +73,7 @@
           </el-descriptions-item>
           <el-descriptions-item label="更新时间">2022.11.2</el-descriptions-item>
         </el-descriptions>
-        <el-divider></el-divider>
+        <el-divider/>
         <span>实体属性</span>
         <el-table
           :data="tableData"
@@ -85,17 +82,14 @@
           <el-table-column
             prop="date"
             label="日期"
-            width="100">
-          </el-table-column>
+            width="100"/>
           <el-table-column
             prop="name"
             label="姓名"
-            width="60">
-          </el-table-column>
+            width="60"/>
           <el-table-column
             prop="address"
-            label="地址">
-          </el-table-column>
+            label="地址"/>
         </el-table>
       </el-card>
     </div>
@@ -103,8 +97,11 @@
 </template>
 
 <script>
+import KGVisible from './KGVisible'
+
 export default {
-  name: "KGInstance",
+  name: 'KGInstance',
+  components: { KGVisible },
   data() {
     return {
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
@@ -145,14 +142,14 @@ export default {
       }]
     }
   },
-  methods: {
-    goBack(){
-      const data = true
-      this.$emit('goBack',data)
-    }
-  },
   mounted() {
-    console.log("instance挂载了")
+    console.log('instance挂载了')
+  },
+  methods: {
+    goBack() {
+      const data = true
+      this.$emit('goBack', data)
+    }
   }
 }
 </script>

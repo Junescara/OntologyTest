@@ -54,7 +54,7 @@ export const constantRouterMap = [
         name: '本体列表',
         component: () => import('@/views/neo4j/ontology/list'),
         meta: { title: '本体列表', icon: 'table' }
-      },
+      }
     ]
   },
   {
@@ -69,7 +69,7 @@ export const constantRouterMap = [
         name: '河流节点列表',
         component: () => import('@/views/neo4j/river/list'),
         meta: { title: '河流节点列表', icon: 'table' }
-      },
+      }
       // {
       //   path: 'relation',
       //   name: '河流节点关系',
@@ -89,8 +89,29 @@ export const constantRouterMap = [
         path: 'index',
         name: 'KgMananement',
         component: () => import('@/views/neo4j/kg/Index'),
-        meta: { title: '图谱实例列表', icon: 'table' },
+        meta: { title: '图谱实例列表', icon: 'table' }
       },
+      {
+        path: 'KgOntoMananement',
+        name: 'KgOntoMananement',
+        component: () => import('@/views/neo4j/kg/components/KGOntoManagement'),
+        meta: { title: '知识库管理', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'KGAnalysisPoint',
+        name: 'KGAnalysisPoint',
+        component: () => import('@/views/neo4j/kg/components/KGAnalysisPoint'),
+        meta: { title: '点查询', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'KGAnalysisRelationClass',
+        name: 'KGAnalysisRelationClass',
+        component: () => import('@/views/neo4j/kg/components/KGAnalysisRelationClass'),
+        meta: { title: '关联对象查询', icon: 'table' },
+        hidden: true
+      }
       // {
       //   path: 'relation',
       //   name: '河流节点关系',

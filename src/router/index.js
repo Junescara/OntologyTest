@@ -82,14 +82,14 @@ export const constantRouterMap = [
     path: '/kg',
     component: Layout,
     redirect: '/kg/index',
-    name: '图谱实例',
+    name: 'kgroot',
     meta: { title: '图谱实例', icon: 'example' },
     children: [
       {
         path: 'index',
-        name: '图谱实例列表',
+        name: 'KgMananement',
         component: () => import('@/views/neo4j/kg/Index'),
-        meta: { title: '图谱实例列表', icon: 'table' }
+        meta: { title: '图谱实例列表', icon: 'table' },
       },
       // {
       //   path: 'relation',

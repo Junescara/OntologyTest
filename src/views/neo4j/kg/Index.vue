@@ -7,7 +7,7 @@
  -->
 <template>
   <div>
-    <el-tabs v-model="activeName" @tab-click="handleClick" type="card">
+    <el-tabs :active-name="activeName" @tab-click="handleClick" type="card">
       <el-tab-pane label="知识库" name="first">
         <KGOnto></KGOnto>
       </el-tab-pane>
@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'second'
+      activeName: 'first'
     };
   },
   methods: {

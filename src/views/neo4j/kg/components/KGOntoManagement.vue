@@ -18,14 +18,16 @@
       </div>
     </el-card>
     <el-card class="box-card-2">
-      <el-empty description="这一块用来展示查出来的节点和关系"/>
+      <KGVisible></KGVisible>
     </el-card>
   </div>
 </template>
 
 <script>
+import KGVisible from "./KGVisible";
 export default {
-  name: 'KGOntoManagement'
+  name: 'KGOntoManagement',
+  components: {KGVisible}
 }
 </script>
 

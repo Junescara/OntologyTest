@@ -3,13 +3,15 @@
     <el-input placeholder="请输入内容" style="width: 300px">
       <el-button slot="append" icon="el-icon-search"/>
     </el-input>
-    <el-empty description="这一块用来展示查出来的节点和关系"/>
+    <KGVisible></KGVisible>
   </el-card>
 </template>
 
 <script>
+import KGVisible from "./KGVisible";
 export default {
-  name: 'KGAnalysisPoint'
+  name: 'KGAnalysisPoint',
+  components: {KGVisible}
 }
 </script>
 

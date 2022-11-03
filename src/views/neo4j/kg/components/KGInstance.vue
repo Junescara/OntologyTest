@@ -23,7 +23,12 @@
             <el-descriptions-item label="备注">
               <el-tag size="small">学校</el-tag>
             </el-descriptions-item>
-            <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
+            <el-descriptions-item label="实体数量/个">
+              <el-tag size="small">270</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="实体类型数量/个">
+              <el-tag size="small">270</el-tag>
+            </el-descriptions-item>
           </el-descriptions>
         </el-col>
       </el-row>

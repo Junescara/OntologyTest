@@ -111,6 +111,20 @@ export const constantRouterMap = [
         component: () => import('@/views/neo4j/kg/components/KGAnalysisRelationClass'),
         meta: { title: '关联对象查询', icon: 'table' },
         hidden: true
+      },
+      {
+        path: 'KGManagementList',
+        name: 'KGManagementList',
+        component: () => import('@/views/neo4j/kg/components/KGManagementList'),
+        meta: { title: '实例对象查询', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'KGInstance',
+        name: 'KGInstance',
+        component: () => import('@/views/neo4j/kg/components/KGInstance'),
+        meta: { title: '实例详情查询', icon: 'table' },
+        hidden: true
       }
       // {
       //   path: 'relation',

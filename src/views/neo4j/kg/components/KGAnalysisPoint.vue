@@ -11,7 +11,12 @@
 import KGVisible from "./KGVisible";
 export default {
   name: 'KGAnalysisPoint',
-  components: {KGVisible}
+  components: {KGVisible},
+  mounted() {
+  },
+  methods:{
+
+  }
 }
 </script>
 

@@ -17,17 +17,11 @@
         </el-col>
         <el-col :span="6">
           <el-descriptions :column="2" title="图谱信息">
-            <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-            <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-            <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
-            <el-descriptions-item label="备注">
-              <el-tag size="small">学校</el-tag>
-            </el-descriptions-item>
             <el-descriptions-item label="实体数量/个">
-              <el-tag size="small">270</el-tag>
+              <el-tag size="small">{{ nodeCounts }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="实体类型数量/个">
-              <el-tag size="small">270</el-tag>
+              <el-tag size="small">{{ nodeTypeCounts }}</el-tag>
             </el-descriptions-item>
           </el-descriptions>
         </el-col>
@@ -40,23 +34,55 @@
           <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
         </div>
         <div>
-          <el-radio-group>
-            <el-radio-button label="实体"/>
-            <el-radio-button label="关系"/>
-          </el-radio-group>
-          <el-select v-model="value" placeholder="请选择实体类型" style="margin-top: 20px">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"/>
-          </el-select>
-          <div style="margin-top: 15px;">
-            <el-input placeholder="请输入内容" class="input-with-select">
-              <el-button slot="append" icon="el-icon-search"/>
-            </el-input>
+          <el-button @click="change(0)">实体</el-button>
+          <el-button @click="change(1)">关系</el-button>
+          <!--以下为实体的下拉菜单-->
+          <div v-show="0===number">
+            <el-select v-show="0===number" clearable @clear="clear" @change="chooseEntity" v-model="nodeLabels.index" placeholder="请选择实体类型"
+                       style="margin-top: 20px">
+              <el-option
+                v-for="(item,index) in nodeLabels"
+                :key=index
+                :label=item
+                :value=item
+              />
+            </el-select>
+            <div style="margin-top: 15px;">
+              <el-input placeholder="请搜索实体名称" class="input-with-select">
+                <el-button slot="append" icon="el-icon-search"/>
+              </el-input>
+            </div>
           </div>
-          <el-empty description="描述文字"/>
+          <!--以下为关系的下拉菜单-->
+          <div v-show="1===number">
+            <el-select clearable v-model="relLabels.index" placeholder="请选择关系类型"
+                       style="margin-top: 20px">
+              <el-option
+                v-for="(item,index) in relLabels"
+                :key=index
+                :label=item
+                :value=item
+              />
+            </el-select>
+            <div style="margin-top: 15px;">
+              <el-input placeholder="请搜索关系名称" class="input-with-select">
+                <el-button slot="append" icon="el-icon-search"/>
+              </el-input>
+            </div>
+          </div>
+
+          <div class="tag-group">
+            <span class="tag-group__title"></span>
+            <!--以下标签用于显示查询出来的节点名称-->
+            <el-tag
+              v-for="(item,index) in nodeNames"
+              :key=index
+              type=''
+              effect="plain"
+              @click="getNodeByName(item)">
+              {{ item }}
+            </el-tag>
+          </div>
         </div>
       </el-card>
       <el-card class="box-card-2">
@@ -79,23 +105,13 @@
           <el-descriptions-item label="更新时间">2022.11.2</el-descriptions-item>
         </el-descriptions>
         <el-divider/>
-        <span>实体属性</span>
-        <el-table
-          :data="tableData"
-          stripe
-          style="width: 100%">
-          <el-table-column
-            prop="date"
-            label="日期"
-            width="100"/>
-          <el-table-column
-            prop="name"
-            label="姓名"
-            width="60"/>
-          <el-table-column
-            prop="address"
-            label="地址"/>
-        </el-table>
+        <!--以下为实体属性的表格-->
+        <el-descriptions v-for="(item,index) in nodeByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
+          <el-descriptions-item label="属性名">属性值</el-descriptions-item>
+          <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
+            {{proVals}}
+          </el-descriptions-item>
+        </el-descriptions>
       </el-card>
     </div>
   </div>
@@ -103,86 +119,202 @@
 
 <script>
 import KGVisible from './KGVisible'
-
+import aggregateApi from '@/api/neo4j/aggregate';
+import regionalismApi from '@/api/neo4j/regionalism';
+import sectionApi from '@/api/neo4j/section';
+import stationApi from '@/api/neo4j/station';
 export default {
   name: 'KGInstance',
-  components: { KGVisible },
+  components: {KGVisible},
   data() {
     return {
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
-      value: '',
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      //记录节点的数量
+      nodeCounts: 0,
+      //记录节点类型的数量
+      nodeTypeCounts: 0,
+      //记录节点的标签，用于下拉菜单选择
+      nodeLabels: [],
+      //记录关系的标签，用于下拉菜单选择
+      relLabels: [],
+      //记录查询出的节点名称
+      nodeNames: [],
+      //记录下拉菜单索引
+      number: 0,
+      //记录通过名称查询出来的节点
+      nodeByName: null,
+      currentType: null
     }
   },
   mounted() {
     console.log('instance挂载了')
   },
+  created() {
+    this.getAllNodeCounts()
+    this.getAllNodeLabels()
+    this.getAllRelLabels()
+  },
   methods: {
     goBack() {
       const data = true
       this.$emit('goBack', data)
+    },
+    //选择实体菜单
+    chooseEntity(value) {
+      switch (value) {
+        case '行政区划':
+          this.currentType = '行政区划'
+          regionalismApi.getRegionalismNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.regionalismNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '测站':
+          this.currentType = '测站'
+          stationApi.getStationNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.stationNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '断面':
+          this.currentType = '断面'
+          sectionApi.getSectionNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.sectionNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        default:
+      }
+
+    },
+    //选择关系菜单
+    chooseRelation(value) {
+      aggregateApi.getRelLabels()
+        .then((response) => {
+          this.relLabels = response.data.data.relLabels
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //切换下拉菜单
+    change(index) {
+      this.number = index;
+      this.nodeNames = null
+      this.nodeByName = null
+    },
+    //清空查询出来的实体类型
+    clear() {
+      this.nodeNames = null
+      this.nodeByName = null
+    },
+    getNodeByName(name) {
+      if (this.currentType === '行政区划') {
+        this.getRegionalismNodeByName(name)
+      }
+      if (this.currentType === '断面') {
+        this.getSectionNodeByName(name)
+      }
+      if (this.currentType === '测站') {
+        this.getStationNodeByName(name)
+      }
+    },
+    //根据名称查询行政规划节点
+    getRegionalismNodeByName(regionalismName) {
+      regionalismApi.getRegionalismByName(regionalismName)
+        .then((response) => {
+          this.nodeByName = response.data.data.result
+          console.log(this.nodeByName)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //根据名称查询断面节点
+    getSectionNodeByName(sectionName) {
+      sectionApi.getSectionByName(sectionName)
+        .then((response) => {
+          this.nodeByName = response.data.data.result
+          console.log(this.nodeByName)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //根据名称查询测站节点
+    getStationNodeByName(stationName) {
+      stationApi.getStationByName(stationName)
+        .then((response) => {
+          this.nodeByName = response.data.data.result
+          console.log(this.nodeByName)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //获得所有节点的数量和节点类型的数量
+    getAllNodeCounts() {
+      aggregateApi.getNodeCounts()
+        .then((response) => {
+          this.nodeCounts = response.data.data.nodeCounts
+          this.nodeTypeCounts = response.data.data.nodeTypeCounts
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //获得所有节点的标签
+    getAllNodeLabels() {
+      aggregateApi.getNodeLabels()
+        .then((response) => {
+          this.nodeLabels = response.data.data.nodeLabels
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //获得所有关系的标签
+    getAllRelLabels() {
+      aggregateApi.getRelLabels()
+        .then((response) => {
+          this.relLabels = response.data.data.relLabels
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   }
 }
 </script>
 
 <style scoped>
-.text {
-  font-size: 14px;
-}
-
-.item {
-  margin-bottom: 18px;
-}
-
 。clearfix {
   background-color: #4AB7BD;
 }
+
 .clearfix:before,
 .clearfix:after {
   display: table;
   content: "";
 }
+
 .clearfix:after {
   clear: both
 }
 
 .box-card {
   width: 300px;
-  height: 500px;
+  height: 100%;
   margin-top: 20px;
   margin-left: 20px;
 }

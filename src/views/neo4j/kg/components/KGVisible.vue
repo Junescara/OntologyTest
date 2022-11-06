@@ -44,9 +44,9 @@ export default {
         containerId: 'viz',
         // neo4j服务器地址，用户名 和 密码
         neo4j: {
-          serverUrl: 'bolt://localhost:7687',
+          serverUrl: 'bolt://10.196.83.104:7687',
           serverUser: 'neo4j',
-          serverPassword: '123456'
+          serverPassword: 'sdb3309'
         },
 
         // **///labels是节点央样式的配置：**

@@ -12,5 +12,5 @@ export default {
       url: `/river/getRiverRelationNode`,
       method: 'get'
     })
-  }
+  },
 }

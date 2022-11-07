@@ -91,7 +91,8 @@
           <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
-        <KGVisible/>
+<!--        <KGVisible/>-->
+        <KGVisibleEcahrts></KGVisibleEcahrts>
       </el-card>
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
@@ -123,9 +124,10 @@ import aggregateApi from '@/api/neo4j/aggregate';
 import regionalismApi from '@/api/neo4j/regionalism';
 import sectionApi from '@/api/neo4j/section';
 import stationApi from '@/api/neo4j/station';
+import KGVisibleEcahrts from "./KGVisibleEcahrts";
 export default {
   name: 'KGInstance',
-  components: {KGVisible},
+  components: {KGVisibleEcahrts, KGVisible},
   data() {
     return {
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],

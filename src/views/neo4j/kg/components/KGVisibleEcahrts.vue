@@ -6,7 +6,7 @@
  * @version:     1.0
  -->
 <template>
-  <div>
+  <div style="white-space:pre-line">
     <chart-block :option="chartData"></chart-block>
   </div>
 </template>
@@ -23,20 +23,26 @@ export default {
       chartData:{
 
       },
+      currentNodeId:72,
+    }
+  },
+  props: {
+    currentNode: {
+      type: Object,
+      default: () => {}
     }
   },
   methods:{
-    init(){
+    initKG(){
       let rels = []
-      let nodes = [{name:'72'},{name:'3182'}, {name:'3039'}, {name:'3038'},{name:'2853'},{name:'2719'},{name:'2457'},{name:'2172'},{name:'1754'},{name:'1650'},{name:'1532'},{name:'1530'},{name:'1396'},{name:'1193'},{name:'1049'},{name:'1048'},{name:'921'},{name:'920'},{name:'654'},{name:'277'},{name:'73'},{name:'1189'}]
+      let nodes = []
       let nodeIds = []
       // for (let i = 0; i < 100; i++){
       //   nodes.push({
       //     id:i
       //   })
       // }
-      //测试显示
-      relationApi.getRelsByNodeId(72).then(({data}) => {
+      relationApi.getRelsByNodeId(this.currentNodeId).then(({data}) => {
         rels = data.data.relationList
         console.log("rels:",rels)
         for (let item of rels){
@@ -47,7 +53,8 @@ export default {
         return relationApi.getNodesByIds(nodeIds)
       }).then(({data}) => {
         nodes = data.data.nodeList
-        return relationApi.getNodeById(72)
+        //发起第三次异步请求，查询起点结点的信息
+        return relationApi.getNodeById(this.currentNodeId)
       }).then(({data}) => {
         nodes.push(data.data)
         let dataList = {
@@ -61,7 +68,19 @@ export default {
   },
   mounted() {
     //初始化可视化图谱
-    this.init()
+    this.initKG()
+  },
+  watch:{
+    currentNode: {
+      handler(newValue, oldValue) {
+        console.log("currentId",newValue[0]._id)
+        this.currentNodeId = newValue[0]._id
+        this.initKG()
+      },
+      // 因为option是个对象，而我们对于echarts的配置项，要更改的数据往往不在一级属性里面
+      // 所以这里设置了deep:true，vue文档有说明
+      deep: true
+    }
   }
 }
 </script>

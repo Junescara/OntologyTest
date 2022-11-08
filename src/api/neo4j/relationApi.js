@@ -71,5 +71,11 @@ export default {
       url: `/relation/getRelsByNodeId/`+id,
       method: 'get'
     })
+  },
+  getRelsByName(name){
+    return request({
+      url: `/relation/getRelsByName/`+name,
+      method: 'get'
+    })
   }
 }

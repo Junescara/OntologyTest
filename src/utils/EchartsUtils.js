@@ -53,7 +53,16 @@ export default {
           },
           formatter:function(params){
             console.log("params:",params)
-            if(params.data.name){
+            if (params.data.category !== undefined){
+              if (params.data.regionalism != null){
+                return `行政区划名称：${params.data.regionalism.extraName ? params.data.regionalism.extraName : ''}
+                        行政区划编码：${params.data.regionalism.code ? params.data.regionalism.code : ''}
+                        经度：${params.data.regionalism.longitude ? params.data.regionalism.longitude : ''}
+                        纬度：${params.data.regionalism.latitude ? params.data.regionalism.latitude : ''}
+                        `
+              }
+            }
+            if(params.data.name && params.data.category === undefined){
               return [params.data.name]
             }
             else{
@@ -101,6 +110,12 @@ export default {
             links: linkList,
             categories:[
               {
+                name:'Resource',
+                itemStyle:{
+                  "color": "rgba(229,102,63,0.89)"
+                }
+              },
+              {
                 name:'行政区划',
                 itemStyle:{
                     "color": "rgba(245,10,241,0.89)"
@@ -142,7 +157,7 @@ export default {
       let linkItem = {
         source: item.start.toString(),
         target: item.end.toString(),
-        name:'link',
+        name:item.relList[0],
         value:'link',
         // label: {
         //   show: true,
@@ -167,6 +182,7 @@ export default {
   createNodes(nodes) {
     let nodeList = []
     for (let item of nodes) {
+      console.log("nodeItem++++++",item)
       let nodeItem = CommonUtils.deepClone(item)
       /*nodeItem['itemStyle'] = {
         "normal": {
@@ -178,7 +194,10 @@ export default {
         }
       }*/
       //现在传入的参数中尚未填入category，这里临时补一个
-      nodeItem['category'] = '行政区划'
+      if (item.nodeType.length <= 1){
+        nodeItem['category'] = item.nodeType[0]
+      }
+      nodeItem['category'] = item.nodeType[1]
       nodeItem['name'] = item.regionalism._id.toString()
       nodeList.push(nodeItem)
     }

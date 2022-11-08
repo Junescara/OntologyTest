@@ -55,7 +55,7 @@
           </div>
           <!--以下为关系的下拉菜单-->
           <div v-show="1===number">
-            <el-select clearable v-model="relLabels.index" placeholder="请选择关系类型"
+            <el-select clearable v-model="relLabels.index" placeholder="请选择关系类型" @change="chooseRelation"
                        style="margin-top: 20px">
               <el-option
                 v-for="(item,index) in relLabels"
@@ -71,7 +71,7 @@
             </div>
           </div>
 
-          <div class="tag-group">
+          <div class="tag-group" v-if="number === 0">
             <span class="tag-group__title"></span>
             <!--以下标签用于显示查询出来的节点名称-->
             <el-tag
@@ -79,7 +79,19 @@
               :key=index
               type=''
               effect="plain"
-              @click="getNodeByName(item)">
+            >
+              {{ item }}
+            </el-tag>
+          </div>
+          <div class="tag-group" v-if="number === 1">
+            <span class="tag-group__title"></span>
+            <!--以下标签用于显示查询出来的节点名称-->
+            <el-tag
+              v-for="(item,index) in relNames"
+              :key=index
+              type=''
+              effect="plain"
+              >
               {{ item }}
             </el-tag>
           </div>
@@ -92,7 +104,7 @@
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
-        <KGVisibleEcahrts></KGVisibleEcahrts>
+        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>
       </el-card>
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
@@ -125,6 +137,7 @@ import regionalismApi from '@/api/neo4j/regionalism';
 import sectionApi from '@/api/neo4j/section';
 import stationApi from '@/api/neo4j/station';
 import KGVisibleEcahrts from "./KGVisibleEcahrts";
+import relationApi from "../../../../api/neo4j/relationApi";
 export default {
   name: 'KGInstance',
   components: {KGVisibleEcahrts, KGVisible},
@@ -142,11 +155,15 @@ export default {
       relLabels: [],
       //记录查询出的节点名称
       nodeNames: [],
+      //查询出来的关系组合
+      relNames:[],
       //记录下拉菜单索引
       number: 0,
       //记录通过名称查询出来的节点
       nodeByName: null,
-      currentType: null
+      relBYName:null,
+      currentType: null,
+      currentRelType:null,
     }
   },
   mounted() {
@@ -197,17 +214,31 @@ export default {
           break;
         default:
       }
-
     },
     //选择关系菜单
     chooseRelation(value) {
-      aggregateApi.getRelLabels()
-        .then((response) => {
-          this.relLabels = response.data.data.relLabels
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      switch (value) {
+        case '下级行政区划':
+          this.currentRelType = '下级行政区划'
+          relationApi.getRelsByName(this.currentRelType).then(({data}) => {
+            for (let item of data.data.relationList){
+              this.relNames.push(item.pathName);
+            }
+          })
+          console.log("relnames++++++",this.relNames)
+          break;
+        case '关联':
+          this.currentRelType = '关联'
+          stationApi.getStationNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.stationNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        default:
+      }
     },
     //切换下拉菜单
     change(index) {

@@ -79,21 +79,29 @@
               :key=index
               type=''
               effect="plain"
+              @click="getNodeByName(item)"
             >
               {{ item }}
             </el-tag>
           </div>
-          <div class="tag-group" v-if="number === 1">
+          <div class="tag-group infinite-list-wrapper" v-if="number === 1"  style="overflow: auto;height: calc(100vh - 72px)">
             <span class="tag-group__title"></span>
-            <!--以下标签用于显示查询出来的节点名称-->
-            <el-tag
-              v-for="(item,index) in relNames"
-              :key=index
-              type=''
-              effect="plain"
-              >
-              {{ item }}
-            </el-tag>
+            <!--以下标签用于显示查询出来的关系名称-->
+            <ui v-infinite-scroll="load" infinite-scroll-disabled="disabled" infinite-scroll-distance="1" class="list">
+              <li v-for="(item,index) in relNamesLazy"
+                  :key=index
+                  effect="plain"
+                  style="list-style:none"
+                  >
+                <el-tag
+                  type=''
+                  @click="getRelByName(item)">
+                  {{ item }}
+                </el-tag>
+              </li>
+            </ui>
+            <p v-if="flags.loadingFlag" style="text-align: center">加载中...</p>
+            <p v-if="noMore" style="text-align: center">没有更多了</p>
           </div>
         </div>
       </el-card>
@@ -125,6 +133,22 @@
             {{proVals}}
           </el-descriptions-item>
         </el-descriptions>
+
+        <!--以下为关系属性的表格-->
+        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
+          <el-descriptions-item label="属性名">属性值</el-descriptions-item>
+          <el-descriptions-item label="起点">
+            {{item[0]}}
+            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
+          </el-descriptions-item>
+          <el-descriptions-item label="关系">
+            {{item[1]}}
+          </el-descriptions-item>
+          <el-descriptions-item label="终点">
+            {{item[2]}}
+            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
+          </el-descriptions-item>
+        </el-descriptions>
       </el-card>
     </div>
   </div>
@@ -145,6 +169,12 @@ export default {
     return {
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      //标记类
+      flags:{
+        relLazyCountFlag:0,
+        relLoadingFlag:false,
+        loadingFlag:false
+      },
       //记录节点的数量
       nodeCounts: 0,
       //记录节点类型的数量
@@ -157,11 +187,13 @@ export default {
       nodeNames: [],
       //查询出来的关系组合
       relNames:[],
+      //实现懒加载的relNames
+      relNamesLazy:[],
       //记录下拉菜单索引
       number: 0,
       //记录通过名称查询出来的节点
       nodeByName: null,
-      relBYName:null,
+      relByName:null,
       currentType: null,
       currentRelType:null,
     }
@@ -224,18 +256,20 @@ export default {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
             }
+            this.load()
           })
           console.log("relnames++++++",this.relNames)
+          console.log("relsNamesLazy=====",this.relNamesLazy)
           break;
         case '关联':
           this.currentRelType = '关联'
-          stationApi.getStationNames()
-            .then((response) => {
-              this.nodeNames = response.data.data.stationNames
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          relationApi.getRelsByName(this.currentRelType).then(({data}) => {
+            for (let item of data.data.relationList){
+              this.relNames.push(item.pathName);
+            }
+            this.load()
+          })
+          console.log("relnames++++++",this.relNames)
           break;
         default:
       }
@@ -262,12 +296,24 @@ export default {
         this.getStationNodeByName(name)
       }
     },
+    getRelByName(name) {
+      if (this.currentRelType === '下级行政区划') {
+        let nameArray = name.split("->")
+        this.relByName = [nameArray]
+        console.log("relByName=====",this.relByName)
+      }
+      if (this.currentRelType === '关联') {
+
+        //业务逻辑
+        //TODO
+      }
+    },
     //根据名称查询行政规划节点
     getRegionalismNodeByName(regionalismName) {
       regionalismApi.getRegionalismByName(regionalismName)
         .then((response) => {
           this.nodeByName = response.data.data.result
-          console.log(this.nodeByName)
+          console.log("nodebyname=====",this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -325,7 +371,36 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    load(){
+      this.flags.relLoadingFlag = true
+      this.flags.loadingFlag = true
+      setTimeout(() => {
+        let origin = this.flags.relLazyCountFlag
+        this.flags.relLazyCountFlag = this.flags.relLazyCountFlag + 25
+        if (this.flags.relLazyCountFlag < this.relNames.length){
+          for (let i = origin; i < this.flags.relLazyCountFlag; i++){
+            this.relNamesLazy.push(this.relNames[i])
+          }
+        }else {
+          for (let i = origin; i < this.relNames.length; i++){
+            this.relNamesLazy.push(this.relNames[i])
+          }
+        }
+        this.flags.relLoadingFlag = false
+        this.flags.loadingFlag = false
+      }, 1000)
     }
+  },
+  computed:{
+    disabled (){
+      console.log("flag+++++",this.flags.relLoadingFlag)
+      console.log("nomore+++++",this.noMore)
+      return this.flags.relLoadingFlag || this.noMore
+    },
+    noMore () {
+      return this.flags.relLazyCountFlag >= this.relNames.length
+    },
   }
 }
 </script>

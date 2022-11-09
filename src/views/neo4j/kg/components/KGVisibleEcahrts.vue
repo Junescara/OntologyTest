@@ -28,8 +28,8 @@ export default {
   },
   props: {
     currentNode: {
-      type: Object,
-      default: () => {}
+      type: Array,
+      default: () => [{}]
     }
   },
   methods:{
@@ -54,6 +54,7 @@ export default {
       }).then(({data}) => {
         nodes = data.data.nodeList
         //发起第三次异步请求，查询起点结点的信息
+        console.log("nodes======",nodes)
         return relationApi.getNodeById(this.currentNodeId)
       }).then(({data}) => {
         nodes.push(data.data)

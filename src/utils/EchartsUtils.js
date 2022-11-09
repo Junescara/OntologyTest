@@ -25,11 +25,13 @@ export default {
 
     //如果结点数据不为空
     if (data.nodes.length > 0){
+      //调用生成结点的方法，将结点源数据转换为echarts所需要的结点列表
       dataList = this.createNodes(data.nodes)
     }
 
     //如果关系边数据不为空
     if (data.rels.length > 0){
+      //调用生成关系边的方法，将关系源数据转换为echarts所需要的关系列表
       linkList = this.createRelsEdges(data.rels)
     }
 
@@ -38,6 +40,7 @@ export default {
         title: {
           text: '可视化知识图谱'
         },
+        //鼠标事件函数
         tooltip: {
           show:true,
           trigger:'item',
@@ -53,6 +56,7 @@ export default {
           },
           formatter:function(params){
             console.log("params:",params)
+            //判定是结点，显示结点相关数据
             if (params.data.category !== undefined){
               if (params.data.regionalism != null){
                 return `行政区划名称：${params.data.regionalism.extraName ? params.data.regionalism.extraName : ''}
@@ -62,6 +66,7 @@ export default {
                         `
               }
             }
+            //判定为边，显示边数据
             if(params.data.name && params.data.category === undefined){
               return [params.data.name]
             }
@@ -78,12 +83,14 @@ export default {
           x: "center",
           show: true
         },
+        //图表中的数据源
         series: [
           {
-            type: 'graph',
-            layout: 'force',
-            symbolSize: 25,
-            roam: true,
+            type: 'graph', //图表类型
+            layout: 'force', //使用力导图
+            symbolSize: 25, //结点大小
+            roam: true, //是否允许滚轮缩放以及鼠标拖拽
+            //结点标签下显示设置
             label: {
               show: true,
               textStyle: {
@@ -91,8 +98,11 @@ export default {
                 color: "black",
               }
             },
+            //边显示设置
             edgeSymbol: ['', 'arrow'],
+            //边的大小设置
             edgeSymbolSize: [4, 20],
+            //边标签显示设置
             edgeLabel: {
               fontSize: 20,
               textStyle: {
@@ -101,13 +111,15 @@ export default {
               },
               formatter: "{c}"
             },
+            //力导图显示设置
             force: {
               repulsion: 4000,//节点之间的斥力因子。支持数组表达斥力范围，值越大斥力越大。
               edgeLength: 80,//边的两个节点之间的距离
               gravity: 0.1, //节点受到的向中心的引力因子。该值越大节点越往中心点靠拢。
             },
-            data: dataList,
-            links: linkList,
+            data: dataList, //结点数据源
+            links: linkList,//边数据源
+            //类别集合，可以在结点数据源中声明该节点所属类型
             categories:[
               {
                 name:'Resource',
@@ -134,6 +146,7 @@ export default {
                 }
               },
             ],
+            //连线显示设置
             lineStyle: {
               opacity: 0.9,
               width: 1,
@@ -143,7 +156,6 @@ export default {
         ]
       }
     };
-    console.log("option:",option)
     return option.chartsData
   },
   /**

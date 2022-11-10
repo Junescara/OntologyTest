@@ -413,6 +413,9 @@ export default {
               message: '删除实体及关系失败!'
             });
           }
+          this.getAllNodeCounts()
+          this.getAllNodeLabels()
+          this.getAllRelLabels()
         })
         .catch((error) => {
           console.log(error);
@@ -428,6 +431,9 @@ export default {
             type: 'success',
             message: '删除实体成功!'
           });
+          this.getAllNodeCounts()
+          this.getAllNodeLabels()
+          this.getAllRelLabels()
         }else{
           const mes = "有"+response.data.data+"条关系与该实体相连，是否一起删除。"
           this.$confirm(mes, '提示', {

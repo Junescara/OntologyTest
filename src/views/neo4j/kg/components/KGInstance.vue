@@ -117,7 +117,9 @@
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
           <span>实体类信息</span>
-          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          <el-button @click="editConceptVisible = true" style="float: right; " type="text">增加</el-button>
+          <el-button @click="editConceptVisible = true" style="float: right; " type="text">修改</el-button>
+          <el-button @click="delNode" style="float: right; " type="text">删除</el-button>
         </div>
         <el-descriptions :column="1">
           <el-descriptions-item label="实体所属类型">
@@ -150,6 +152,25 @@
           </el-descriptions-item>
         </el-descriptions>
       </el-card>
+
+      <el-dialog
+        title="修改实体信息"
+        :visible.sync="editConceptVisible"
+        width="50%"
+        center>
+
+        <el-form :label-position="labelPosition" :model="formLabelAlign" v-for="(item,index) in nodeByName">
+          <el-form-item label-width="90px" v-for="(proVals,proNames) in item" :label="proNames">
+            <el-input size="medium" :placeholder="proVals"></el-input>
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="editConceptVisible = false">取 消</el-button>
+    <el-button type="primary" @click="editConceptVisible = false">确 定</el-button>
+  </span>
+      </el-dialog>
+
     </div>
   </div>
 </template>
@@ -196,6 +217,8 @@ export default {
       relByName:null,
       currentType: null,
       currentRelType:null,
+      //修改实体对话框是否开启
+      editConceptVisible: false
     }
   },
   mounted() {
@@ -219,6 +242,7 @@ export default {
           regionalismApi.getRegionalismNames()
             .then((response) => {
               this.nodeNames = response.data.data.regionalismNames
+              console.log(this.nodeByName)
             })
             .catch((error) => {
               console.log(error);
@@ -368,6 +392,60 @@ export default {
         .then((response) => {
           this.relLabels = response.data.data.relLabels
         })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //删除选定节点及关联关系
+    delNodeAndRels(){
+      aggregateApi.delNodeAndRelsById(this.nodeByName[0]._id)
+        .then((response) => {
+          if(response.data.data==1){
+            //删除成功
+            this.$message({
+              type: 'success',
+              message: '删除实体及关系成功!'
+            });
+          }else{
+            //删除失败
+            this.$message({
+              type: 'warning',
+              message: '删除实体及关系失败!'
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //删除选定节点
+    delNode(){
+      aggregateApi.delNodeById(this.nodeByName[0]._id)
+      .then((response) => {
+        if(response==0){
+          //删除成功
+          this.$message({
+            type: 'success',
+            message: '删除实体成功!'
+          });
+        }else{
+          const mes = "有"+response.data.data+"条关系与该实体相连，是否一起删除。"
+          this.$confirm(mes, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            //删除选定节点及关联关系
+            this.delNodeAndRels()
+          }).catch(() => {
+            //取消删除
+            this.$message({
+              type: 'info',
+              message: '已取消删除！'
+            });
+          });
+        }
+      })
         .catch((error) => {
           console.log(error);
         });

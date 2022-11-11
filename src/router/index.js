@@ -135,6 +135,36 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/workflow',
+    component: Layout,
+    redirect: '/workflow/choose',
+    name: '工作流步骤',
+    meta: { title: '工作流步骤', icon: 'example' },
+    children: [
+      {
+        path: 'choose',
+        name: '工作流步骤',
+        component: () => import('@/views/workflow/choose'),
+        meta: { title: '选择出口断面和预报范围', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'show',
+        name: '工作流步骤',
+        component: () => import('@/views/workflow/show'),
+        meta: { title: '对象关系拓扑展示', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'finish',
+        name: '工作流步骤',
+        component: () => import('@/views/workflow/finish'),
+        meta: { title: '完成数据提取', icon: 'table' },
+        hidden: true
+      }
+    ]
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true

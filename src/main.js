@@ -19,12 +19,14 @@ import './errorLog' // error log
 import './permission' // permission control
 import './mock' // simulation data
 
-import * as filters from './filters' // global filters
+import * as filters from './filters'
+import * as echarts from 'echarts' // global filters
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
 })
+Vue.prototype.$echarts = echarts;
 
 // register global utility filters.
 Object.keys(filters).forEach(key => {

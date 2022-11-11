@@ -55,7 +55,7 @@
           </div>
           <!--以下为关系的下拉菜单-->
           <div v-show="1===number">
-            <el-select clearable v-model="relLabels.index" placeholder="请选择关系类型"
+            <el-select clearable v-model="relLabels.index" placeholder="请选择关系类型" @change="chooseRelation"
                        style="margin-top: 20px">
               <el-option
                 v-for="(item,index) in relLabels"
@@ -71,7 +71,7 @@
             </div>
           </div>
 
-          <div class="tag-group">
+          <div class="tag-group" v-if="number === 0">
             <span class="tag-group__title"></span>
             <!--以下标签用于显示查询出来的节点名称-->
             <el-tag
@@ -79,9 +79,29 @@
               :key=index
               type=''
               effect="plain"
-              @click="getNodeByName(item)">
+              @click="getNodeByName(item)"
+            >
               {{ item }}
             </el-tag>
+          </div>
+          <div class="tag-group infinite-list-wrapper" v-if="number === 1"  style="overflow: auto;height: calc(100vh - 72px)">
+            <span class="tag-group__title"></span>
+            <!--以下标签用于显示查询出来的关系名称-->
+            <ui v-infinite-scroll="load" infinite-scroll-disabled="disabled" infinite-scroll-distance="1" class="list">
+              <li v-for="(item,index) in relNamesLazy"
+                  :key=index
+                  effect="plain"
+                  style="list-style:none"
+                  >
+                <el-tag
+                  type=''
+                  @click="getRelByName(item)">
+                  {{ item }}
+                </el-tag>
+              </li>
+            </ui>
+            <p v-if="flags.loadingFlag" style="text-align: center">加载中...</p>
+            <p v-if="noMore" style="text-align: center">没有更多了</p>
           </div>
         </div>
       </el-card>
@@ -91,12 +111,15 @@
           <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
-        <KGVisible/>
+<!--        <KGVisible/>-->
+        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>
       </el-card>
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
           <span>实体类信息</span>
-          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          <el-button @click="editConceptVisible = true" style="float: right; " type="text">增加</el-button>
+          <el-button @click="editConceptVisible = true" style="float: right; " type="text">修改</el-button>
+          <el-button @click="delNode" style="float: right; " type="text">删除</el-button>
         </div>
         <el-descriptions :column="1">
           <el-descriptions-item label="实体所属类型">
@@ -112,7 +135,42 @@
             {{proVals}}
           </el-descriptions-item>
         </el-descriptions>
+
+        <!--以下为关系属性的表格-->
+        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
+          <el-descriptions-item label="属性名">属性值</el-descriptions-item>
+          <el-descriptions-item label="起点">
+            {{item[0]}}
+            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
+          </el-descriptions-item>
+          <el-descriptions-item label="关系">
+            {{item[1]}}
+          </el-descriptions-item>
+          <el-descriptions-item label="终点">
+            {{item[2]}}
+            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
+          </el-descriptions-item>
+        </el-descriptions>
       </el-card>
+
+      <el-dialog
+        title="修改实体信息"
+        :visible.sync="editConceptVisible"
+        width="50%"
+        center>
+
+        <el-form :label-position="labelPosition" :model="formLabelAlign" v-for="(item,index) in nodeByName">
+          <el-form-item label-width="90px" v-for="(proVals,proNames) in item" :label="proNames">
+            <el-input size="medium" :placeholder="proVals"></el-input>
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="editConceptVisible = false">取 消</el-button>
+    <el-button type="primary" @click="editConceptVisible = false">确 定</el-button>
+  </span>
+      </el-dialog>
+
     </div>
   </div>
 </template>
@@ -123,13 +181,21 @@ import aggregateApi from '@/api/neo4j/aggregate';
 import regionalismApi from '@/api/neo4j/regionalism';
 import sectionApi from '@/api/neo4j/section';
 import stationApi from '@/api/neo4j/station';
+import KGVisibleEcahrts from "./KGVisibleEcahrts";
+import relationApi from "../../../../api/neo4j/relationApi";
 export default {
   name: 'KGInstance',
-  components: {KGVisible},
+  components: {KGVisibleEcahrts, KGVisible},
   data() {
     return {
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      //标记类
+      flags:{
+        relLazyCountFlag:0,
+        relLoadingFlag:false,
+        loadingFlag:false
+      },
       //记录节点的数量
       nodeCounts: 0,
       //记录节点类型的数量
@@ -140,11 +206,19 @@ export default {
       relLabels: [],
       //记录查询出的节点名称
       nodeNames: [],
+      //查询出来的关系组合
+      relNames:[],
+      //实现懒加载的relNames
+      relNamesLazy:[],
       //记录下拉菜单索引
       number: 0,
       //记录通过名称查询出来的节点
       nodeByName: null,
-      currentType: null
+      relByName:null,
+      currentType: null,
+      currentRelType:null,
+      //修改实体对话框是否开启
+      editConceptVisible: false
     }
   },
   mounted() {
@@ -168,6 +242,7 @@ export default {
           regionalismApi.getRegionalismNames()
             .then((response) => {
               this.nodeNames = response.data.data.regionalismNames
+              console.log(this.nodeByName)
             })
             .catch((error) => {
               console.log(error);
@@ -195,17 +270,33 @@ export default {
           break;
         default:
       }
-
     },
     //选择关系菜单
     chooseRelation(value) {
-      aggregateApi.getRelLabels()
-        .then((response) => {
-          this.relLabels = response.data.data.relLabels
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      switch (value) {
+        case '下级行政区划':
+          this.currentRelType = '下级行政区划'
+          relationApi.getRelsByName(this.currentRelType).then(({data}) => {
+            for (let item of data.data.relationList){
+              this.relNames.push(item.pathName);
+            }
+            this.load()
+          })
+          console.log("relnames++++++",this.relNames)
+          console.log("relsNamesLazy=====",this.relNamesLazy)
+          break;
+        case '关联':
+          this.currentRelType = '关联'
+          relationApi.getRelsByName(this.currentRelType).then(({data}) => {
+            for (let item of data.data.relationList){
+              this.relNames.push(item.pathName);
+            }
+            this.load()
+          })
+          console.log("relnames++++++",this.relNames)
+          break;
+        default:
+      }
     },
     //切换下拉菜单
     change(index) {
@@ -229,12 +320,24 @@ export default {
         this.getStationNodeByName(name)
       }
     },
+    getRelByName(name) {
+      if (this.currentRelType === '下级行政区划') {
+        let nameArray = name.split("->")
+        this.relByName = [nameArray]
+        console.log("relByName=====",this.relByName)
+      }
+      if (this.currentRelType === '关联') {
+
+        //业务逻辑
+        //TODO
+      }
+    },
     //根据名称查询行政规划节点
     getRegionalismNodeByName(regionalismName) {
       regionalismApi.getRegionalismByName(regionalismName)
         .then((response) => {
           this.nodeByName = response.data.data.result
-          console.log(this.nodeByName)
+          console.log("nodebyname=====",this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -292,7 +395,96 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    //删除选定节点及关联关系
+    delNodeAndRels(){
+      aggregateApi.delNodeAndRelsById(this.nodeByName[0]._id)
+        .then((response) => {
+          if(response.data.data==1){
+            //删除成功
+            this.$message({
+              type: 'success',
+              message: '删除实体及关系成功!'
+            });
+          }else{
+            //删除失败
+            this.$message({
+              type: 'warning',
+              message: '删除实体及关系失败!'
+            });
+          }
+          this.getAllNodeCounts()
+          this.getAllNodeLabels()
+          this.getAllRelLabels()
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //删除选定节点
+    delNode(){
+      aggregateApi.delNodeById(this.nodeByName[0]._id)
+      .then((response) => {
+        if(response==0){
+          //删除成功
+          this.$message({
+            type: 'success',
+            message: '删除实体成功!'
+          });
+          this.getAllNodeCounts()
+          this.getAllNodeLabels()
+          this.getAllRelLabels()
+        }else{
+          const mes = "有"+response.data.data+"条关系与该实体相连，是否一起删除。"
+          this.$confirm(mes, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            //删除选定节点及关联关系
+            this.delNodeAndRels()
+          }).catch(() => {
+            //取消删除
+            this.$message({
+              type: 'info',
+              message: '已取消删除！'
+            });
+          });
+        }
+      })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    load(){
+      this.flags.relLoadingFlag = true
+      this.flags.loadingFlag = true
+      setTimeout(() => {
+        let origin = this.flags.relLazyCountFlag
+        this.flags.relLazyCountFlag = this.flags.relLazyCountFlag + 25
+        if (this.flags.relLazyCountFlag < this.relNames.length){
+          for (let i = origin; i < this.flags.relLazyCountFlag; i++){
+            this.relNamesLazy.push(this.relNames[i])
+          }
+        }else {
+          for (let i = origin; i < this.relNames.length; i++){
+            this.relNamesLazy.push(this.relNames[i])
+          }
+        }
+        this.flags.relLoadingFlag = false
+        this.flags.loadingFlag = false
+      }, 1000)
     }
+  },
+  computed:{
+    disabled (){
+      console.log("flag+++++",this.flags.relLoadingFlag)
+      console.log("nomore+++++",this.noMore)
+      return this.flags.relLoadingFlag || this.noMore
+    },
+    noMore () {
+      return this.flags.relLazyCountFlag >= this.relNames.length
+    },
   }
 }
 </script>

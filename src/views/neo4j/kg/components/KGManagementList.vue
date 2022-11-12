@@ -8,52 +8,28 @@
 <template>
   <div>
     <el-row>
-      <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible = true">文件上传</el-button>
+      <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px">新增图谱</el-button>
     </el-row>
     <el-row style="margin-bottom: 20px;margin-left: 10px">
-      <el-col v-for="(o, index) in 4" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
+      <el-col v-for="(item, index) in list.connectList" :span="4" :key="index" :offset="index > 0 ? 2 : 0">
         <el-card :body-style="{ padding: '0px' }">
           <img :src="require('@/assets/images/sanxia.jpg')" class="image">
           <div style="padding: 14px;">
-            <span>水利知识图谱</span>
+            <span>{{item.db_C_NAME}}</span>
             <div class="bottom clearfix">
-              <time class="time">{{ currentDate }}</time>
-              <el-button type="text" class="button" @click="childClick">查看详情</el-button>
+              <p class="time">{{item.db_NOTE}}</p>
+              <el-button type="text" class="button" @click="childClick(item.db_ID)">查看详情</el-button>
             </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
-    <el-row style="margin-bottom: 20px;margin-left: 10px">
-      <el-col v-for="(o, index) in 4" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
-        <el-card :body-style="{ padding: '0px' }">
-          <img :src="require('@/assets/images/sanxia.jpg')" class="image">
-          <div style="padding: 14px;">
-            <span>水利知识图谱</span>
-            <div class="bottom clearfix">
-              <time class="time">{{ currentDate }}</time>
-              <el-button type="text" class="button" @click="childClick">查看详情</el-button>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <el-dialog
-      title="上传文件"
-      :visible.sync="visibles.dialogVisible"
-      width="50%">
-      <KGUploadFile></KGUploadFile>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="visibles.dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="visibles.dialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import KGUploadFile from "./KGUploadFile";
+import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 export default {
   name: 'KGManagementList',
   components: {KGUploadFile},
@@ -62,15 +38,29 @@ export default {
       currentDate: new Date(),
       visibles:{
         dialogVisible:false
+      },
+      list:{
+        connectList:[]
       }
     }
   },
   methods: {
-    childClick() {
+    childClick(instanceId) {
       const data = 1
       // this.$emit('toDetails',data)
-      this.$router.push('KGInstance')
+      this.$router.push({name:'KGInstance',params:{id:instanceId}})
+    },
+    init(){
+      this.listConnectors()
+    },
+    listConnectors(){
+      KGConnectApi.getConnects().then(({data}) => {
+        this.list.connectList = data.data
+      })
     }
+  },
+  mounted() {
+    this.init()
   }
 }
 </script>

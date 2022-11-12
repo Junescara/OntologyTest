@@ -77,5 +77,9 @@ export default {
       url: `/relation/getRelsByName/`+name,
       method: 'get'
     })
+  },
+  //添加关系
+  addRel(addForm) {
+    return request.post(`/relation/addRel`, addForm,{headers:{'Content-Type': 'application/json'}})
   }
 }

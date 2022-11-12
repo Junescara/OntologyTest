@@ -30,7 +30,7 @@ export default {
       params: {id:id}
     })
   },
-  //按id删除节点及关联关系
+  //按id删除实体及关联关系
   delNodeAndRelsById(id) {
     return request({
       url: `/kg/instance/aggregate/delNodeAndRelsById/`,

@@ -31,7 +31,7 @@
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span>知识库管理</span>
-          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          <el-button @click="addObjVisible = true" style="float: right; padding-top: 1px" type="text">增加</el-button>
         </div>
         <div>
           <el-button @click="change(0)">实体</el-button>
@@ -117,9 +117,8 @@
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
           <span>实体类信息</span>
-          <el-button @click="editConceptVisible = true" style="float: right; " type="text">增加</el-button>
-          <el-button @click="editConceptVisible = true" style="float: right; " type="text">修改</el-button>
-          <el-button @click="delNode" style="float: right; " type="text">删除</el-button>
+          <el-button @click="editConceptVisible = true" style="float: right; padding-top: 1px; margin-left: 6px " type="text">修改</el-button>
+          <el-button @click="delObject" style="float: right; padding-top: 1px " type="text">删除</el-button>
         </div>
         <el-descriptions :column="1">
           <el-descriptions-item label="实体所属类型">
@@ -137,7 +136,7 @@
         </el-descriptions>
 
         <!--以下为关系属性的表格-->
-        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
+        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="关系属性" :key="index" :column="1" border>
           <el-descriptions-item label="属性名">属性值</el-descriptions-item>
           <el-descriptions-item label="起点">
             {{item[0]}}
@@ -154,11 +153,10 @@
       </el-card>
 
       <el-dialog
-        title="修改实体信息"
-        :visible.sync="editConceptVisible"
+        title="修改实例"
+        :visible.sync="editObjVisible"
         width="50%"
         center>
-
         <el-form :label-position="labelPosition" :model="formLabelAlign" v-for="(item,index) in nodeByName">
           <el-form-item label-width="90px" v-for="(proVals,proNames) in item" :label="proNames">
             <el-input size="medium" :placeholder="proVals"></el-input>
@@ -166,8 +164,38 @@
         </el-form>
 
         <span slot="footer" class="dialog-footer">
-    <el-button @click="editConceptVisible = false">取 消</el-button>
-    <el-button type="primary" @click="editConceptVisible = false">确 定</el-button>
+    <el-button @click="editObjVisible = false">取 消</el-button>
+    <el-button type="primary" @click="editObjVisible = false">确 定</el-button>
+  </span>
+      </el-dialog>
+
+      <el-dialog
+        title="增加实例"
+        :visible.sync="addObjVisible"
+        width="50%"
+        center>
+        <el-form :inline="true" :model="InstanceForm" class="demo-form-inline">
+          <el-form-item label="请选择需要增加的实例类型" prop="name">
+            <el-cascader
+              v-model="InstanceForm.types"
+              :options="addOptions"
+              :props="{ expandTrigger: 'hover' }"
+              style="margin-left: 6px "
+              @change="chooseAddAtts"></el-cascader>
+          </el-form-item>
+          <el-form-item
+            v-for="(domain) in InstanceForm.attributes"
+            :label="domain.name"
+            :key="domain.key"
+            :prop="domain.key">
+            <el-input v-model="domain.value"></el-input>
+          </el-form-item>
+        </el-form>
+
+
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="addObjVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addObject">确 定</el-button>
   </span>
       </el-dialog>
 
@@ -188,6 +216,49 @@ export default {
   components: {KGVisibleEcahrts, KGVisible},
   data() {
     return {
+      //增加实例的相关信息
+      InstanceForm: {
+        //实例的标签信息
+        types:[],
+        //实例的属性列表，记录要添加的属性
+        attributes:[{
+        }]
+      },
+      //增加、修改实体时用于提交的数据格式
+      submitInstance: {
+        //实例的标签信息
+        types:[],
+        //实例的属性列表，记录要添加的属性
+        attributes:[]
+      },
+      //“增加实体或关系”标签选择
+      addOptions:[{
+        value: '实体',
+        label: '实体',
+        children: [{
+          value: '行政区划',
+          label: '行政区划',
+        },
+          {
+            value: '测站',
+            label: '测站',
+          },
+          {
+            value: '断面',
+            label: '断面',
+          }]
+      }, {
+          value: '关系',
+          label: '关系',
+          children: [{
+            value: '关联',
+            label: '关联',
+          },
+            {
+              value: '下级行政区划',
+              label: '下级行政区划',
+            }]
+        }],
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       //标记类
@@ -217,8 +288,10 @@ export default {
       relByName:null,
       currentType: null,
       currentRelType:null,
-      //修改实体对话框是否开启
-      editConceptVisible: false
+      //修改对话框是否开启
+      editObjVisible: false,
+      //增加对话框是否开启
+      addObjVisible: false
     }
   },
   mounted() {
@@ -396,7 +469,104 @@ export default {
           console.log(error);
         });
     },
-    //删除选定节点及关联关系
+    //增加功能 —— 根据标签选择对应实体或关系的属性
+    chooseAddAtts(types){
+
+      //清空属性列表
+      this.InstanceForm.attributes = [];
+
+      if(types[0]==="关系"){
+        this.InstanceForm.attributes.push({
+          key: "startEntityId",
+          name: "起始实体id",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "endEntityId",
+          name: "终止实体id",
+          value: ""
+        });
+      }else{
+        console.log("hhhh");
+      }
+
+    },
+    //增加选定实例
+    addObject() {
+      this.submitInstance.attributes = []
+      this.submitInstance.types = []
+      this.submitInstance.types.push(this.InstanceForm.types[1]);
+      this.InstanceForm.attributes.forEach((item) => {
+        this.submitInstance.attributes.push({
+            name: item.name,
+            value: item.value
+        });
+      });
+      if(this.InstanceForm.types[0]==="关系"){
+        relationApi.addRel(JSON.stringify(this.submitInstance))
+        .then(
+          (response) => {
+            //如果起始实体不存在
+            if(response.data.data==-1){
+              this.$message({
+                type: 'error',
+                message: '起始实体不存在!'
+              });
+            } else if(response.data.data==-2){
+              this.$message({
+                type: 'error',
+                message: '终止实体不存在!'
+              });
+            }else{
+              let mes = '创建关系成功，关系的id为' + response.data.data + "!"
+              this.$message({
+                type: 'success',
+                message: mes
+              });
+            }
+          })
+        .catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+        this.addObjVisible = false
+      }else{
+        console.log("hhh");
+        this.addObjVisible = false
+      }
+    },
+    //删除选定实例
+    delObject(){
+      if(JSON.stringify(this.relByName)=="null" && JSON.stringify(this.nodeByName)=="null"){
+        //没有选中实例
+        this.$message({
+          type: 'error',
+          message: '请选择要删除的实例!'
+        });
+      }else if(JSON.stringify(this.nodeByName)!="null" && JSON.stringify(this.relByName)=="null"){
+        //选中实体
+        this.delNode()
+      }else if(JSON.stringify(this.relByName)!="null" && JSON.stringify(this.nodeByName)=="null"){
+        //选中关系
+        this.delRel()
+      }else{
+        //出现错误
+        this.$message({
+          type: 'error',
+          message: '出现错误!'
+        });
+      }
+
+    },
+    //删除选定关系
+    delRel(){
+      this.$message({
+        type: 'error',
+        message: '删除关系!'
+      });
+    },
+    //删除选定实体及关联关系
     delNodeAndRels(){
       aggregateApi.delNodeAndRelsById(this.nodeByName[0]._id)
         .then((response) => {
@@ -409,7 +579,7 @@ export default {
           }else{
             //删除失败
             this.$message({
-              type: 'warning',
+              type: 'error',
               message: '删除实体及关系失败!'
             });
           }
@@ -421,7 +591,7 @@ export default {
           console.log(error);
         });
     },
-    //删除选定节点
+    //删除选定实体
     delNode(){
       aggregateApi.delNodeById(this.nodeByName[0]._id)
       .then((response) => {
@@ -441,7 +611,7 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            //删除选定节点及关联关系
+            //删除选定实体及关联关系
             this.delNodeAndRels()
           }).catch(() => {
             //取消删除

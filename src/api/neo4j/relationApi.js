@@ -81,5 +81,12 @@ export default {
   //添加关系
   addRel(addForm) {
     return request.post(`/relation/addRel`, addForm,{headers:{'Content-Type': 'application/json'}})
+  },
+
+  getRelsRegionContainsNodeName(key){
+    return request({
+      url: `/relation/getRelsContainsNodeNameKey/`+key,
+      method: 'get'
+    })
   }
 }

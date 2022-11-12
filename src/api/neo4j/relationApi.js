@@ -77,5 +77,11 @@ export default {
       url: `/relation/getRelsByName/`+name,
       method: 'get'
     })
+  },
+  getRelsRegionContainsNodeName(key){
+    return request({
+      url: `/relation/getRelsContainsNodeNameKey/`+key,
+      method: 'get'
+    })
   }
 }

@@ -15,4 +15,10 @@ export default {
       method: 'get'
     })
   },
+  getRegionalismContainsName(key){
+    return request({
+      url: `/kg/instance/regionalism/regionalismContansName/${key}`,
+      method: 'get'
+    })
+  }
 }

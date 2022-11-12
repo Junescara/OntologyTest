@@ -48,8 +48,8 @@
               />
             </el-select>
             <div style="margin-top: 15px;">
-              <el-input placeholder="请搜索实体名称" class="input-with-select">
-                <el-button slot="append" icon="el-icon-search"/>
+              <el-input placeholder="请搜索实体名称" class="input-with-select" v-model="key.nodeKey">
+                <el-button slot="append" icon="el-icon-search" @click="getNodeContainsName"/>
               </el-input>
             </div>
           </div>
@@ -65,8 +65,8 @@
               />
             </el-select>
             <div style="margin-top: 15px;">
-              <el-input placeholder="请搜索关系名称" class="input-with-select">
-                <el-button slot="append" icon="el-icon-search"/>
+              <el-input placeholder="请搜索关系名称" class="input-with-select" v-model="key.relNodeKey">
+                <el-button slot="append" icon="el-icon-search" @click="getRelsContainsNodeName"/>
               </el-input>
             </div>
           </div>
@@ -195,6 +195,11 @@ export default {
         relLazyCountFlag:0,
         relLoadingFlag:false,
         loadingFlag:false
+      },
+      //查询关键字
+      key:{
+        nodeKey:'',
+        relNodeKey:'',
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -474,6 +479,28 @@ export default {
         this.flags.relLoadingFlag = false
         this.flags.loadingFlag = false
       }, 1000)
+    },
+    getNodeContainsName(){
+      if (this.currentType === '行政区划'){
+        regionalismApi.getRegionalismContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }
+    },
+    getRelsContainsNodeName(){
+      if (this.currentRelType === '下级行政区划'){
+        relationApi.getRelsRegionContainsNodeName(this.key.relNodeKey).then(({data}) => {
+          this.relNames = []
+          let list = data.data.relationList
+          for (let item of list){
+            this.relNames.push(item.pathName)
+          }
+        })
+      }
     }
   },
   computed:{
@@ -485,6 +512,19 @@ export default {
     noMore () {
       return this.flags.relLazyCountFlag >= this.relNames.length
     },
+  },
+  watch:{
+    relNames:{
+      handler(newValue, oldValue) {
+        // this.relNamesLazy = []
+        if (oldValue.length > 0){
+          this.relNamesLazy = []
+          this.flags.relLazyCountFlag = 0
+          this.load()
+        }
+      },
+      deep: true
+    }
   }
 }
 </script>

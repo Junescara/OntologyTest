@@ -159,8 +159,8 @@
         width="50%"
         center>
 
-        <el-form :label-position="labelPosition" :model="formLabelAlign" v-for="(item,index) in nodeByName">
-          <el-form-item label-width="90px" v-for="(proVals,proNames) in item" :label="proNames">
+        <el-form :label-position="labelPosition" :model="formLabelAlign" v-for="(item,index) in nodeByName" :key="item">
+          <el-form-item label-width="90px" v-for="(proVals,proNames) in item" :key="proVals" :label="proNames">
             <el-input size="medium" :placeholder="proVals"></el-input>
           </el-form-item>
         </el-form>

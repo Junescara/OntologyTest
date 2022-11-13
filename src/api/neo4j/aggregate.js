@@ -37,5 +37,9 @@ export default {
       method: 'post',
       params: {id:id}
     })
+  },
+  //添加实体
+  addNode(addForm) {
+    return request.post(`/kg/instance/aggregate/addNode`, addForm,{headers:{'Content-Type': 'application/json'}})
   }
 }

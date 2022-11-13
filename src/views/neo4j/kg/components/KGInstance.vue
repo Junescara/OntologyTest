@@ -117,7 +117,7 @@
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
           <span>实体类信息</span>
-          <el-button @click="editConceptVisible = true" style="float: right; padding-top: 1px; margin-left: 6px " type="text">修改</el-button>
+          <el-button @click="editObjVisible = true" style="float: right; padding-top: 1px; margin-left: 6px " type="text">修改</el-button>
           <el-button @click="delObject" style="float: right; padding-top: 1px " type="text">删除</el-button>
         </div>
         <el-descriptions :column="1">
@@ -172,7 +172,7 @@
       <el-dialog
         title="增加实例"
         :visible.sync="addObjVisible"
-        width="50%"
+        width="25%"
         center>
         <el-form :inline="true" :model="InstanceForm" class="demo-form-inline">
           <el-form-item label="请选择需要增加的实例类型" prop="name">
@@ -491,8 +491,41 @@ export default {
           name: "终止实体id",
           value: ""
         });
-      }else{
-        console.log("hhhh");
+      }
+      else if(types[1]==="行政区划"){
+        this.InstanceForm.attributes.push({
+          key: "jurisdiction_num",
+          name: "行政区划编码",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "jurisdiction",
+          name: "行政区划名称（带乡镇）",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "jurisdiction_s",
+          name: "行政区划名名称",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "lgtd",
+          name: "经度",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "lttd",
+          name: "纬度",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "class",
+          name: "类别",
+          value: ""
+        });
+      }
+      else{
+        console.log("没有写");
       }
 
     },
@@ -502,10 +535,12 @@ export default {
       this.submitInstance.types = []
       this.submitInstance.types.push(this.InstanceForm.types[1]);
       this.InstanceForm.attributes.forEach((item) => {
-        this.submitInstance.attributes.push({
+        if(item.value !== ""){
+          this.submitInstance.attributes.push({
             name: item.name,
             value: item.value
-        });
+          });
+        }
       });
       if(this.InstanceForm.types[0]==="关系"){
         relationApi.addRel(JSON.stringify(this.submitInstance))
@@ -523,11 +558,14 @@ export default {
                 message: '终止实体不存在!'
               });
             }else{
-              let mes = '创建关系成功，关系的id为' + response.data.data + "!"
+              let mes = 'id为' + response.data.data + '的关系创建成功!'
               this.$message({
                 type: 'success',
                 message: mes
               });
+              this.getAllNodeCounts()
+              this.getAllNodeLabels()
+              this.getAllRelLabels()
             }
           })
         .catch(
@@ -536,11 +574,37 @@ export default {
           }
         );
         this.addObjVisible = false
-      }else{
-        console.log("hhh");
+      }
+      else if(this.InstanceForm.types[0]==="实体"){
+
+        aggregateApi.addNode(JSON.stringify(this.submitInstance))
+        .then(
+          (response) => {
+            let mes = 'id为' + response.data.data + '的实体创建成功!'
+            this.$message({
+              type: 'success',
+              message: mes
+            });
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
+          })
+        .catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+        this.addObjVisible = false
+      }
+      else{
+        this.$message({
+          type: 'error',
+          message: '出错了!'
+        });
         this.addObjVisible = false
       }
     },
+
     //删除选定实例
     delObject(){
       if(JSON.stringify(this.relByName)=="null" && JSON.stringify(this.nodeByName)=="null"){
@@ -570,6 +634,9 @@ export default {
         type: 'error',
         message: '删除关系!'
       });
+      this.getAllNodeCounts()
+      this.getAllNodeLabels()
+      this.getAllRelLabels()
     },
     //删除选定实体及关联关系
     delNodeAndRels(){
@@ -581,6 +648,9 @@ export default {
               type: 'success',
               message: '删除实体及关系成功!'
             });
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
           }else{
             //删除失败
             this.$message({
@@ -588,9 +658,6 @@ export default {
               message: '删除实体及关系失败!'
             });
           }
-          this.getAllNodeCounts()
-          this.getAllNodeLabels()
-          this.getAllRelLabels()
         })
         .catch((error) => {
           console.log(error);
@@ -618,6 +685,9 @@ export default {
           }).then(() => {
             //删除选定实体及关联关系
             this.delNodeAndRels()
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
           }).catch(() => {
             //取消删除
             this.$message({

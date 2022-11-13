@@ -22,4 +22,29 @@ export default {
       method: 'get'
     })
   },
+  //按id删除节点
+  delNodeById(id) {
+    return request({
+      url: `/kg/instance/aggregate/delNodeById/`,
+      method: 'post',
+      params: {id:id}
+    })
+  },
+  //按id删除实体及关联关系
+  delNodeAndRelsById(id) {
+    return request({
+      url: `/kg/instance/aggregate/delNodeAndRelsById/`,
+      method: 'post',
+      params: {id:id}
+    })
+  },
+  //添加实体
+  addNode(addForm) {
+    return request.post(`/kg/instance/aggregate/addNode`, addForm,{headers:{'Content-Type': 'application/json'}})
+  },
+
+  //修改实体
+  editNode(addForm) {
+    return request.post(`/kg/instance/aggregate/editNode`, addForm,{headers:{'Content-Type': 'application/json'}})
+  }
 }

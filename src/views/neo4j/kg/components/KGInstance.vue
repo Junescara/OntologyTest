@@ -34,7 +34,7 @@
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span>知识库管理</span>
-          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          <el-button @click="addObjVisible = true" style="float: right; padding-top: 1px" type="text">增加</el-button>
         </div>
         <div>
           <el-button @click="change(0)">实体</el-button>
@@ -120,7 +120,8 @@
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
           <span>实体类信息</span>
-          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          <el-button @click="editObjVisible = true" style="float: right; padding-top: 1px; margin-left: 6px " type="text">修改</el-button>
+          <el-button @click="delObject" style="float: right; padding-top: 1px " type="text">删除</el-button>
         </div>
         <el-descriptions :column="1">
           <el-descriptions-item label="实体所属类型">
@@ -138,7 +139,7 @@
         </el-descriptions>
 
         <!--以下为关系属性的表格-->
-        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
+        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="关系属性" :key="index" :column="1" border>
           <el-descriptions-item label="属性名">属性值</el-descriptions-item>
           <el-descriptions-item label="起点">
             {{item[0]}}
@@ -153,6 +154,56 @@
           </el-descriptions-item>
         </el-descriptions>
       </el-card>
+
+      <!--以下为修改实例卡片-->
+      <el-dialog
+        title="修改实例"
+        :visible.sync="editObjVisible"
+        width="50%"
+        center>
+        <el-form :label-position="labelPosition" :model="formLabelAlign">
+          <el-form-item label-width="120px" v-for="(proVals,proNames) in editNodeInfo.editNodeAtts" :label="proNames">
+            <el-input size="medium" :placeholder="proVals" v-model="editNodeInfo.editNodeAtts[proNames]"></el-input>
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editObjVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editObiect">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!--以下为增加实例卡片-->
+      <el-dialog
+        title="增加实例"
+        :visible.sync="addObjVisible"
+        width="25%"
+        center>
+        <el-form :model="InstanceForm" class="demo-form-inline">
+          <el-form-item label="请选择需要增加的实例类型" prop="name">
+            <el-cascader
+              v-model="InstanceForm.types"
+              :options="addOptions"
+              :props="{ expandTrigger: 'hover' }"
+              style="margin-left: 6px "
+              @change="chooseAddAtts"></el-cascader>
+          </el-form-item>
+          <el-form-item
+            v-for="(domain) in InstanceForm.attributes"
+            :label="domain.name"
+            :key="domain.key"
+            :prop="domain.key">
+            <el-input v-model="domain.value"></el-input>
+          </el-form-item>
+        </el-form>
+
+
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="addObjVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addObject">确 定</el-button>
+  </span>
+      </el-dialog>
+
     </div>
 
     <el-dialog
@@ -189,6 +240,50 @@ export default {
   },
   data() {
     return {
+      tempAtt:null,
+      //增加实例的相关信息
+      InstanceForm: {
+        //实例的标签信息
+        types:[],
+        //实例的属性列表，记录要添加的属性
+        attributes:[{
+        }]
+      },
+      //增加、修改实体时用于提交的数据格式
+      submitInstance: {
+        //实例的标签信息
+        types:[],
+        //实例的属性列表，记录要添加的属性
+        attributes:[]
+      },
+      //“增加实体或关系”标签选择
+      addOptions:[{
+        value: '实体',
+        label: '实体',
+        children: [{
+          value: '行政区划',
+          label: '行政区划',
+        },
+          {
+            value: '测站',
+            label: '测站',
+          },
+          {
+            value: '断面',
+            label: '断面',
+          }]
+      }, {
+          value: '关系',
+          label: '关系',
+          children: [{
+            value: '关联',
+            label: '关联',
+          },
+            {
+              value: '下级行政区划',
+              label: '下级行政区划',
+            }]
+        }],
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       visibles:{
@@ -220,6 +315,8 @@ export default {
       nodeNames: [],
       //查询出来的关系组合
       relNames:[],
+      //查询出来的关系组合及id
+      relNamesAndIds:[],
       //实现懒加载的relNames
       relNamesLazy:[],
       //记录下拉菜单索引
@@ -230,6 +327,15 @@ export default {
       currentType: null,
       currentRelType:null,
       currentId:null,
+      currentRelId:null,
+      //修改对话框是否开启
+      editObjVisible: false,
+      //增加对话框是否开启
+      addObjVisible: false,
+      editNodeInfo:{
+        editNodeId:null,
+        editNodeAtts:null
+      }
     }
   },
   mounted() {
@@ -257,6 +363,7 @@ export default {
           regionalismApi.getRegionalismNames()
             .then((response) => {
               this.nodeNames = response.data.data.regionalismNames
+              console.log(this.nodeByName)
             })
             .catch((error) => {
               console.log(error);
@@ -293,9 +400,16 @@ export default {
           relationApi.getRelsByName(this.currentRelType).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
+              let relNameAndId = {
+                id:item.id,
+                path:item.pathName
+              }
+
+              this.relNamesAndIds.push(relNameAndId);
             }
             this.load()
           })
+          console.log("relNamesAndIds++++++",this.relNamesAndIds)
           console.log("relnames++++++",this.relNames)
           console.log("relsNamesLazy=====",this.relNamesLazy)
           break;
@@ -304,6 +418,12 @@ export default {
           relationApi.getRelsByName(this.currentRelType).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
+              let relNameAndId = {
+                id:item.id,
+                path:item.pathName
+              }
+
+              this.relNamesAndIds.push(relNameAndId);
             }
             this.load()
           })
@@ -336,9 +456,18 @@ export default {
     },
     getRelByName(name) {
       if (this.currentRelType === '下级行政区划') {
+
+        for(let i in this.relNamesAndIds){
+          if(this.relNamesAndIds[i].path === name){
+            this.currentRelId = this.relNamesAndIds[i].id;
+            break;
+          }
+        }
+
         let nameArray = name.split("->")
         this.relByName = [nameArray]
         console.log("relByName=====",this.relByName)
+        console.log("currentRelId=====",this.currentRelId)
       }
       if (this.currentRelType === '关联') {
 
@@ -351,7 +480,13 @@ export default {
       regionalismApi.getRegionalismByName(regionalismName)
         .then((response) => {
           this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
+
           console.log("nodebyname=====",this.nodeByName)
+          console.log("editNodeInfo=====",this.editNodeInfo)
         })
         .catch((error) => {
           console.log(error);
@@ -362,6 +497,10 @@ export default {
       sectionApi.getSectionByName(sectionName)
         .then((response) => {
           this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
           console.log(this.nodeByName)
         })
         .catch((error) => {
@@ -373,6 +512,10 @@ export default {
       stationApi.getStationByName(stationName)
         .then((response) => {
           this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
           console.log(this.nodeByName)
         })
         .catch((error) => {
@@ -406,6 +549,284 @@ export default {
         .then((response) => {
           this.relLabels = response.data.data.relLabels
         })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //增加功能 —— 根据标签选择对应实体或关系的属性
+    chooseAddAtts(types){
+
+      //清空属性列表
+      this.InstanceForm.attributes = [];
+
+      if(types[0]==="关系"){
+        this.InstanceForm.attributes.push({
+          key: "startEntityId",
+          name: "起始实体id",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "endEntityId",
+          name: "终止实体id",
+          value: ""
+        });
+      }
+      else if(types[1]==="行政区划"){
+        this.InstanceForm.attributes.push({
+          key: "jurisdiction_num",
+          name: "行政区划编码",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "jurisdiction",
+          name: "行政区划名称（带乡镇）",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "jurisdiction_s",
+          name: "行政区划名名称",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "lgtd",
+          name: "经度",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "lttd",
+          name: "纬度",
+          value: ""
+        });
+        this.InstanceForm.attributes.push({
+          key: "class",
+          name: "类别",
+          value: ""
+        });
+      }
+      else{
+        console.log("没有写");
+      }
+
+    },
+    //修改选定实例
+    editObiect(){
+      this.submitInstance.attributes = []
+      this.submitInstance.types = []
+      this.submitInstance.types.push(this.currentType)
+      this.submitInstance.attributes.push({
+        name:"_id",
+        value:this.editNodeInfo.editNodeId
+      })
+      Object.keys(this.editNodeInfo.editNodeAtts).forEach((key)=>{
+        if(this.editNodeInfo.editNodeAtts[key] != "" && this.editNodeInfo.editNodeAtts[key] != null){
+          this.submitInstance.attributes.push({
+            name: key,
+            value: this.editNodeInfo.editNodeAtts[key]
+          });
+        }
+      });
+      aggregateApi.editNode(JSON.stringify(this.submitInstance))
+        .then(
+          (response) => {
+            let mes = 'id为' + response.data.data + '的实体修改成功!'
+            this.$message({
+              type: 'success',
+              message: mes
+            });
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
+          })
+        .catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+      this.editObjVisible = false
+    },
+    //增加选定实例
+    addObject() {
+      this.submitInstance.attributes = []
+      this.submitInstance.types = []
+      this.submitInstance.types.push(this.InstanceForm.types[1]);
+      this.InstanceForm.attributes.forEach((item) => {
+        if(item.value !== "" && item.value !== null){
+          this.submitInstance.attributes.push({
+            name: item.name,
+            value: item.value
+          });
+        }
+      });
+      if(this.InstanceForm.types[0]==="关系"){
+        relationApi.addRel(JSON.stringify(this.submitInstance))
+        .then(
+          (response) => {
+            //如果起始实体不存在
+            if(response.data.data==-1){
+              this.$message({
+                type: 'error',
+                message: '起始实体不存在!'
+              });
+            } else if(response.data.data==-2){
+              this.$message({
+                type: 'error',
+                message: '终止实体不存在!'
+              });
+            }else{
+              let mes = 'id为' + response.data.data + '的关系创建成功!'
+              this.$message({
+                type: 'success',
+                message: mes
+              });
+              this.getAllNodeCounts()
+              this.getAllNodeLabels()
+              this.getAllRelLabels()
+            }
+          })
+        .catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+        this.addObjVisible = false
+      }
+      else if(this.InstanceForm.types[0]==="实体"){
+
+        aggregateApi.addNode(JSON.stringify(this.submitInstance))
+        .then(
+          (response) => {
+            let mes = 'id为' + response.data.data + '的实体创建成功!'
+            this.$message({
+              type: 'success',
+              message: mes
+            });
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
+          })
+        .catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+        this.addObjVisible = false
+      }
+      else{
+        this.$message({
+          type: 'error',
+          message: '出错了!'
+        });
+        this.addObjVisible = false
+      }
+    },
+
+    //删除选定实例
+    delObject(){
+      if(JSON.stringify(this.relByName)=="null" && JSON.stringify(this.nodeByName)=="null"){
+        //没有选中实例
+        this.$message({
+          type: 'error',
+          message: '请选择要删除的实例!'
+        });
+      }else if(JSON.stringify(this.nodeByName)!="null" && JSON.stringify(this.relByName)=="null"){
+        //选中实体
+        this.delNode()
+      }else if(JSON.stringify(this.relByName)!="null" && JSON.stringify(this.nodeByName)=="null"){
+        //选中关系
+        this.delRel()
+      }else{
+        //出现错误
+        this.$message({
+          type: 'error',
+          message: '出现错误!'
+        });
+      }
+
+    },
+    //删除选定关系
+    delRel(){
+      relationApi.delRelById(this.currentRelId)
+      .then((response) => {
+        if(response.data.data==1){
+          //删除成功
+          this.$message({
+            type: 'success',
+            message: '删除关系成功!'
+          });
+          this.getAllNodeCounts()
+          this.getAllNodeLabels()
+          this.getAllRelLabels()
+        }else{
+          //删除失败
+          this.$message({
+            type: 'error',
+            message: '删除关系失败!'
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    },
+    //删除选定实体及关联关系
+    delNodeAndRels(){
+      aggregateApi.delNodeAndRelsById(this.nodeByName[0]._id)
+        .then((response) => {
+          if(response.data.data==1){
+            //删除成功
+            this.$message({
+              type: 'success',
+              message: '删除实体及关系成功!'
+            });
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
+          }else{
+            //删除失败
+            this.$message({
+              type: 'error',
+              message: '删除实体及关系失败!'
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //删除选定实体
+    delNode(){
+      aggregateApi.delNodeById(this.nodeByName[0]._id)
+      .then((response) => {
+        if(response==0){
+          //删除成功
+          this.$message({
+            type: 'success',
+            message: '删除实体成功!'
+          });
+          this.getAllNodeCounts()
+          this.getAllNodeLabels()
+          this.getAllRelLabels()
+        }else{
+          const mes = "有"+response.data.data+"条关系与该实体相连，是否一起删除。"
+          this.$confirm(mes, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            //删除选定实体及关联关系
+            this.delNodeAndRels()
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
+          }).catch(() => {
+            //取消删除
+            this.$message({
+              type: 'info',
+              message: '已取消删除！'
+            });
+          });
+        }
+      })
         .catch((error) => {
           console.log(error);
         });

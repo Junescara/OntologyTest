@@ -41,5 +41,10 @@ export default {
   //添加实体
   addNode(addForm) {
     return request.post(`/kg/instance/aggregate/addNode`, addForm,{headers:{'Content-Type': 'application/json'}})
+  },
+
+  //修改实体
+  editNode(addForm) {
+    return request.post(`/kg/instance/aggregate/editNode`, addForm,{headers:{'Content-Type': 'application/json'}})
   }
 }

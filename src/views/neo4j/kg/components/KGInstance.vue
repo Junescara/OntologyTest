@@ -152,29 +152,31 @@
         </el-descriptions>
       </el-card>
 
+      <!--以下为修改实例卡片-->
       <el-dialog
         title="修改实例"
         :visible.sync="editObjVisible"
         width="50%"
         center>
-        <el-form :label-position="labelPosition" :model="formLabelAlign" v-for="(item,index) in nodeByName">
-          <el-form-item label-width="90px" v-for="(proVals,proNames) in item" :label="proNames">
-            <el-input size="medium" :placeholder="proVals"></el-input>
+        <el-form :label-position="labelPosition" :model="formLabelAlign">
+          <el-form-item label-width="120px" v-for="(proVals,proNames) in editNodeInfo.editNodeAtts" :label="proNames">
+            <el-input size="medium" :placeholder="proVals" v-model="editNodeInfo.editNodeAtts[proNames]"></el-input>
           </el-form-item>
         </el-form>
 
         <span slot="footer" class="dialog-footer">
-    <el-button @click="editObjVisible = false">取 消</el-button>
-    <el-button type="primary" @click="editObjVisible = false">确 定</el-button>
-  </span>
+          <el-button @click="editObjVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editObiect">确 定</el-button>
+        </span>
       </el-dialog>
 
+      <!--以下为增加实例卡片-->
       <el-dialog
         title="增加实例"
         :visible.sync="addObjVisible"
         width="25%"
         center>
-        <el-form :inline="true" :model="InstanceForm" class="demo-form-inline">
+        <el-form :model="InstanceForm" class="demo-form-inline">
           <el-form-item label="请选择需要增加的实例类型" prop="name">
             <el-cascader
               v-model="InstanceForm.types"
@@ -216,6 +218,7 @@ export default {
   components: {KGVisibleEcahrts, KGVisible},
   data() {
     return {
+      tempAtt:null,
       //增加实例的相关信息
       InstanceForm: {
         //实例的标签信息
@@ -299,7 +302,11 @@ export default {
       //修改对话框是否开启
       editObjVisible: false,
       //增加对话框是否开启
-      addObjVisible: false
+      addObjVisible: false,
+      editNodeInfo:{
+        editNodeId:null,
+        editNodeAtts:null
+      }
     }
   },
   mounted() {
@@ -440,7 +447,13 @@ export default {
       regionalismApi.getRegionalismByName(regionalismName)
         .then((response) => {
           this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
+
           console.log("nodebyname=====",this.nodeByName)
+          console.log("editNodeInfo=====",this.editNodeInfo)
         })
         .catch((error) => {
           console.log(error);
@@ -451,6 +464,10 @@ export default {
       sectionApi.getSectionByName(sectionName)
         .then((response) => {
           this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
           console.log(this.nodeByName)
         })
         .catch((error) => {
@@ -462,6 +479,10 @@ export default {
       stationApi.getStationByName(stationName)
         .then((response) => {
           this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
           console.log(this.nodeByName)
         })
         .catch((error) => {
@@ -554,13 +575,49 @@ export default {
       }
 
     },
+    //修改选定实例
+    editObiect(){
+      this.submitInstance.attributes = []
+      this.submitInstance.types = []
+      this.submitInstance.types.push(this.currentType)
+      this.submitInstance.attributes.push({
+        name:"_id",
+        value:this.editNodeInfo.editNodeId
+      })
+      Object.keys(this.editNodeInfo.editNodeAtts).forEach((key)=>{
+        if(this.editNodeInfo.editNodeAtts[key] != "" && this.editNodeInfo.editNodeAtts[key] != null){
+          this.submitInstance.attributes.push({
+            name: key,
+            value: this.editNodeInfo.editNodeAtts[key]
+          });
+        }
+      });
+      aggregateApi.editNode(JSON.stringify(this.submitInstance))
+        .then(
+          (response) => {
+            let mes = 'id为' + response.data.data + '的实体修改成功!'
+            this.$message({
+              type: 'success',
+              message: mes
+            });
+            this.getAllNodeCounts()
+            this.getAllNodeLabels()
+            this.getAllRelLabels()
+          })
+        .catch(
+          (error) => {
+            console.log(error);
+          }
+        );
+      this.editObjVisible = false
+    },
     //增加选定实例
     addObject() {
       this.submitInstance.attributes = []
       this.submitInstance.types = []
       this.submitInstance.types.push(this.InstanceForm.types[1]);
       this.InstanceForm.attributes.forEach((item) => {
-        if(item.value !== ""){
+        if(item.value !== "" && item.value !== null){
           this.submitInstance.attributes.push({
             name: item.name,
             value: item.value

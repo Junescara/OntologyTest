@@ -77,5 +77,26 @@ export default {
       url: `/relation/getRelsByName/`+name,
       method: 'get'
     })
+  },
+
+  //按id删除关系
+  delRelById(id) {
+    return request({
+      url: `/relation/delRelById`,
+      method: 'post',
+      params: {id:id}
+    })
+  },
+
+  //添加关系
+  addRel(addForm) {
+    return request.post(`/relation/addRel`, addForm,{headers:{'Content-Type': 'application/json'}})
+  },
+
+  getRelsRegionContainsNodeName(key){
+    return request({
+      url: `/relation/getRelsContainsNodeNameKey/`+key,
+      method: 'get'
+    })
   }
 }

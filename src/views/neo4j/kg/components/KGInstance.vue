@@ -25,6 +25,9 @@
             </el-descriptions-item>
           </el-descriptions>
         </el-col>
+        <el-col :span="6">
+          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible = true">导入文件</el-button>
+        </el-col>
       </el-row>
     </el-card>
     <div style="display: flex">
@@ -202,6 +205,17 @@
       </el-dialog>
 
     </div>
+
+    <el-dialog
+      title="上传文件"
+      :visible.sync="visibles.dialogVisible"
+      width="50%">
+      <KGUploadFile></KGUploadFile>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="visibles.dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="visibles.dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -213,9 +227,17 @@ import sectionApi from '@/api/neo4j/section';
 import stationApi from '@/api/neo4j/station';
 import KGVisibleEcahrts from "./KGVisibleEcahrts";
 import relationApi from "../../../../api/neo4j/relationApi";
+import KGUploadFile from "./KGUploadFile";
+import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 export default {
   name: 'KGInstance',
-  components: {KGVisibleEcahrts, KGVisible},
+  components: {KGVisibleEcahrts, KGVisible,KGUploadFile},
+  props:{
+    kgConnectInfo:{
+      type:Object,
+      default:() => {}
+    }
+  },
   data() {
     return {
       tempAtt:null,
@@ -264,6 +286,9 @@ export default {
         }],
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      visibles:{
+        dialogVisible:false
+      },
       //标记类
       flags:{
         relLazyCountFlag:0,
@@ -274,6 +299,9 @@ export default {
       key:{
         nodeKey:'',
         relNodeKey:'',
+      },
+      kgInfo:{
+
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -298,6 +326,7 @@ export default {
       relByName:null,
       currentType: null,
       currentRelType:null,
+      currentId:null,
       currentRelId:null,
       //修改对话框是否开启
       editObjVisible: false,
@@ -310,7 +339,11 @@ export default {
     }
   },
   mounted() {
-    console.log('instance挂载了')
+    this.currentId = this.$route.params.id
+    console.log('id=======',this.currentId)
+    KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
+      this.kgInfo = data.data
+    })
   },
   created() {
     this.getAllNodeCounts()

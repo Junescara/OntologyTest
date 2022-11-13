@@ -74,11 +74,17 @@ export default {
   methods:{
     uploadFile(params,type){
       console.log("params=======",params)
-      fileApi.importRelation(this.dataform,params.file).then(({data}) => {
-        console.log("测试结果data===========",data)
-      },(error) => {
-        console.log("/测试结果erroe=======",error)
-      })
+      if (this.flags.fileFlag == 1){
+        //导入关系文件
+        fileApi.importRelation(this.dataform,params.file).then(({data}) => {
+          console.log("测试结果data===========",data)
+        },(error) => {
+          console.log("/测试结果erroe=======",error)
+        })
+      }else {
+        //导入实体文件
+      }
+
     }
   }
 }

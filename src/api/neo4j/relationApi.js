@@ -78,6 +78,16 @@ export default {
       method: 'get'
     })
   },
+
+  //按id删除关系
+  delRelById(id) {
+    return request({
+      url: `/relation/delRelById`,
+      method: 'post',
+      params: {id:id}
+    })
+  },
+
   //添加关系
   addRel(addForm) {
     return request.post(`/relation/addRel`, addForm,{headers:{'Content-Type': 'application/json'}})

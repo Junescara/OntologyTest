@@ -284,6 +284,8 @@ export default {
       nodeNames: [],
       //查询出来的关系组合
       relNames:[],
+      //查询出来的关系组合及id
+      relNamesAndIds:[],
       //实现懒加载的relNames
       relNamesLazy:[],
       //记录下拉菜单索引
@@ -293,6 +295,7 @@ export default {
       relByName:null,
       currentType: null,
       currentRelType:null,
+      currentRelId:null,
       //修改对话框是否开启
       editObjVisible: false,
       //增加对话框是否开启
@@ -357,9 +360,16 @@ export default {
           relationApi.getRelsByName(this.currentRelType).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
+              let relNameAndId = {
+                id:item.id,
+                path:item.pathName
+              }
+
+              this.relNamesAndIds.push(relNameAndId);
             }
             this.load()
           })
+          console.log("relNamesAndIds++++++",this.relNamesAndIds)
           console.log("relnames++++++",this.relNames)
           console.log("relsNamesLazy=====",this.relNamesLazy)
           break;
@@ -368,6 +378,12 @@ export default {
           relationApi.getRelsByName(this.currentRelType).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
+              let relNameAndId = {
+                id:item.id,
+                path:item.pathName
+              }
+
+              this.relNamesAndIds.push(relNameAndId);
             }
             this.load()
           })
@@ -400,9 +416,18 @@ export default {
     },
     getRelByName(name) {
       if (this.currentRelType === '下级行政区划') {
+
+        for(let i in this.relNamesAndIds){
+          if(this.relNamesAndIds[i].path === name){
+            this.currentRelId = this.relNamesAndIds[i].id;
+            break;
+          }
+        }
+
         let nameArray = name.split("->")
         this.relByName = [nameArray]
         console.log("relByName=====",this.relByName)
+        console.log("currentRelId=====",this.currentRelId)
       }
       if (this.currentRelType === '关联') {
 
@@ -630,13 +655,28 @@ export default {
     },
     //删除选定关系
     delRel(){
-      this.$message({
-        type: 'error',
-        message: '删除关系!'
+      relationApi.delRelById(this.currentRelId)
+      .then((response) => {
+        if(response.data.data==1){
+          //删除成功
+          this.$message({
+            type: 'success',
+            message: '删除关系成功!'
+          });
+          this.getAllNodeCounts()
+          this.getAllNodeLabels()
+          this.getAllRelLabels()
+        }else{
+          //删除失败
+          this.$message({
+            type: 'error',
+            message: '删除关系失败!'
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      this.getAllNodeCounts()
-      this.getAllNodeLabels()
-      this.getAllRelLabels()
     },
     //删除选定实体及关联关系
     delNodeAndRels(){

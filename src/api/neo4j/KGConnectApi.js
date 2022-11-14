@@ -16,11 +16,23 @@ export default {
     })
   },
   getConnectionById(id){
-    // return request({
-    //   url: `/kg/instance/connect/getExistInstInfoById`,
-    //   method: 'post',
-    //   data: JSON.stringify(id)
-    // })
-    return request.post(`/kg/instance/connect/getExistInstInfoById`,JSON.stringify(id),{headers:{'content-type':'application/x-www-form-urlencoded'}})
+    return request({
+      url: `/kg/instance/connect/getExistInstInfoById?id=`+id,
+      method: 'get',
+    })
+  },
+  addConnection(params){
+    return request({
+      url: `/kg/instance/connect/addInst`,
+      method: 'post',
+      data:qs.stringify(params)
+    })
+  },
+  fetchDelete(params){
+    return request({
+      url: `/kg/instance/connect/deleteInstById`,
+      method: 'post',
+      data:qs.stringify(params)
+    })
   }
 }

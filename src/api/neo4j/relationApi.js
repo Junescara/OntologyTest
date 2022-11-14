@@ -11,7 +11,7 @@ import qs from "qs"
 export default {
   getTestRels(){
     return request({
-      url: `/relation/list`,
+      url: `/kg/instance/relation/list`,
       method: 'get'
     })
   },
@@ -22,7 +22,7 @@ export default {
    */
   getNodeById(id){
     return request({
-      url: `/relation/getNodeById/`+id,
+      url: `/kg/instance/relation/getNodeById/`+id,
       method: 'get'
     })
   },
@@ -52,7 +52,7 @@ export default {
     //   method: 'post',
     //   params: {ids:ids}
     // })
-    return request.get(`/relation/getNodesByIds/`, {
+    return request.get(`/kg/instance/relation/getNodesByIds/`, {
       params:{
         ids
       },
@@ -68,13 +68,13 @@ export default {
    */
   getRelsByNodeId(id){
     return request({
-      url: `/relation/getRelsByNodeId/`+id,
+      url: `/kg/instance/relation/getRelsByNodeId/`+id,
       method: 'get'
     })
   },
   getRelsByName(name){
     return request({
-      url: `/relation/getRelsByName/`+name,
+      url: `/kg/instance/relation/getRelsByName/`+name,
       method: 'get'
     })
   },
@@ -82,7 +82,7 @@ export default {
   //按id删除关系
   delRelById(id) {
     return request({
-      url: `/relation/delRelById`,
+      url: `/kg/instance/relation/delRelById`,
       method: 'post',
       params: {id:id}
     })
@@ -90,12 +90,12 @@ export default {
 
   //添加关系
   addRel(addForm) {
-    return request.post(`/relation/addRel`, addForm,{headers:{'Content-Type': 'application/json'}})
+    return request.post(`/kg/instance/relation/addRel`, addForm,{headers:{'Content-Type': 'application/json'}})
   },
 
   getRelsRegionContainsNodeName(key){
     return request({
-      url: `/relation/getRelsContainsNodeNameKey/`+key,
+      url: `/kg/instance/relation/getRelsContainsNodeNameKey/`+key,
       method: 'get'
     })
   }

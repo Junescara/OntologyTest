@@ -8,7 +8,7 @@
 <template>
   <div>
     <el-row>
-      <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px">新增图谱</el-button>
+      <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="handleAdd">新增图谱</el-button>
     </el-row>
     <el-row style="margin-bottom: 20px;margin-left: 10px">
       <el-col v-for="(item, index) in list.connectList" :span="4" :key="index" :offset="index > 0 ? 2 : 0">
@@ -18,12 +18,54 @@
             <span>{{item.db_C_NAME}}</span>
             <div class="bottom clearfix">
               <p class="time">{{item.db_NOTE}}</p>
-              <el-button type="text" class="button" @click="childClick(item.db_ID)">查看详情</el-button>
+              <el-button type="warning" plain class="button" @click="handleUpdate" size="mini">编辑详情</el-button>
+              <el-button type="success" plain class="button" @click="childClick(item.db_ID)" size="mini">查看图谱</el-button>
+              <el-button type="warning" plain class="button" @click="handleDelete(item.db_ID)" size="mini">删除</el-button>
             </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
+
+    <el-dialog
+      :title="flags.updateFlag ? '编辑' : '新增'"
+      :visible.sync="visibles.addOrUpdateVisible"
+      width="50%">
+      <el-form ref="form" :model="dataInfo" label-width="80px" v-show="flags.updateFlag == false">
+        <el-form-item label="图谱库id" label-width="150px">
+          <el-input v-model="dataInfo.dbId"></el-input>
+        </el-form-item>
+        <el-form-item label="图谱库名称" label-width="150px">
+          <el-input v-model="dataInfo.dbName"></el-input>
+        </el-form-item>
+        <el-form-item label="图谱库中文名称" label-width="150px">
+          <el-input v-model="dataInfo.dbCName"></el-input>
+        </el-form-item>
+        <el-form-item label="图谱库描述" label-width="150px">
+          <el-input v-model="dataInfo.dbNote"></el-input>
+        </el-form-item>
+        <el-form-item label="联系人id" label-width="150px">
+          <el-input v-model="dataInfo.contactId"></el-input>
+        </el-form-item>
+        <el-form-item label="图谱ip地址" label-width="150px">
+          <el-input v-model="dataInfo.ipAddr"></el-input>
+        </el-form-item>
+        <el-form-item label="图谱端口" label-width="150px">
+          <el-input v-model="dataInfo.srcPort"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名" label-width="150px">
+          <el-input v-model="dataInfo.srcUser"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" label-width="150px">
+          <el-input v-model="dataInfo.srcPsw"></el-input>
+        </el-form-item>
+      </el-form>
+      <span v-show="flags.updateFlag == true">编辑选项</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="visibles.addOrUpdateVisible = false">取 消</el-button>
+    <el-button type="primary" @click="fetchData">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -37,10 +79,26 @@ export default {
     return {
       currentDate: new Date(),
       visibles:{
-        dialogVisible:false
+        dialogVisible:false,
+        addOrUpdateVisible:false
+      },
+      flags:{
+        updateFlag:false
       },
       list:{
         connectList:[]
+      },
+      dataInfo:{
+        dbId:10000,
+        dbName:'',
+        dbCName:'',
+        dbNote:'',
+        entityNum:'',
+        contactId:'',
+        ipAddr:'',
+        srcPort:'',
+        srcUser:'',
+        srcPsw:'',
       }
     }
   },
@@ -56,6 +114,40 @@ export default {
     listConnectors(){
       KGConnectApi.getConnects().then(({data}) => {
         this.list.connectList = data.data
+      })
+    },
+    handleAdd(){
+      this.flags.updateFlag = false
+      this.visibles.addOrUpdateVisible = true
+    },
+    handleUpdate(){
+      this.flags.updateFlag = true
+      this.visibles.addOrUpdateVisible = true
+    },
+    fetchData(){
+      if (!this.flags.updateFlag){
+        KGConnectApi.addConnection(this.dataInfo).then(({data}) => {
+          if (data.code == 200){
+            this.$message.success(data.data)
+          }else {
+            this.$message.error(data.data)
+          }
+          this.visibles.addOrUpdateVisible = false
+          this.init()
+        })
+      }
+    },
+    handleDelete(dbId){
+      const params = {
+        dbId
+      }
+      KGConnectApi.fetchDelete(params).then(({data}) => {
+        if (data.code == 200){
+          this.$message.success(data.data)
+        }else {
+          this.$message.error(data.data)
+        }
+        this.init()
       })
     }
   },
@@ -77,8 +169,8 @@ export default {
 }
 
 .button {
-  padding: 0;
   float: right;
+  margin: 5px 5px;
 }
 
 .image {

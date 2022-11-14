@@ -17,6 +17,12 @@
         </el-col>
         <el-col :span="6">
           <el-descriptions :column="2" title="图谱信息">
+            <el-descriptions-item label="数据库名称">
+              <el-tag size="small">{{ kgInfo.db_NAME }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="数据库id">
+              <el-tag size="small">{{ kgInfo.db_ID }}</el-tag>
+            </el-descriptions-item>
             <el-descriptions-item label="实体数量/个">
               <el-tag size="small">{{ nodeCounts }}</el-tag>
             </el-descriptions-item>
@@ -341,9 +347,11 @@ export default {
   mounted() {
     this.currentId = this.$route.params.id
     console.log('id=======',this.currentId)
-    KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
-      this.kgInfo = data.data
-    })
+    if (this.currentId !== undefined){
+      KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
+        this.kgInfo = data.data
+      })
+    }
   },
   created() {
     this.getAllNodeCounts()

@@ -18,10 +18,10 @@
         <el-col :span="6">
           <el-descriptions :column="2" title="图谱信息">
             <el-descriptions-item label="数据库名称">
-              <el-tag size="small">{{ kgInfo.db_NAME }}</el-tag>
+              <el-tag size="small">{{ kgInfo.dbName }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="数据库id">
-              <el-tag size="small">{{ kgInfo.db_ID }}</el-tag>
+              <el-tag size="small">{{ kgInfo.dbId }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="实体数量/个">
               <el-tag size="small">{{ nodeCounts }}</el-tag>

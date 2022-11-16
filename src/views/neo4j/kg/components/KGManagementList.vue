@@ -15,12 +15,12 @@
         <el-card :body-style="{ padding: '0px' }">
           <img :src="require('@/assets/images/sanxia.jpg')" class="image">
           <div style="padding: 14px;">
-            <span>{{item.db_C_NAME}}</span>
+            <span>{{item.dbCName}}</span>
             <div class="bottom clearfix">
-              <p class="time">{{item.db_NOTE}}</p>
+              <p class="time">{{item.dbNote}}</p>
               <el-button type="warning" plain class="button" @click="handleUpdate" size="mini">编辑详情</el-button>
-              <el-button type="success" plain class="button" @click="childClick(item.db_ID)" size="mini">查看图谱</el-button>
-              <el-button type="warning" plain class="button" @click="handleDelete(item.db_ID)" size="mini">删除</el-button>
+              <el-button type="success" plain class="button" @click="childClick(item.dbId)" size="mini">查看图谱</el-button>
+              <el-button type="warning" plain class="button" @click="handleDelete(item.dbId)" size="mini">删除</el-button>
             </div>
           </div>
         </el-card>
@@ -114,6 +114,7 @@ export default {
     listConnectors(){
       KGConnectApi.getConnects().then(({data}) => {
         this.list.connectList = data.data
+        console.log("this.list.connectList=======",this.list.connectList)
       })
     },
     handleAdd(){

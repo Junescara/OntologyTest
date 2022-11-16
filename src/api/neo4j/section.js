@@ -10,8 +10,9 @@ export default {
   //根据名称查询断面节点
   getSectionByName(sectionName) {
     return request({
-      url: `/kg/instance/section/sectionByName/${sectionName}`,
-      method: 'get'
+      url: `/kg/instance/section/sectionByName`,
+      method: 'get',
+      params:{sectionName}
     })
   },
 }

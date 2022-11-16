@@ -11,13 +11,13 @@ import qs from "qs";
 export default {
   getConnects(){
     return request({
-      url: `/kg/instance/connect/getExistInstInfo`,
+      url: `/kg/instance/connect/getInstInfo`,
       method: 'get'
     })
   },
   getConnectionById(id){
     return request({
-      url: `/kg/instance/connect/getExistInstInfoById?id=`+id,
+      url: `/kg/instance/connect/getInstInfoById?dbId=`+id,
       method: 'get',
     })
   },

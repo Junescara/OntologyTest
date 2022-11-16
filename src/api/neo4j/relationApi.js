@@ -74,8 +74,9 @@ export default {
   },
   getRelsByName(name){
     return request({
-      url: `/kg/instance/relation/getRelsByName/`+name,
-      method: 'get'
+      url: `/kg/instance/relation/getRelsByName`,
+      method: 'get',
+      params: {name}
     })
   },
 
@@ -95,8 +96,20 @@ export default {
 
   getRelsRegionContainsNodeName(key){
     return request({
-      url: `/kg/instance/relation/getRelsContainsNodeNameKey/`+key,
-      method: 'get'
+      url: `/kg/instance/relation/getRelsContainsNodeNameKey`,
+      method: 'get',
+      params:{key}
+    })
+  },
+  /**
+   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * @param id
+   * @returns {*}
+   */
+  getKGVisiblesData(id){
+    return request({
+      url: `/kg/instance/relation/getVisibleChartsByNodeId/`+id,
+      method: 'get',
     })
   }
 }

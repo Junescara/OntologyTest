@@ -11,14 +11,16 @@ export default {
   //根据名称查询行政区划节点
   getRegionalismByName(regionalismName) {
     return request({
-      url: `/kg/instance/regionalism/regionalismByName/${regionalismName}`,
-      method: 'get'
+      url: `/kg/instance/regionalism/regionalismByName`,
+      method: 'get',
+      params:{regionalismName}
     })
   },
   getRegionalismContainsName(key){
     return request({
-      url: `/kg/instance/regionalism/regionalismContansName/${key}`,
-      method: 'get'
+      url: `/kg/instance/regionalism/regionalismContansName`,
+      method: 'get',
+      params:{regionalismNameKey:key}
     })
   }
 }

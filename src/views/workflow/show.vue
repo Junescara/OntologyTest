@@ -21,7 +21,6 @@
         </div>
 
 
-
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="toFinish">确定生成</el-button>
@@ -36,88 +35,47 @@
 <script>
 import Vis from "vis";
 import visApi from '@/api/workflow/vis'
+
 export default {
   name: "show",
   data() {
     return {
+      //存储断面信息
+      outlet: '',
+      //存储范围信息
+      inRegion: '',
       dialogVisible: false,
       nodes: [],
       edges: [],
       // network:null,
       container: null,
+      //保存原始节点数组
+      nodesOrigin: null,
+      //保存原始关系数组
+      edgesOrigin: null,
       //   节点数组
-      nodesArray: [
-        {
-          id: 0,
-          label: "大前端",
-          color: { background: "yellow" }
-        },
-        {
-          id: 1,
-          label: "HTML",
-          color: { background: "pink" }
-        },
-        {
-          id: 2,
-          label: "JavaScript",
-          color: { background: "pink" }
-        },
-        {
-          id: 3,
-          label: "CSS",
-          color: { background: "pink" }
-        },
-        {
-          id: 4,
-          label: "三大主流框架",
-          color: { background: "pink" }
-        },
-        {
-          id: 5,
-          label: "vue.js",
-          color: { background: "pink" }
-        },
-        {
-          id: 6,
-          label: "react.js",
-          color: { background: "pink" }
-        },
-        {
-          id: 7,
-          label: "angular.js",
-          color: { background: "pink" }
-        }
-      ],
+      nodesArray: [],
       //   关系线数组
-      edgesArray: [
-        { from: 0, to: 1, label: "ddd" },
-        { from: 1, to: 0, label: "aaa" },
-        { from: 0, to: 2, label: "step1" },
-        { from: 0, to: 3, label: "step1" },
-        { from: 0, to: 4, label: "step1" },
-        { from: 4, to: 5, label: "step2" },
-        { from: 4, to: 6, label: "step2" },
-        { from: 4, to: 7, label: "step2" }
-      ],
+      edgesArray: [],
       options: {},
+      //保存拓扑图信息
       data: {}
     }
   },
   created() {
-    this.regionalismRel()
+    //获取路由中的参数
+    this.getParams()
+    this.getTopoPicture()
   },
   methods: {
-    //查询行政区划-上级行政区划->行政区划
-    regionalismRel() {
-      visApi.getRegionalismRel()
+    //获取拓扑图
+    getTopoPicture() {
+      visApi.getTopo(this.outlet, this.inRegion)
         .then((response) => {
-          this.nodesArray = response.data.data.nodeArray
-          console.log(this.nodesArray)
-          this.edgesArray = response.data.data.relationArray
           //1.创建一个nodes数组
-          this.nodes = new Vis.DataSet(response.data.data.nodeArray);
+          this.nodes = new Vis.DataSet(response.data.data.nodesArray);
           //2.创建一个edges数组
-          this.edges = new Vis.DataSet(response.data.data.relationArray);
+          this.edges = new Vis.DataSet(response.data.data.edgesArray);
           this.container = document.getElementById("network_id");
           this.data = {
             nodes: this.nodes,
@@ -187,7 +145,7 @@ export default {
                 //设置两个节点之前的连线的状态
                 enabled: true //默认是true，设置为false之后，两个节点之前的连线始终为直线，不会出现贝塞尔曲线
               },
-              arrows: { to: true } //箭头指向to
+              arrows: {to: true} //箭头指向to
             },
             //计算节点之前斥力，进行自动排列的属性
             physics: {
@@ -245,15 +203,22 @@ export default {
         });
     },
     toFinish() {
-      this.$router.push({ path: '/workflow/finish'})
+      console.log(this.data)
+      this.$router.push({
+        path: '/workflow/finish',
+        query: {
+          data: this.data,
+        }
+      })
     },
     toChoose() {
-      this.$router.push({ path: '/workflow/choose'})
+      this.$router.push({path: '/workflow/choose'})
     },
-    init() {
-
+    //获取选择步骤中选择的断面和范围信息
+    getParams() {
+      this.outlet = this.$route.query.outlet
+      this.inRegion = this.$route.query.inRegion
     },
-
     resetAllNodes() {
       this.nodes.clear();
       this.edges.clear();
@@ -273,13 +238,9 @@ export default {
     resetAllNodesStabilize() {
       this.resetAllNodes();
       this.network.stabilize();
-    }
+    },
   },
   mounted() {
-    this.init();
-
-
-
   }
 }
 </script>

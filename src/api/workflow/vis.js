@@ -1,10 +1,10 @@
 import request from '@/utils/request'
-//聚合信息接口提供
+//拓扑生成相关接口
 export default {
-  //查询所有节点的数量、节点类型的数量
-  getRegionalismRel() {
+  //生成原始的对象关系拓扑
+  getTopo(outlet,inRegion) {
     return request({
-      url: `/vis/regionalismRel`,
+      url: `/topo/build/${outlet}/${inRegion}`,
       method: 'get'
     })
   },

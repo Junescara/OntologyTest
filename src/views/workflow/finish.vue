@@ -9,7 +9,11 @@
 
     <el-form ref="form" label-width="80px" class="form">
       <el-form-item>
-        <el-empty description="数据提取中，请等待......"></el-empty>
+        <div>您最终生成的拓扑图为</div>
+        <div>
+          <!--width,height 画布的宽度，高度。 可以是百分比或像素，一般在dom元素上设置 -->
+          <div id="network_id" class="network" style="height:80vh"></div>
+        </div>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="finish">结束</el-button>
@@ -26,12 +30,18 @@ export default {
   name: "finish",
   data() {
     return {
+      //保存拓扑图信息
+      data: {}
     }
   },
   created() {
-
+    this.getParams()
   },
   methods: {
+    //获取生成拓扑步骤中的拓扑图
+    getParams() {
+      this.data = this.$route.query.data
+    },
     finish() {
       this.$router.push({ path: '/workflow/choose'})
     }

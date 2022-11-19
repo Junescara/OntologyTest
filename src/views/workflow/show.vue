@@ -11,7 +11,7 @@
 
         <div>
           <!--width,height 画布的宽度，高度。 可以是百分比或像素，一般在dom元素上设置 -->
-          <div id="network_id" class="network" style="height:80vh"></div>
+          <div id="showTopo" class="network" style="height:80vh"></div>
           <el-dialog title="测试框" :visible.sync="dialogVisible" width="width">
             <div slot="footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
@@ -44,6 +44,7 @@ export default {
       outlet: '',
       //存储范围信息
       inRegion: '',
+      //控制弹框是否显示
       dialogVisible: false,
       nodes: [],
       edges: [],
@@ -76,7 +77,7 @@ export default {
           this.nodes = new Vis.DataSet(response.data.data.nodesArray);
           //2.创建一个edges数组
           this.edges = new Vis.DataSet(response.data.data.edgesArray);
-          this.container = document.getElementById("network_id");
+          this.container = document.getElementById("showTopo");
           this.data = {
             nodes: this.nodes,
             edges: this.edges
@@ -88,7 +89,7 @@ export default {
             locales: {
               cn: {
                 //工具栏中文翻译
-                edit: "编辑",
+                edit: "Edit",
                 del: "删除当前节点或关系",
                 back: "返回",
                 addNode: "添加节点",
@@ -240,8 +241,6 @@ export default {
       this.network.stabilize();
     },
   },
-  mounted() {
-  }
 }
 </script>
 

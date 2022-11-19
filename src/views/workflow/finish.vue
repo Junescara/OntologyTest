@@ -12,7 +12,7 @@
         <div>您最终生成的拓扑图为</div>
         <div>
           <!--width,height 画布的宽度，高度。 可以是百分比或像素，一般在dom元素上设置 -->
-          <div id="network_id" class="network" style="height:80vh"></div>
+          <div id="mynetwork" class="network" style="height:80vh"></div>
         </div>
       </el-form-item>
       <el-form-item>
@@ -26,25 +26,98 @@
 </template>
 
 <script>
+import Vis from "vis";
 export default {
   name: "finish",
   data() {
     return {
       //保存拓扑图信息
-      data: {}
+      data: {},
+      nodes: [],
+      edges: [],
+      container: null,
+      options: {}
     }
   },
   created() {
-    this.getParams()
+    //从vuex中获取已经保存到的nodes和edges
+    this.nodes = this.$store.state.nodes
+    this.edges = this.$store.state.edges
   },
   methods: {
-    //获取生成拓扑步骤中的拓扑图
-    getParams() {
-      this.data = this.$route.query.data
-    },
     finish() {
       this.$router.push({ path: '/workflow/choose'})
+    },
+    //展示现有的拓扑图
+    showTopo() {
+      this.container = document.getElementById('mynetwork');
+      this.data = {
+        nodes: this.nodes,
+        edges: this.edges
+      };
+      this.options = {
+        //节点的配置
+        nodes: {
+          shape: "circle",
+          size: 50,
+          font: {
+            //字体配置
+            size: 32
+          },
+          color: {
+            // border: "#2B7CE9", //节点边框颜色
+            background: "#97C2FC", //节点背景颜色
+            highlight: {
+              //节点选中时状态颜色
+              border: "#2B7CE9",
+              background: "#D2E5FF"
+            },
+            hover: {
+              //节点鼠标滑过时状态颜色
+              border: "#2B7CE9",
+              background: "#D2E5FF"
+            }
+          },
+          borderWidth: 0, //节点边框宽度，单位为px
+          borderWidthSelected: 2 //节点被选中时边框的宽度，单位为px
+        },
+        edges: {
+          width: 1,
+          length: 260,
+          color: {
+            color: "#848484",
+            highlight: "#848484",
+            hover: "#848484",
+            inherit: "from",
+            opacity: 1.0
+          },
+          shadow: true,
+          smooth: {
+            //设置两个节点之前的连线的状态
+            enabled: true //默认是true，设置为false之后，两个节点之前的连线始终为直线，不会出现贝塞尔曲线
+          },
+          arrows: {to: true} //箭头指向to
+        },
+        //计算节点之前斥力，进行自动排列的属性
+        physics: {
+          enabled: true, //默认是true，设置为false后，节点将不会自动改变，拖动谁谁动。不影响其他的节点
+          barnesHut: {
+            gravitationalConstant: -4000,
+            centralGravity: 0.3,
+            springLength: 120,
+            springConstant: 0.04,
+            damping: 0.09,
+            avoidOverlap: 0
+          }
+        },
+      }
+
+      this.network = new Vis.Network(this.container, this.data, this.options);
+
     }
+  },
+  mounted() {
+    this.showTopo()
   }
 }
 </script>

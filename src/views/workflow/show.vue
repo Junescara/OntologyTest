@@ -204,13 +204,10 @@ export default {
         });
     },
     toFinish() {
-      console.log(this.data)
-      this.$router.push({
-        path: '/workflow/finish',
-        query: {
-          data: this.data,
-        }
-      })
+      this.$store.commit("commitNodes",this.nodes)
+      this.$store.commit("commitEdges",this.edges)
+      this.$router.push({path: '/workflow/finish',})
+
     },
     toChoose() {
       this.$router.push({path: '/workflow/choose'})

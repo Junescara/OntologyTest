@@ -168,7 +168,7 @@
         width="50%"
         center>
         <el-form :label-position="labelPosition" :model="formLabelAlign">
-          <el-form-item label-width="120px" v-for="(proVals,proNames) in editNodeInfo.editNodeAtts" :label="proNames">
+          <el-form-item label-width="120px" v-for="(proVals,proNames) in editNodeInfo.editNodeAtts" :key="proNames" :label="proNames">
             <el-input size="medium" :placeholder="proVals" v-model="editNodeInfo.editNodeAtts[proNames]"></el-input>
           </el-form-item>
         </el-form>

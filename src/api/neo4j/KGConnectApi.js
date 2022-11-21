@@ -9,30 +9,45 @@ import request from "../../utils/request";
 import qs from "qs";
 
 export default {
-  getConnects(){
+  /**
+   * 分页加载连接信息
+   * @param params
+   * @returns {*}
+   */
+  getConnects(params){
     return request({
-      url: `/kg/instance/connect/getExistInstInfo`,
-      method: 'get'
+      url: `/kg/instance/connect/getInstInfo`,
+      method: 'get',
+      params: params
     })
   },
   getConnectionById(id){
     return request({
-      url: `/kg/instance/connect/getExistInstInfoById?id=`+id,
+      url: `/kg/instance/connect/getInstInfoById?dbId=`+id,
       method: 'get',
     })
   },
   addConnection(params){
     return request({
-      url: `/kg/instance/connect/addInst`,
+      url: `/kg/instance/connect/addInstInfo`,
       method: 'post',
       data:qs.stringify(params)
     })
   },
   fetchDelete(params){
     return request({
-      url: `/kg/instance/connect/deleteInstById`,
+      url: `/kg/instance/connect/deleteInstInfoById`,
       method: 'post',
       data:qs.stringify(params)
     })
+  },
+  fetchUpdate(params){
+    /*return request({
+      url: `/kg/instance/connect/updateInstInfo`,
+      method: 'post',
+      data:JSON.stringify(params)
+    })*/
+
+    return request.post(`/kg/instance/connect/updateInstInfo`,JSON.stringify(params),{headers:{"Content-Type":"application/json"}})
   }
 }

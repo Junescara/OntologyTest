@@ -10,8 +10,9 @@ export default {
   //根据名称查询测站节点
   getStationByName(stationName) {
     return request({
-      url: `/kg/instance/station/stationByName/${stationName}`,
-      method: 'get'
+      url: `/kg/instance/station/stationByName`,
+      method: 'get',
+      params:{stationName}
     })
   },
 }

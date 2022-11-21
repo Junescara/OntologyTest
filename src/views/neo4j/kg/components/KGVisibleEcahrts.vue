@@ -42,7 +42,21 @@ export default {
       //     id:i
       //   })
       // }
-      relationApi.getRelsByNodeId(this.currentNodeId).then(({data}) => {
+      relationApi.getKGVisiblesData(this.currentNodeId).then(({data}) => {
+        rels = data.data.relationShips.relationList
+        nodes = data.data.endNodes.nodeList
+        let startNode = data.data.startNode
+        nodes.push(startNode)
+
+        let dataList = {
+          nodes,
+          rels
+        }
+        console.log("datalist============",dataList)
+        this.chartData = EchartsUtils.createKG(dataList)
+        console.log("chartset；",this.chartData)
+      })
+      /*relationApi.getRelsByNodeId(this.currentNodeId).then(({data}) => {
         rels = data.data.relationList
         console.log("rels:",rels)
         for (let item of rels){
@@ -64,7 +78,7 @@ export default {
         }
         this.chartData = EchartsUtils.createKG(dataList)
         console.log("chartset；",this.chartData)
-      })
+      })*/
     }
   },
   mounted() {

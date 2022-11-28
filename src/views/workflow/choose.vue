@@ -38,7 +38,7 @@ export default {
   data() {
     return {
       //存放输入框内的出口断面
-      outletSection: '屯溪',
+      outletSection: '屯溪测站',
       //存放输入框内的预报范围
       forecastRange: '横江流域'
     }

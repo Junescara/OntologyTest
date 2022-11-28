@@ -10,6 +10,16 @@
     <el-form ref="form" label-width="80px" class="form">
       <el-form-item>
         <div>您最终生成的拓扑图为</div>
+        <div class="tag-group" align="center">
+          <span class="tag-group__title">图例</span>
+          <el-tag
+            v-for="item in items"
+            :key="item.label"
+            :color="item.color"
+            effect="dark">
+            {{ item.label }}
+          </el-tag>
+        </div>
         <div>
           <!--width,height 画布的宽度，高度。 可以是百分比或像素，一般在dom元素上设置 -->
           <div id="mynetwork" class="network" style="height:80vh"></div>
@@ -36,33 +46,16 @@ export default {
       nodes: [],
       edges: [],
       container: null,
-      options: {}
-    }
-  },
-  created() {
-    //从vuex中获取已经保存到的nodes和edges
-    this.nodes = this.$store.state.nodes
-    this.edges = this.$store.state.edges
-  },
-  methods: {
-    finish() {
-      this.$router.push({ path: '/workflow/choose'})
-    },
-    //展示现有的拓扑图
-    showTopo() {
-      this.container = document.getElementById('mynetwork');
-      this.data = {
-        nodes: this.nodes,
-        edges: this.edges
-      };
-      this.options = {
-        //节点的配置
+      options: {},
+      //保存图结构的配置信息
+      topoOptions: {
+        // 设置节点样式
         nodes: {
           shape: "circle",
-          size: 50,
+          size: 40,
           font: {
             //字体配置
-            size: 32
+            size: 25
           },
           color: {
             // border: "#2B7CE9", //节点边框颜色
@@ -81,9 +74,14 @@ export default {
           borderWidth: 0, //节点边框宽度，单位为px
           borderWidthSelected: 2 //节点被选中时边框的宽度，单位为px
         },
+        // 边线配置
         edges: {
-          width: 1,
+          width: 2,
           length: 260,
+          font: {
+            //字体配置
+            size: 25
+          },
           color: {
             color: "#848484",
             highlight: "#848484",
@@ -110,8 +108,35 @@ export default {
             avoidOverlap: 0
           }
         },
-      }
-
+      },
+      //图例信息
+      items: [
+        { color: '#C2DCA8', label: '雨量站' },
+        { color: '#DCABA8', label: '水库' },
+        { color: '#B1EF8F', label: '河段' },
+        { color: '#8FEFB1', label: '流域' },
+        { color: '#EF8FDB', label: '测站' },
+        { color: '#EF8FAB', label: '子流域' }
+      ]
+    }
+  },
+  created() {
+    //从vuex中获取已经保存到的nodes和edges
+    this.nodes = this.$store.state.nodes
+    this.edges = this.$store.state.edges
+  },
+  methods: {
+    finish() {
+      this.$router.push({ path: '/workflow/choose'})
+    },
+    //展示现有的拓扑图
+    showTopo() {
+      this.container = document.getElementById('mynetwork');
+      this.data = {
+        nodes: this.nodes,
+        edges: this.edges
+      };
+      this.options = this.topoOptions
       this.network = new Vis.Network(this.container, this.data, this.options);
 
     }

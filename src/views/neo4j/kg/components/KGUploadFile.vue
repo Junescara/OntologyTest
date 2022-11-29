@@ -44,15 +44,21 @@
       class="upload-demo"
       drag
       action="String"
+      ref="upload"
       multiple
-      :auto-upload="true"
+      :auto-upload="false"
+      :limit="1"
+      :on-exceed="handleExceed"
       :http-request="uploadFile">
       <i class="el-icon-upload"></i>
       <div class="el-upload__text">将图谱文件拖到此处，或<em>点击上传</em></div>
-      <div class="el-upload__tip" slot="tip">请上传csv文件</div>
+      <div class="el-upload__tip" slot="tip">待上传的文件：</div>
     </el-upload>
+    <br>
+    <el-button type="primary" @click="submitUpload" plain>导入</el-button>
+<!--    <el-button style="margin-left: 10px;" type="success" @click="uploadFile">导入</el-button>-->
 
-    <el-button type="primary" plain>上传</el-button>
+<!--    <el-button type="primary" plain>上传</el-button>-->
   </div>
 </template>
 
@@ -73,21 +79,38 @@ export default {
     }
   },
   methods:{
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`限制选择1个文件`);
+    },
     uploadFile(params,type){
       console.log("params=======",params)
       if (this.flags.fileFlag == 1){
         //导入关系文件
         fileApi.importRelation(this.dataform,params.file).then(({data}) => {
-          console.log("测试结果data===========",data)
+          console.log("测试结果data===========",data);
+          this.$message({
+            message: '导入成功',
+            type: 'success'
+          });
         },(error) => {
-          console.log("/测试结果erroe=======",error)
-        })
+          console.log("/测试结果error=======",error);
+          this.$message.error('导入失败');
+        });
+
       }else {
         //导入实体文件
         fileApi.importEntities(this.dataform,params.file).then(({data}) => {
-          console.log("测试结果data===========",data)
+          console.log("测试结果data===========",data);
+          this.$message({
+            message: '导入成功',
+            type: 'success'
+          });
         },(error) => {
-          console.log("/测试结果erroe=======",error)
+          console.log("/测试结果erroe=======",error);
+          this.$message.error('导入失败');
         })
       }
 

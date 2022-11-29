@@ -57,7 +57,7 @@ export default {
         ids
       },
       paramsSerializer: function (params) {
-        return qs.stringify(params, { arrayFormat: "repeat" });
+        return JSON.stringify(params, { arrayFormat: "repeat" });
       },
     })
   },

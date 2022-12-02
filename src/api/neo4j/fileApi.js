@@ -25,5 +25,17 @@ export default {
     return request.post("/kg/instance/importRelation",
                         formData,
        {'Content-Type': 'multipart/form-data'})
+  },
+  importEntities(params,upload){
+    const file = upload
+    console.log("upload为======",file)
+    let formData = new FormData()
+    formData.append('file', file)
+    formData.append('label',params.label)
+    formData.append('co',params.co)
+    console.log("formdata======",formData.get('file'))
+    return request.post("/kg/instance/importEntities",
+      formData,
+      {'Content-Type': 'multipart/form-data'})
   }
 }

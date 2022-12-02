@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
+
 import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
@@ -21,6 +22,7 @@ import './mock' // simulation data
 
 import * as filters from './filters'
 import * as echarts from 'echarts' // global filters
+
 
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium', // set element-ui default size

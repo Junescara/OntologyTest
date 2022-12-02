@@ -121,7 +121,8 @@
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
-        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>
+<!--        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>-->
+        <KGVisibleVisNetwork :current-node="nodeByName"></KGVisibleVisNetwork>
       </el-card>
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
@@ -235,9 +236,10 @@ import KGVisibleEcahrts from "./KGVisibleEcahrts";
 import relationApi from "../../../../api/neo4j/relationApi";
 import KGUploadFile from "./KGUploadFile";
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
+import KGVisibleVisNetwork from "./KGVisibleVisNetwork";
 export default {
   name: 'KGInstance',
-  components: {KGVisibleEcahrts, KGVisible,KGUploadFile},
+  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile},
   props:{
     kgConnectInfo:{
       type:Object,

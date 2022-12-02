@@ -3,15 +3,17 @@
     <el-input placeholder="请输入内容" style="width: 300px">
       <el-button slot="append" icon="el-icon-search"/>
     </el-input>
-    <KGVisible></KGVisible>
+<!--    <KGVisible></KGVisible>-->
+    <KGVisibleVisNetwork></KGVisibleVisNetwork>
   </el-card>
 </template>
 
 <script>
 import KGVisible from "./KGVisible";
+import KGVisibleVisNetwork from "./KGVisibleVisNetwork";
 export default {
   name: 'KGAnalysisPoint',
-  components: {KGVisible},
+  components: {KGVisible,KGVisibleVisNetwork},
   mounted() {
   },
   methods:{

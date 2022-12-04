@@ -237,6 +237,12 @@ import relationApi from "../../../../api/neo4j/relationApi";
 import KGUploadFile from "./KGUploadFile";
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 import KGVisibleVisNetwork from "./KGVisibleVisNetwork";
+import ReservoirApi from "../../../../api/neo4j/ReservoirApi";
+import WaterGateApi from "../../../../api/neo4j/WaterGateApi";
+import WaterShedApi from "../../../../api/neo4j/WaterShedApi";
+import RiverApi from "../../../../api/neo4j/RiverApi";
+import riverApi from "../../../../api/neo4j/RiverApi";
+import waterShedApi from "../../../../api/neo4j/WaterShedApi";
 export default {
   name: 'KGInstance',
   components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile},
@@ -399,6 +405,46 @@ export default {
               console.log(error);
             });
           break;
+        case '水库':
+          this.currentType = '水库'
+          ReservoirApi.getReservoirNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.reservoirNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '水闸':
+          this.currentType = '水闸'
+          WaterGateApi.getWaterGateNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.waterGateNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '河流':
+          this.currentType = '河流'
+          RiverApi.getRiverNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.riverNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '流域':
+          this.currentType = '流域'
+          WaterShedApi.getWaterShedNames()
+            .then((response) => {
+              this.nodeNames = response.data.data.watershedNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
         default:
       }
     },
@@ -463,6 +509,18 @@ export default {
       if (this.currentType === '测站') {
         this.getStationNodeByName(name)
       }
+      if (this.currentType == '河流') {
+        this.getRiverNodeByName(name)
+      }
+      if (this.currentType == '水闸') {
+        this.getWaterGateNodeByName(name)
+      }
+      if (this.currentType == '流域') {
+        this.getWaterShedNodeByName(name)
+      }
+      if (this.currentType == '水库') {
+        this.getReservoirNodeByName(name)
+      }
     },
     getRelByName(name) {
       if (this.currentRelType === '下级行政区划') {
@@ -520,6 +578,75 @@ export default {
     //根据名称查询测站节点
     getStationNodeByName(stationName) {
       stationApi.getStationByName(stationName)
+        .then((response) => {
+          this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
+          console.log(this.nodeByName)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    /**
+     * 根据河流名查询河流信息
+     * @param stationName
+     */
+    getRiverNodeByName(riverName) {
+      riverApi.getRiverByName(riverName)
+        .then((response) => {
+          this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
+          console.log(this.nodeByName)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    /**
+     * 根据流域名称查询流域信息
+     * @param watershedName
+     */
+    getWaterShedNodeByName(watershedName) {
+      waterShedApi.getWaterShedByName(watershedName)
+        .then((response) => {
+          this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
+          console.log(this.nodeByName)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    /**
+     * 根据水闸名称查询水闸信息
+     * @param waterGateName
+     */
+    getWaterGateNodeByName(waterGateName) {
+      WaterGateApi.getWaterGateByName(waterGateName)
+        .then((response) => {
+          this.nodeByName = response.data.data.result
+          let tmp = JSON.stringify(this.nodeByName[0]);
+          this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+          this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+          delete this.editNodeInfo.editNodeAtts._id
+          console.log(this.nodeByName)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    getReservoirNodeByName(reservoirName) {
+      ReservoirApi.getReservoirByName(reservoirName)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);

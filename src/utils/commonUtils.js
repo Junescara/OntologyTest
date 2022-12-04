@@ -37,6 +37,22 @@ export default {
       nodeItem = node.station
       nodeItem['nodeType'] = '测站'
       return nodeItem
+    }else if (node.nodeType.indexOf('水库') >= 0){
+      nodeItem = node.reservoir
+      nodeItem['nodeType'] = '水库'
+      return nodeItem
+    }else if (node.nodeType.indexOf('水闸') >= 0){
+      nodeItem = node.waterGate
+      nodeItem['nodeType'] = '水闸'
+      return nodeItem
+    }else if (node.nodeType.indexOf('河流') >= 0){
+      nodeItem = node.river
+      nodeItem['nodeType'] = '河流'
+      return nodeItem
+    }else if (node.nodeType.indexOf('流域') >= 0){
+      nodeItem = node.watershed
+      nodeItem['nodeType'] = '流域'
+      return nodeItem
     }
   }
 }

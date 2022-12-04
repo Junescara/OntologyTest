@@ -98,7 +98,7 @@ export default {
     }
   },
   methods:{
-    ...mapMutations(['changeSelectedFlood','changeMatchID']),
+    ...mapMutations(['changeSelectedFlood','changeMatchID','getMatchID', 'changeMatchedSim3', 'changeMatchedPre']),
     matchFlood(index,row){
       console.log(index,row)//当前列表第几个，一行的proxy数据
       let matchId = row.floodId
@@ -112,13 +112,14 @@ export default {
     },
     //页面改变，重新请求。
     changePage(page){
+      let _this = this
       postRequest("/flood",{
         "page":page,
-        "size":this.pageSize
+        "size":_this.pageSize
       }).then((res)=>{
         console.log(res.data)
-        this.tableData = res.data.data.records
-        this.currentPage = res.data.data.current
+        _this.tableData = res.data.data.records
+        _this.currentPage = res.data.data.current
       }).catch((err)=>{
         Message({
           message:err,
@@ -134,7 +135,7 @@ export default {
     },
     //双击某一列，根据id查数据库，改变左边图标的数据捏
     dbClick2ChangeTableData(row, column, event){
-      let floodID = toRaw(row).floodId//获得id
+      let floodID = row.floodId//获得id
       // console.log("flood发送数据",floodID)
       //利用vuex进行兄弟组件的通信
       this.changeSelectedFlood(floodID);
@@ -142,7 +143,6 @@ export default {
     close(){
       this.matchDialogVisible = false
     },
-    ...mapMutations(['getMatchID', 'changeMatchedSim3', 'changeMatchedPre']),
     start() {
       console.log("start", this.status)
       if (this.resetStatus) {

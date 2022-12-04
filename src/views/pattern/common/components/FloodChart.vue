@@ -6,6 +6,8 @@
 
 <script>
 import {mapState,mapMutations} from 'vuex'
+import {postRequest} from "../../../../api/pattern/api";
+import {str2listForRain, str2listForTimeStamp} from "../../../../api/pattern/dataUtils";
 export default {
   name: "FloodChart",
   data(){
@@ -118,21 +120,22 @@ export default {
 
   },
   watch:{
-    selectedFlood(newKey,oldKey) {
+    '$store.state.pattern.selectedFlood'(newKey,oldKey) {
+      let _this = this
       console.log("我现在监听到了捏",newKey)
-      // postRequest("/floodInfo",{"floodID":newKey})
-      //   .then((res)=>{
-      //     // console.log(res)
-      //     let flArr = toRaw(str2listForRain(res.data.data.flow))
-      //     this.currentChartParam.flow = flArr;
-      //     let rvArr = toRaw(str2listForRain(res.data.data.rain))
-      //     this.currentChartParam.rain = rvArr;
-      //     let timeArr = toRaw(str2listForTimeStamp(res.data.data.duration))
-      //     this.currentChartParam.timestamp =timeArr
-      //     this.initChart()
-      //   })
-      //   .catch((err)=>{
-      //   })
+      postRequest("/floodInfo",{"floodID":newKey})
+        .then((res)=>{
+          // console.log(res)
+          let flArr = str2listForRain(res.data.data.flow)
+          _this.currentChartParam.flow = flArr;
+          let rvArr = str2listForRain(res.data.data.rain)
+          _this.currentChartParam.rain = rvArr;
+          let timeArr = str2listForTimeStamp(res.data.data.duration)
+          _this.currentChartParam.timestamp =timeArr
+          _this.initChart()
+        })
+        .catch((err)=>{
+        })
     },
     isCollapse(val){
       console.log("侧边栏有变化",val)

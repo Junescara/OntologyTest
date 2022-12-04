@@ -17,6 +17,7 @@
         </el-tab-pane>
         <el-tab-pane label="预测结果" style="height: 100%">
 <!--          <pre-flood-chart/>-->
+          <ResultPreChart/>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -31,9 +32,10 @@
 import FloodChart from "./components/FloodChart";
 import FloodTable from "./components/FloodTable";
 import ResultSimChart from "./components/ResultSimChart";
+import ResultPreChart from "./components/ResultPreChart";
 export default {
   name: "index",
-  components: {ResultSimChart, FloodTable, FloodChart},
+  components: {ResultPreChart, ResultSimChart, FloodTable, FloodChart},
   // components: {PreFloodChart, ResultChart, FloodTable, RainAndflood},
   data(){
     return {

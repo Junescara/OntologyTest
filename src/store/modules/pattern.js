@@ -11,7 +11,7 @@ const pattern = {
     matchedSim3:'',//保存最佳三个预测id
     matchedPre:'',//保存匹配道德拟合数据
     matchedCurrent:'',//保存当前请求的数据，减少请求次数
-
+    brushLoadingFlag:false,
   },
   mutations: {
     changeSelectedFlood:(state,code)=>{
@@ -31,6 +31,9 @@ const pattern = {
     },
     changeMatchID:(state,data)=>{
       state.matchID = data
+    },
+    changeLoadingFlag:(state,data)=>{
+      state.brushLoadingFlag = data
     }
   },
   actions: {

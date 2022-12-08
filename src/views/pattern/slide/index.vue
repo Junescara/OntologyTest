@@ -11,8 +11,16 @@
       </div>
     </div>
     <div class="brush-main-down">
-      <BrushResultChart/>
-<!--      <div class="brush-result-chart" ref="brushResChart" id="brushResChart" v-loading="loading"></div>-->
+      <el-tabs style="width: 100%;height: 100%">
+        <el-tab-pane label="匹配结果" style="height: 100%">
+          <!--          <result-chart/>-->
+          <BrushResultChart/>
+        </el-tab-pane>
+        <el-tab-pane label="预测结果" style="height: 100%">
+          <!--          <pre-flood-chart/>-->
+<!--          <ResultPreChart/>-->
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
@@ -35,14 +43,14 @@ export default {
 
 }
 .brush-main-top{
-  min-height: calc(50vh - 48px);
+  min-height: calc(50vh - 96px);
   width: 100%;
   /*background-color: #b1d;*/
   display: flex;
   flex-direction: row;
 }
 .brush-main-down{
-  min-height: calc(50vh - 48px);
+  min-height: calc(50vh - 96px);
   width: 100%;
   /*background-color: #1ad;*/
 }

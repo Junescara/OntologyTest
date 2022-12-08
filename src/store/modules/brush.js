@@ -9,7 +9,9 @@ const brush = {
     currentID:1,
     matchID:1,
     originData:[],
-    matchedData:[]
+    matchedData:[],
+    originFlood:[],
+    matchedFlood:[]
 
   },
   mutations: {
@@ -24,6 +26,12 @@ const brush = {
     },
     changeMatchedData:(state,data)=>{
       state.matchedData = data
+    },
+    changeOriginFlood:(state,data)=>{
+      state.originFlood = data
+    },
+    changeMatchedFlood:(state,data)=>{
+      state.matchedFlood = data
     }
   },
   actions: {

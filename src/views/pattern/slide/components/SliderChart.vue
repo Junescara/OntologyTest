@@ -147,7 +147,7 @@ export default {
 <style scoped>
 #sliderChart{
   width: 100%;
-  height: calc(50vh - 48px);
+  height: calc(50vh - 96px);
 }
 
 </style>

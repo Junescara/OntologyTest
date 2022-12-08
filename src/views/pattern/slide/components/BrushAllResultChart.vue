@@ -1,14 +1,10 @@
 <template>
-  <div id="zoomChart"></div>
+  <div id="brushALlResultChart" v-loading="loading"></div>
 </template>
 
 <script>
-import {postRequestJson} from "../../../../api/pattern/api";
-import {mapMutations} from "vuex";
-import {str2listForRain} from "../../../../api/pattern/dataUtils";
-
 export default {
-  name: "ZoomChart",
+  name: "BrushAllResultChart",
   data(){
     return{
       currentChartParam:{
@@ -24,22 +20,23 @@ export default {
       },
       chart:null,
       options:null,
-      originSelect:[],//选取的源数据
-      matchSelect:[],//匹配的数据
-      matchID:1//匹配到的id
-
+      loading:false,
+      originData:[],
+      matchedData:[],
+      dataLength:0,
+      originFlood:[],
+      matchedFlood:[]
 
     }
   },
   methods:{
-    ...mapMutations(['changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood']),
     initChart(){
       let _this = this
-      let el = document.getElementById("zoomChart")
+      let el = document.getElementById('brushALlResultChart')
       let chart = this.$echarts.init(el);
       let options ={
         legend: {
-          data: ['流量', '降雨量'],
+          data: ['源数据', '匹配数据'],
           left: 10
         },
         tooltip:{
@@ -54,38 +51,17 @@ export default {
         },
         xAxis:{
           type:'category',
-          data:this.currentChartParam.timestamp.map(function (str){
-            return str.replace(' ',"\n");
-          })
+          data:new Array(this.dataLength).fill(1).map((v, i) => ++i)
         },
         yAxis:[
           {
             name:"流量",
             type:'value'
-          },{
-            name:"降雨量",
-            nameLocation:'start',
-            inverse:true,
-            type:'value',
-            alignTicks: true,
           }
         ],
-        toolbox:{
-          feature:{
-            dataZoom:{
-              show:true,
-              brush:{
-                type:['lineX']
-              },
-              filterMode:"filter",
-              yAxisIndex:true
-              // xAxisIndex:0//
-            }
-          }
-        },
         series:[
           {
-            name:'流量',
+            name:'源数据',
             type:'line',
             lineStyle:{
               width:1,
@@ -100,79 +76,40 @@ export default {
             emphasis:{
               focus:'series',
             },
-            data:this.currentChartParam.flow,
+            data:this.originData,
           },
           {
-            name: '降雨量',
-            type: 'bar',
-            yAxisIndex:1,
+            name: '匹配数据',
+            type: 'line',
             itemStyle: {
               color:"#00a2ea"
             },
             emphasis: {
               focus: 'series'
             },
-            data: this.currentChartParam.rain
+            data: this.matchedData
           }
         ]
 
       };
-      //监听选择
-      chart.on('datazoom',function (param){
-
-        console.log("datazoom监听到啦  ",param)
-        // loading.value = true
-        let startValue = param.batch[0].startValue
-        let endValue = param.batch[0].endValue
-        if (startValue == endValue){
-          //说明是返回的情况
-          // loading.value = false
-          return
-        }
-        _this.changeLoadingFlag(true)
-
-
-        console.log(startValue,endValue)
-        console.log("现在选取的：",_this.currentChartParam.flow.slice(startValue,endValue))
-
-        // setTimeout(()=>{
-        //   loading.value = false
-        // },2000)
-        let data={}
-        data['id'] = 1
-        data['startValue'] = startValue
-        data['endValue'] = endValue
-        postRequestJson("/brush",JSON.stringify(data))
-          .then((res)=>{
-            console.log(res)
-
-            let data = res.data.data;
-            _this.changeMatchID(data.idResult);
-            let originSelect = data.x1Shapelet;
-            let matchSelect = data.x2Shapelet;
-            let originFlood = data.x1Line;
-            let matchedFlood = data.x2Line;
-
-            _this.changeOriginData(str2listForRain(originSelect));
-            _this.changeMatchedData(str2listForRain(matchSelect));
-            // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
-            _this.changeMatchedFlood(str2listForRain(matchedFlood));
-            _this.changeOriginFlood(str2listForRain(originFlood));
-
-
-            _this.changeLoadingFlag(false)
-
-            // loading.value = false
-          })
-          .catch((err)=>{
-            _this.changeLoadingFlag(false)
-          })
-
-      })
-
 
       chart.setOption(options);
-
+      //初始化区域
+      // chart.dispatchAction({
+      //   type:'brush',
+      //   areas:[{
+      //     brushType:'lineX',
+      //     range:[_this.rightSide.value-_this.sliderLength.value,_this.rightSide.value],
+      //     xAxisIndex: 0
+      //   }]
+      // })
+      //监听滑块的变化
+      // chart.on('brushSelected',function (params){//给出的是数据下标
+      //   let r = params.batch[0].selected[0].dataIndex.length
+      //   // console.log("我是滑块，我华东了")
+      //   _this.sliderLength.value = r //选取范围的总长度
+      //   _this.rightSide.value = params.batch[0].selected[0].dataIndex[r-1]//最右侧的数值
+      // })
       //添加窗口收缩的监听，重新绘制大小。
       window.addEventListener('resize',()=>{
         chart.resize()
@@ -183,20 +120,30 @@ export default {
       })
       observer.observe(el)
     }
-
   },
   mounted() {
     this.initChart()
+
   },
   watch:{
+    '$store.state.brush.matchedFlood'(newValue,oldValue){
+      if (this.$store.state.brush.matchedFlood.length!=0){
+        this.originData = this.$store.state.brush.originData
+        this.matchedData = this.$store.state.brush.matchedData
+        this.dataLength = this.originData.length
+
+        this.initChart()
+      }
+      this.loading = newValue
+    }
 
   }
 }
 </script>
 
 <style scoped>
-#zoomChart{
-  height: calc(50vh - 96px);
+#brushResultChart{
+  height: calc(50vh - 48px);
 }
 
 </style>

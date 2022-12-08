@@ -135,6 +135,38 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/pattern',
+    component: Layout,
+    redirect: '/pattern/index',
+    name: '模式库',
+    meta: { title: '模式库', icon: 'example' },
+    children: [
+      {
+        path: 'index',
+        name: '历史模式场次',
+        component: () => import('@/views/pattern/common/index.vue'),
+        meta: { title: '模式匹配', icon: 'table' }
+      }
+    ]
+  },{
+    path: '/slider',
+    redirect: '/slider/table',
+    component: Layout,
+    name: '滑动窗口',
+    meta: { title: '滑动窗口', icon: 'example' },
+    children: [
+      {
+        path: 'table',
+        name: '滑动窗口图表',
+        component: () => import('@/views/pattern/slide/index.vue'),
+        meta: { title: '滑动窗口图表', icon: 'table' }
+      }
+      // {
+      //   path: 'relation',
+      //   name: '河流节点关系',
+      //   component: () => import('@/views/neo4j/river/relation'),
+      //   meta: { title: '河流节点关系', icon: 'table' }
+      // }
     path: '/workflow',
     component: Layout,
     redirect: '/workflow/choose',

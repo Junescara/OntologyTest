@@ -89,7 +89,7 @@ export const constantRouterMap = [
         path: 'index',
         name: 'KgMananement',
         component: () => import('@/views/neo4j/kg/Index'),
-        meta: { title: '图谱实例列表', icon: 'table' }
+        meta: { title: '知识平台', icon: 'table' }
       },
       {
         path: 'KgOntoMananement',
@@ -98,18 +98,39 @@ export const constantRouterMap = [
         meta: { title: '知识库管理', icon: 'table' },
         hidden: true
       },
-      {
+      /*{
         path: 'KGAnalysisPoint',
         name: 'KGAnalysisPoint',
         component: () => import('@/views/neo4j/kg/components/KGAnalysisPoint'),
         meta: { title: '点查询', icon: 'table' },
         hidden: true
+      },*/
+      {
+        path: 'KGHistoryCase',
+        name: 'KGHistoryCase',
+        component: () => import('@/views/pattern/common/index'),
+        meta: { title: '历史场次', icon: 'table' },
+        hidden: true
       },
       {
+        path: 'KGPattern',
+        name: 'KGPattern',
+        component: () => import('@/views/pattern/slide/index'),
+        meta: { title: '历史场次', icon: 'table' },
+        hidden: true
+      },
+      /*{
         path: 'KGAnalysisRelationClass',
         name: 'KGAnalysisRelationClass',
         component: () => import('@/views/neo4j/kg/components/KGAnalysisRelationClass'),
         meta: { title: '关联对象查询', icon: 'table' },
+        hidden: true
+      },*/
+      {
+        path: 'KGRiverSectionTopo',
+        name: 'KGRiverSectionTopo',
+        component: () => import('@/views/workflow/choose'),
+        meta: { title: '流域拓扑', icon: 'table' },
         hidden: true
       },
       {
@@ -125,7 +146,7 @@ export const constantRouterMap = [
         component: () => import('@/views/neo4j/kg/components/KGInstance'),
         meta: { title: '实例详情查询', icon: 'table' },
         hidden: true
-      }
+      },
       // {
       //   path: 'relation',
       //   name: '河流节点关系',
@@ -135,11 +156,42 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/pattern',
+    component: Layout,
+    redirect: '/pattern/index',
+    name: '模式库',
+    meta: { title: '模式库', icon: 'example' },
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        name: '历史模式场次',
+        component: () => import('@/views/pattern/common/index.vue'),
+        meta: { title: '模式匹配', icon: 'table' }
+      }
+    ]
+  }, {
+    path: '/slider',
+    redirect: '/slider/table',
+    component: Layout,
+    name: '滑动窗口',
+    meta: {title: '滑动窗口', icon: 'example'},
+    hidden: true,
+    children: [
+      {
+        path: 'table',
+        name: '滑动窗口图表',
+        component: () => import('@/views/pattern/slide/index.vue'),
+        meta: {title: '滑动窗口图表', icon: 'table'}
+      }
+    ]
+  },{
     path: '/workflow',
     component: Layout,
     redirect: '/workflow/choose',
     name: '工作流步骤',
     meta: { title: '工作流步骤', icon: 'example' },
+    hidden: true,
     children: [
       {
         path: 'choose',

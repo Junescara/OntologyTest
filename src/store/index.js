@@ -12,6 +12,18 @@ import brush from './modules/brush'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
+  state: {
+    nodes: [],
+    edges: []
+  },
+  mutations: {
+    commitNodes(state,nodes) {
+      state.nodes = nodes
+    },
+    commitEdges(state,edges) {
+      state.edges = edges
+    },
+  },
   modules: {
     app,
     errorLog,

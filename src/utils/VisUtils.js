@@ -52,8 +52,6 @@ export default {
         let nodeItem = this.switchNodeToItem(node,isStart)
         nodeList.push(nodeItem)
       }
-
-
     }
     return new Vis.DataSet(nodeList)
   },
@@ -125,6 +123,96 @@ export default {
     }
   },
   /**
+   * 将水库结点转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   * @returns {{level: number, id: *, label: *}}
+   */
+  createReservoirItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.reservoirName,
+        level:1
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.reservoirName,
+        level:2
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 将水闸结点转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   * @returns {{level: number, id: *, label}}
+   */
+  createWaterGateItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:1
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:2
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 将流域结点转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   */
+  createWaterShedItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:1
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:2
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 将河流结点转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   */
+  createRiverItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:1
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:2
+      }
+      return nodeItem
+    }
+  },
+  /**
    * 将无类型的node存入dataList
    * @param node
    * @param isStart
@@ -136,6 +224,14 @@ export default {
       return this.createSectionItem(node,isStart)
     }else if (node.nodeType == '测站'){
       return this.createStationItem(node,isStart)
+    }else if (node.nodeType == '河流'){
+      return this.createRiverItem(node,isStart)
+    }else if (node.nodeType == '流域'){
+      return this.createWaterShedItem(node,isStart)
+    }else if (node.nodeType == '水闸'){
+      return this.createWaterGateItem(node,isStart)
+    }else if (node.nodeType == '水库'){
+      return this.createReservoirItem(node,isStart)
     }
   }
 

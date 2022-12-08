@@ -135,6 +135,68 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/pattern',
+    component: Layout,
+    redirect: '/pattern/index',
+    name: '模式库',
+    meta: { title: '模式库', icon: 'example' },
+    children: [
+      {
+        path: 'index',
+        name: '历史模式场次',
+        component: () => import('@/views/pattern/common/index.vue'),
+        meta: { title: '模式匹配', icon: 'table' }
+      }
+    ]
+  },{
+    path: '/slider',
+    redirect: '/slider/table',
+    component: Layout,
+    name: '滑动窗口',
+    meta: { title: '滑动窗口', icon: 'example' },
+    children: [
+      {
+        path: 'table',
+        name: '滑动窗口图表',
+        component: () => import('@/views/pattern/slide/index.vue'),
+        meta: { title: '滑动窗口图表', icon: 'table' }
+      }
+      // {
+      //   path: 'relation',
+      //   name: '河流节点关系',
+      //   component: () => import('@/views/neo4j/river/relation'),
+      //   meta: { title: '河流节点关系', icon: 'table' }
+      // }
+    path: '/workflow',
+    component: Layout,
+    redirect: '/workflow/choose',
+    name: '工作流步骤',
+    meta: { title: '工作流步骤', icon: 'example' },
+    children: [
+      {
+        path: 'choose',
+        name: '工作流步骤1',
+        component: () => import('@/views/workflow/choose'),
+        meta: { title: '选择出口断面和预报范围', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'show',
+        name: '工作流步骤2',
+        component: () => import('@/views/workflow/show'),
+        meta: { title: '对象关系拓扑展示', icon: 'table' },
+        hidden: true
+      },
+      {
+        path: 'finish',
+        name: '工作流步骤3',
+        component: () => import('@/views/workflow/finish'),
+        meta: { title: '完成数据提取', icon: 'table' },
+        hidden: true
+      }
+    ]
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true

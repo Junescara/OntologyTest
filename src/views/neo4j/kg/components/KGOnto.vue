@@ -1,11 +1,11 @@
 <template>
   <div>
     <el-row style="padding: 15px">
-      <el-col v-for="(o, index) in 4" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
+      <el-col v-for="(o, index) in 1" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>水资源知识库</span>
-            <el-button style="float: right; padding: 3px 0" type="text" @click="toOntoManagement">知识库管理</el-button>
+            <span>流域对象关系本体</span>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="toOntoManagement">本体管理</el-button>
           </div>
           <!--以下为知识库描述信息-->
           <div class="text item">
@@ -23,18 +23,18 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-row style="padding: 15px">
+<!--    <el-row style="padding: 15px">
       <el-col v-for="(o, index) in 4" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>水资源知识库</span>
             <el-button style="float: right; padding: 3px 0" type="text" @click="toOntoManagement">知识库管理</el-button>
           </div>
-          <!--以下为知识库描述信息-->
+          &lt;!&ndash;以下为知识库描述信息&ndash;&gt;
           <div class="text item">
             建设水资源知识实体与关系对象，建设水资源知识实体与关系对象，建设水资源知识实体与关系对象。
           </div>
-          <!--以下为数量信息-->
+          &lt;!&ndash;以下为数量信息&ndash;&gt;
           <el-descriptions style="width: 140%">
             <el-descriptions-item label="实体类型数量">6</el-descriptions-item>
             <el-descriptions-item label="关系类型数量">4</el-descriptions-item>
@@ -45,7 +45,7 @@
           </div>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row>-->
   </div>
 </template>
 

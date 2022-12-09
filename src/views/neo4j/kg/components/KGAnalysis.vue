@@ -10,9 +10,9 @@
     <el-row :gutter="20">
       <el-col :span="8">
         <el-card class="box-card" style="width: 100%">
-          <el-descriptions column="1" title="点查询">
+          <el-descriptions column="1" title="历史场景">
             <template slot="extra">
-              <el-button type="primary" size="small" @click="toQueryPoint">详情</el-button>
+              <el-button type="primary" size="small" @click="toKGHistoryCase">查看详情</el-button>
             </template>
             <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
             <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
@@ -21,9 +21,20 @@
       </el-col>
       <el-col :span="8">
         <el-card class="box-card" style="width: 100%">
-          <el-descriptions column="1" title="关联对象查询">
+          <el-descriptions column="1" title="滑动窗口">
             <template slot="extra">
-              <el-button type="primary" size="small" @click="toQueryRelationClass">详情</el-button>
+              <el-button type="primary" size="small" @click="toKGPattern">查看详情</el-button>
+            </template>
+            <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
+            <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="box-card" style="width: 100%">
+          <el-descriptions column="1" title="流域拓扑">
+            <template slot="extra">
+              <el-button type="primary" size="small" @click="toKGRiverSectionTopo">查看详情</el-button>
             </template>
             <el-descriptions-item label="所属分类">关联分析</el-descriptions-item>
             <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
@@ -42,11 +53,14 @@ export default {
     return {}
   },
   methods: {
-    toQueryPoint() {
-      this.$router.push('KGAnalysisPoint')
+    toKGHistoryCase() {
+      this.$router.push('KGHistoryCase')
     },
-    toQueryRelationClass() {
-      this.$router.push('KGAnalysisRelationClass')
+    toKGPattern() {
+      this.$router.push('KGPattern')
+    },
+    toKGRiverSectionTopo() {
+      this.$router.push('KGRiverSectionTopo')
     }
   }
 }

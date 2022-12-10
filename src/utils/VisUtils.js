@@ -30,7 +30,25 @@ export default {
 
     return new Vis.DataSet(linkList)
   },
+  /**
+   * 创建格式化边数据集(本体对象专用)
+   * @param rels
+   */
+  createRelsEdgesForOntoObj(rels) {
+    let linkList = []
+    for (let item of rels) {
+      //这里用结点的name属性来指定关系边的头尾
+      let linkItem = {
+        from: item.start.toString(),
+        to: item.end.toString(),
+        label: item.relList[0]
+      }
 
+      linkList.push(linkItem)
+    }
+
+    return new Vis.DataSet(linkList)
+  },
   /**
    * 创建格式化点数据集
    * @param nodes
@@ -211,6 +229,23 @@ export default {
       }
       return nodeItem
     }
+  },
+  /**
+   * 为本体创建格式化点数据集
+   * @param nodes
+   * @returns {*[]}
+   */
+  createNodesForOntology(nodes) {
+    let nodeList = []
+    for (let node of nodes) {
+      let nodeItem = {
+        id:node._id,
+        label:node.objName,
+        level:1
+      }
+      nodeList.push(nodeItem)
+    }
+    return new Vis.DataSet(nodeList)
   },
   /**
    * 将无类型的node存入dataList

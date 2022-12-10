@@ -18,16 +18,22 @@
       </div>
     </el-card>
     <el-card class="box-card-2">
-      <KGVisible></KGVisible>
+      <KGVisForOntology></KGVisForOntology>
     </el-card>
   </div>
 </template>
 
 <script>
-import KGVisible from "./KGVisible";
+  import KGVisible from './KGVisible'
+  import KGVisForOntology from "./KGVisForOntology";
+  import aggregateApi from '@/api/neo4j/aggregate';
+  import KGVisibleEcahrts from "./KGVisibleEcahrts";
+  import relationApi from "../../../../api/neo4j/relationApi";
+  import KGUploadFile from "./KGUploadFile";
+  import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 export default {
   name: 'KGOntoManagement',
-  components: {KGVisible}
+  components: {KGVisible,KGVisForOntology}
 }
 </script>
 

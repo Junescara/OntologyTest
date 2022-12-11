@@ -122,7 +122,17 @@ export default {
       url: `/kg/onto/showOntology`,
       method: 'get',
     })
-  }
-
+  },
+  /**
+   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * @param id
+   * @returns {*}
+   */
+  getVisiblesDataForOntologySep(id){
+    return request({
+      url: `/kg/onto/showOntologySep`+id,
+      method: 'get',
+    })
+  },
 
 }

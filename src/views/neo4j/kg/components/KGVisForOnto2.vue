@@ -1,7 +1,7 @@
 <!--
- * @author     ：QYC
- * @date       ：Created in 2022/12/9 17:34
- * @description：本体展示
+ * @author     ：Wangziyi
+ * @date       ：Created in 2022/12/2 17:34
+ * @description：基于vis-network实现的图谱可视化
  * @modified By：
  * @version:     1.0
  -->
@@ -19,20 +19,20 @@ import VisUtils from "../../../../utils/VisUtils";
 import CommonUtils from "../../../../utils/commonUtils";
 
 export default {
-  name: "KGVisForOntology",
+  name: "KGVisibleVisNetwork",
   data() {
     return {
       nodes: null,
       edges: null,
       options: null,
       network: null,
-      currentNodeId:64,
+      currentNodeId:7,
     }
   },
   props: {
     currentNode: {
-      type: Array,
-      default: () => [{}]
+      type: Number,
+      default: 7
     }
   },
   created() {
@@ -68,14 +68,18 @@ export default {
       let rels = []
       let nodes = []
       let _this = this
-      relationApi.getKGVisiblesDataForOntology().then(({data}) => {
-        nodes = data.data.ontologyObjList
+      relationApi.getKGVisiblesData(this.currentNodeId).then(({data}) => {
         rels = data.data.relationShips.relationList
+        nodes = data.data.endNodes.nodeList
+        let startNode = data.data.startNode
+        nodes.push(startNode)
+        console.log("从库中查得得nodes",nodes)
+
         const datas = {
-          nodes:VisUtils.createNodesForOntology(nodes),
+          nodes:VisUtils.createNodes(nodes,CommonUtils.getNodeByType(startNode)._id),
           edges:VisUtils.createRelsEdges(rels)
         }
-        // console.log("此时的Node",datas)
+
         const container = this.$refs.KGNetwork;
         _this.options = {
           autoResize: true, // 默认true,自动调整容器的大小
@@ -101,7 +105,7 @@ export default {
           },
           // 配置模块
           configure: {
-            enabled: false, // false时不会在界面上出现各种配置项
+            enabled: true, // false时不会在界面上出现各种配置项
           },
           // 节点模块
           nodes: {
@@ -134,7 +138,7 @@ export default {
             // },
             size: 40, // 节点大小
             // physics: false, // 关闭物理引擎
-            title: '实体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
+            title: '本体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
             widthConstraint: { // 节点的最小宽度与最大宽度
               // maximum: 100,
             }
@@ -143,7 +147,7 @@ export default {
           edges: {
             // label: '哈哈哈',
             width: 2,
-            length: 200,  //QYC changed it from 260 to 160 in 2022/12/10
+            length: 200,
             // physics: false,
             font: {
               //字体配置
@@ -189,9 +193,9 @@ export default {
           physics: {
             enabled: true,
             barnesHut: {
-              gravitationalConstant: -25000, //斥力
+              gravitationalConstant: -5000, //斥力
               centralGravity: 0.3,
-              springLength: 420, //弹簧长度
+              springLength: 400, //弹簧长度
               springConstant: 0.04,
               damping: 0.09,
               avoidOverlap: 0
@@ -208,7 +212,13 @@ export default {
           // 布局
           layout: {
             randomSeed: 2000,
-            improvedLayout: true,
+            // hierarchical: {
+            //   enabled: true,
+            //   levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字
+            //   nodeSpacing: 100,     // 节点之间的距离
+            //   treeSpacing: 100,     // 树之间的距离
+            //   sortMethod: 'directed',
+            // },
           },
         }
         _this.network = new Vis.Network(container, datas, _this.options);
@@ -222,8 +232,8 @@ export default {
   watch:{
     currentNode: {
       handler(newValue, oldValue) {
-        console.log("currentId",newValue[0]._id)
-        this.currentNodeId = newValue[0]._id
+        console.log("currentId",newValue)
+        this.currentNodeId = newValue
         this.initKG()
       },
       // 因为option是个对象，而我们对于echarts的配置项，要更改的数据往往不在一级属性里面

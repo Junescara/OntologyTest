@@ -57,6 +57,7 @@ export default {
    */
   createNodes(nodes,startId) {
     let nodeList = []
+    let k = 0
     for (let item of nodes) {
 
       let node = CommonUtils.getNodeByType(item)
@@ -64,13 +65,21 @@ export default {
       if (node._id !=startId){
         let isStart = false;
         let nodeItem = this.switchNodeToItem(node,isStart)
-        nodeList.push(nodeItem)
+        if(!nodeList.includes(nodeItem)){
+          nodeList.push(nodeItem)
+        }
       } else {
         let isStart = true;
         let nodeItem = this.switchNodeToItem(node,isStart)
-        nodeList.push(nodeItem)
+        if(k===0){
+          nodeList.push(nodeItem)
+          k = 1;
+        }
+        console.log("result",!nodeList.includes(nodeItem))
       }
     }
+
+    console.log("nodeList",nodeList)
     return new Vis.DataSet(nodeList)
   },
   /**
@@ -230,8 +239,53 @@ export default {
       return nodeItem
     }
   },
+
   /**
-   * 为本体创建格式化点数据集
+   * 将河对象本体转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   */
+  createOntologyObjItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.objName,
+        level:1
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.objName,
+        level:2
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 将属性本体转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   */
+  createOntologyPropItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.propName,
+        level:1
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.propName,
+        level:2
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 为本体总览创建格式化点数据集
    * @param nodes
    * @returns {*[]}
    */
@@ -267,6 +321,10 @@ export default {
       return this.createWaterGateItem(node,isStart)
     }else if (node.nodeType == '水库'){
       return this.createReservoirItem(node,isStart)
+    }else if (node.nodeType == '对象本体'){
+      return this.createOntologyObjItem(node,isStart)
+    }else if (node.nodeType == '属性本体'){
+      return this.createOntologyPropItem(node,isStart)
     }
   }
 

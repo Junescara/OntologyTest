@@ -15,4 +15,11 @@ export default {
       params:{stationName}
     })
   },
+  getStationContainsName(key) {
+    return request({
+      url: `/kg/instance/station/stationContansName`,
+      method: 'get',
+      params: {stationNameKey: key}
+    })
+  }
 }

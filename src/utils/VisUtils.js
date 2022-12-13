@@ -17,6 +17,7 @@ export default {
    */
   createRelsEdges(rels) {
     let linkList = []
+    console.log("此时的rels为=============",rels)
     for (let item of rels) {
       //这里用结点的name属性来指定关系边的头尾
       let linkItem = {
@@ -52,6 +53,19 @@ export default {
         let nodeItem = this.switchNodeToItem(node,isStart)
         nodeList.push(nodeItem)
       }
+    }
+    return new Vis.DataSet(nodeList)
+  },
+  /**
+   * 直接利用转换好的结点生成vis的结点数据集
+   * @param nodes
+   * @returns {*}
+   */
+  createNodesV2(nodes) {
+    let nodeList = []
+    for (let item of nodes) {
+      let nodeItem = this.switchNodeToItem(item,false)
+      nodeList.push(nodeItem)
     }
     return new Vis.DataSet(nodeList)
   },

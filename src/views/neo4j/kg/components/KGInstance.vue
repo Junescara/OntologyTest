@@ -996,6 +996,54 @@ export default {
             this.nodeNames.push(item.name)
           }
         })
+      }else if (this.currentType == '测站'){
+        stationApi.getStationContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '断面'){
+        sectionApi.getSectionContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.sectionName)
+          }
+        })
+      }else if (this.currentType == '河流'){
+        riverApi.getRiverContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '水库'){
+        ReservoirApi.getReservoirContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.result
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.reservoirName)
+          }
+        })
+      }else if (this.currentType == '水闸'){
+        WaterGateApi.getWaterGateContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '流域'){
+        WaterShedApi.getWaterShedContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
       }
     },
     getRelsContainsNodeName(){

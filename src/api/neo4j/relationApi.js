@@ -106,10 +106,21 @@ export default {
    * @param id
    * @returns {*}
    */
-  getKGVisiblesData(id){
+  getKGVisiblesOutData(id){
     return request({
       url: `/kg/instance/relation/getVisibleChartsByNodeId/`+id,
       method: 'get',
     })
+  },
+  getKGVisiblesData(ids){
+    let url = `/kg/instance/relation/getWholeVisibleChartsByNodeIds/`
+    let temp = '?ids=' + ids[0]
+    for (let i = 1; i < ids.length; i++){
+      temp = temp + ',' + ids[i]
+    }
+    return request(({
+      url: url + temp,
+      method: 'get',
+    }))
   }
 }

@@ -24,4 +24,11 @@ export default {
       params:{waterGateName}
     })
   },
+  getWaterGateContainsName(key) {
+    return request({
+      url: `/kg/instance/waterGate/waterGateContainsName`,
+      method: 'get',
+      params: {waterGateNameKey: key}
+    })
+  }
 }

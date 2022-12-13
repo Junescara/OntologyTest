@@ -7,9 +7,6 @@
  -->
 <template>
   <div>
-    <el-row>
-      <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="handleAdd">新增图谱</el-button>
-    </el-row>
 <!--    <el-row style="margin-bottom: 20px;margin-left: 10px">
       <el-col v-for="(item, index) in list.connectList" :span="4" :key="index" :offset="index > 0 ? 2 : 0">
         <el-card :body-style="{ padding: '0px' }">
@@ -60,6 +57,9 @@
             </div>
           </el-card>
         </el-col>
+      </el-row>
+      <el-row>
+        <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px;float:right;" @click="handleAdd">新增图谱</el-button>
       </el-row>
       <el-row style="display: flex;float: right">
         <el-pagination

@@ -127,11 +127,13 @@ export default {
         .then((res)=>{
           // console.log(res)
           let flArr = str2listForRain(res.data.data.flow)
+
           _this.currentChartParam.flow = flArr;
           let rvArr = str2listForRain(res.data.data.rain)
           _this.currentChartParam.rain = rvArr;
           let timeArr = str2listForTimeStamp(res.data.data.duration)
           _this.currentChartParam.timestamp =timeArr
+          // console.log(timeArr,"ookokoko")
           _this.initChart()
         })
         .catch((err)=>{

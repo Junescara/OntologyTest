@@ -32,7 +32,8 @@ export default {
     }
   },
   methods:{
-    ...mapMutations(['changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood']),
+    ...mapMutations(['changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData',
+      'changeOriginFlood','changeMatchedFlood','changeOriginStart','changeOriginEnd','changeMatchEnd','changeMatchStart','changeAllDataLoading']),
     initChart(){
       let _this = this
       let el = document.getElementById("zoomChart")
@@ -129,15 +130,13 @@ export default {
           // loading.value = false
           return
         }
-        _this.changeLoadingFlag(true)
+        _this.changeAllDataLoading(true)
 
 
         console.log(startValue,endValue)
         console.log("现在选取的：",_this.currentChartParam.flow.slice(startValue,endValue))
 
-        // setTimeout(()=>{
-        //   loading.value = false
-        // },2000)
+
         let data={}
         data['id'] = 1
         data['startValue'] = startValue
@@ -158,14 +157,24 @@ export default {
             // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
             _this.changeMatchedFlood(str2listForRain(matchedFlood));
             _this.changeOriginFlood(str2listForRain(originFlood));
+            //记录匹配到数据的结束和开头
+            let matchEnd = data.endIndex;
+            let matchStart = data.startIndex;
+            console.log("matchEnd",matchEnd,matchStart)
+
+            _this.changeMatchStart(matchStart);
+            _this.changeMatchEnd(matchEnd);
+            _this.changeOriginStart(startValue)
+            _this.changeOriginEnd(endValue)
 
 
-            _this.changeLoadingFlag(false)
+
+            _this.changeAllDataLoading(false)
 
             // loading.value = false
           })
           .catch((err)=>{
-            _this.changeLoadingFlag(false)
+            _this.changeAllDataLoading(false)
           })
 
       })

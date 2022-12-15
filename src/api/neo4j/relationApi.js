@@ -118,6 +118,13 @@ export default {
       method: 'get',
     })
   },
+  getKGVisiblesDataOfOnto(id){
+    return request({
+      url: `/kg/onto/showOntologySep/`+id,
+      method: 'get',
+    })
+  },
+
   getKGVisiblesData(ids){
     let url = `/kg/instance/relation/getWholeVisibleChartsByNodeIds/`
     let temp = '?ids=' + ids[0]

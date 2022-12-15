@@ -75,7 +75,7 @@ export default {
       let rels = []
       let nodes = []
       let _this = this
-      relationApi.getKGVisiblesData(this.currentNodeId).then(({data}) => {
+      relationApi.getKGVisiblesDataOfOnto(this.currentNodeId).then(({data}) => {
         rels = data.data.relationShips.relationList
         nodes = data.data.endNodes.nodeList
         let startNode = data.data.startNode

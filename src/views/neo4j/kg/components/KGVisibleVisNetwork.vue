@@ -172,7 +172,7 @@ export default {
                 type: 'curvedCCW', // 平滑曲线的类型
                 forceDirection: 'horizontal' // 用于分层布局的配置项,可选值有: ['horizontal', 'vertical', 'none']
               },
-              arrows: {to: true} //箭头指向to
+              arrows: {to: true},//箭头指向to
               // arrows: {  // 这里可以用来自定义箭头，type为image类型即可
               // middle: { enabled: true, type: 'image', imageHeight: 12, imageWidth: 12, src: getOpticalRed() }
               // },

@@ -7,8 +7,13 @@
  -->
 <template>
   <div>
-    <div id="KGNetwork" ref="KGNetwork"></div>
+    <div id="KGNetwork" ref="KGNetwork" class="network"></div>
+    <div class="divHoverNode" id="divHoverNode">
+      <ul>详细信息：</ul>
+      <li>{{detailOfNode}}</li>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -17,6 +22,7 @@ import relationApi from "../../../../api/neo4j/relationApi";
 import EchartsUtils from "../../../../utils/EchartsUtils";
 import VisUtils from "../../../../utils/VisUtils";
 import CommonUtils from "../../../../utils/commonUtils";
+import * as network from "vis";
 
 export default {
   name: "KGVisibleVisNetwork",
@@ -27,6 +33,7 @@ export default {
       options: null,
       network: null,
       currentNodeId:7,
+      detailOfNode:'内容',
     }
   },
   props: {
@@ -61,7 +68,7 @@ export default {
     ]);
   },
   mounted() {
-    this.initKG()
+    this.initKG();
   },
   methods: {
     initKG() {
@@ -138,7 +145,7 @@ export default {
             // },
             size: 40, // 节点大小
             // physics: false, // 关闭物理引擎
-            title: '本体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
+            title: '这是一个本体！', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
             widthConstraint: { // 节点的最小宽度与最大宽度
               // maximum: 100,
             }
@@ -222,11 +229,37 @@ export default {
           },
         }
         _this.network = new Vis.Network(container, datas, _this.options);
+        this.network.on("hoverNode", (e) => {
+          // 通过nodes：[],来判断是节点还是线
+          // 如果nodes是空则是线，反之则是节点
+          // this.$message({
+          //   message: '这是一个本体结点！！!',
+          //   type: 'success'
+          // });
+          console.log("接收的参数",e)
+          let details = document.getElementById("divHoverNode");
+          let x = e.event.offsetX + 15;
+          let y = e.event.offsetY + 15;
+          this.setPosition(x,y);
+          // console.log("x",x);
+          // console.log("y",y);
+          // relationApi.getNodeDetails(e.node).then(({data}) => {
+          //   console.log("data1",data);
+          //   });
+          this.detailOfNode = '内容3';
+        });
+      });
 
-      })
+
+
+
       // setTimeout(() => {
       //   this.nodes.update({id: 9, label: '更新后的9'})
       // },10000)
+    },
+    setPosition(x,y){
+      let details = document.getElementById("divHoverNode");
+      details.style = `left: ${x}px; top: ${y}px;display:block;`;
     }
   },
   watch:{
@@ -249,6 +282,18 @@ export default {
   width: 1450px;
   height: 760px;
 }
+  .divHoverNode{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 150px;
+    height: 400px;
+    border: 30px;
+    border-radius: 50px;
+    box-sizing: border-box;
+    z-index: 10;
+    display: none;
+  }
 </style>
 
 

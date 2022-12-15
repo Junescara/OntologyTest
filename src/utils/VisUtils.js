@@ -250,14 +250,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.objName,
-        level:1
+        level:1,
+        titel:'我是头结点！'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.objName,
-        level:2
+        level:2,
+        titel:'我是尾结点！'
       }
       return nodeItem
     }

@@ -47,6 +47,7 @@ export default {
 
       linkList.push(linkItem)
     }
+  },
 
   createRelsEdgesV2(rels) {
     let linkList = []

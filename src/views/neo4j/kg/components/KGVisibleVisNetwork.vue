@@ -176,6 +176,7 @@ export default {
               // arrows: {  // 这里可以用来自定义箭头，type为image类型即可
               // middle: { enabled: true, type: 'image', imageHeight: 12, imageWidth: 12, src: getOpticalRed() }
               // },
+            },
             font: {
               align: 'left',
               color: '#171615',
@@ -196,6 +197,7 @@ export default {
               // maximum: 100,
             }
           },
+            {
             // 交互模块
             interaction: {
               hover: true, // 启用鼠标悬停

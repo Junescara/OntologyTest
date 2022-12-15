@@ -7,7 +7,7 @@ import axios from 'axios'
 import { Message } from 'element-ui';
 
 // 域名地址
-axios.defaults.baseURL = 'http://localhost:8088';
+axios.defaults.baseURL = 'http://localhost:8083';
 //请求列表
 let reqList=[]
 //阻止重复的请求

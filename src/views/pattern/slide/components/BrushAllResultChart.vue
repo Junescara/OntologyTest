@@ -25,7 +25,12 @@ export default {
       matchedData:[],
       dataLength:0,
       originFlood:[],
-      matchedFlood:[]
+      matchedFlood:[],
+      originStart:0,
+      originEnd:0,
+      matchStart:0,
+      matchEnd:0,
+
 
     }
   },
@@ -53,6 +58,51 @@ export default {
           type:'category',
           data:new Array(this.dataLength).fill(1).map((v, i) => ++i)
         },
+        visualMap:[
+          {
+            dimension:0,
+            seriesIndex:0,
+            color:"#aabbcc",
+            pieces:[
+              {
+                gt:0,
+                lte:_this.originStart,
+                color:'green'
+              },
+              {
+                gt:_this.originStart,
+                lte:_this.originEnd,
+                color:'red'
+              },
+              {
+                gt:_this.originEnd,
+                color:'green'
+              }
+            ]
+          },
+          {
+            dimension:0,
+            seriesIndex:1,
+            color:"#ccbbaa",
+            pieces:[
+              {
+                gt:0,
+                lte:_this.matchStart,
+                color:'blue'
+              },
+              {
+                gt:_this.matchStart,
+                lte:_this.matchEnd,
+                color:'orange'
+              },
+              {
+                gt:_this.matchEnd,
+                color:'blue'
+              }
+            ],
+
+          }
+        ],
         yAxis:[
           {
             name:"流量",
@@ -63,10 +113,6 @@ export default {
           {
             name:'源数据',
             type:'line',
-            lineStyle:{
-              width:1,
-              color:"#01b72a"
-            },
             itemStyle:{
               normal:{
                 color:"#3ecda0"
@@ -76,7 +122,7 @@ export default {
             emphasis:{
               focus:'series',
             },
-            data:this.originData,
+            data:this.originFlood,
           },
           {
             name: '匹配数据',
@@ -84,10 +130,13 @@ export default {
             itemStyle: {
               color:"#00a2ea"
             },
-            emphasis: {
-              focus: 'series'
+            lineStyle:{
+              type:'dashed'
             },
-            data: this.matchedData
+            // emphasis: {
+            //   focus: 'series'
+            // },
+            data: this.matchedFlood
           }
         ]
 
@@ -126,23 +175,31 @@ export default {
 
   },
   watch:{
-    '$store.state.brush.matchedFlood'(newValue,oldValue){
-      if (this.$store.state.brush.matchedFlood.length!=0){
+    '$store.state.brush.allDataLoading'(newValue,oldValue){
+      if (newValue == false){
         this.originData = this.$store.state.brush.originData
         this.matchedData = this.$store.state.brush.matchedData
-        this.dataLength = this.originData.length
+        this.originFlood = this.$store.state.brush.originFlood
+        this.matchedFlood = this.$store.state.brush.matchedFlood
+        console.log(this.originFlood,this.matchedFlood)
+        this.dataLength = this.originFlood.length
+        this.matchStart = this.$store.state.brush.matchStart
+        this.matchEnd = this.$store.state.brush.matchEnd
+        this.originStart = this.$store.state.brush.originStart
+        this.originEnd = this.$store.state.brush.originEnd
 
         this.initChart()
       }
       this.loading = newValue
     }
 
+
   }
 }
 </script>
 
 <style scoped>
-#brushResultChart{
+#brushALlResultChart{
   height: calc(50vh - 48px);
 }
 

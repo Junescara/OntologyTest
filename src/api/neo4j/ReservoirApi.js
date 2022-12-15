@@ -23,4 +23,11 @@ export default {
       params:{reservoirName}
     })
   },
+  getReservoirContainsName(key) {
+    return request({
+      url: `/kg/instance/reservoir/reservoirByNameKey`,
+      method: 'get',
+      params: {reservoirNameKey: key}
+    })
+  }
 }

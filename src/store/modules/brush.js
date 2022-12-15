@@ -11,8 +11,12 @@ const brush = {
     originData:[],
     matchedData:[],
     originFlood:[],
-    matchedFlood:[]
-
+    matchedFlood:[],
+    allDataLoading:false,
+    originStart:0,
+    originEnd:0,
+    matchEnd:0,
+    matchStart:0,
   },
   mutations: {
     changeCurrentID:(state,id)=>{
@@ -32,7 +36,23 @@ const brush = {
     },
     changeMatchedFlood:(state,data)=>{
       state.matchedFlood = data
-    }
+    },
+    changeAllDataLoading:(state,data)=>{
+      state.allDataLoading = data
+    },
+    changeOriginStart:(state,data)=>{
+      state.originStart = data
+    },
+    changeOriginEnd:(state,data)=>{
+      state.originEnd = data
+    },
+    changeMatchEnd:(state,data)=>{
+      state.matchEnd = data
+    },
+    changeMatchStart:(state,data)=>{
+      state.matchStart = data
+    },
+
   },
   actions: {
 

@@ -129,6 +129,13 @@ export default {
       method: 'get',
     }))
   },
+  getLinkedRels(params){
+    return request(({
+      url: '/kg/instance/node/getNodeRelLink',
+      method: 'get',
+      params:params
+    }))
+  }
   /**
    * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
    * @param id

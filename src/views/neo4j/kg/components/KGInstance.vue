@@ -48,7 +48,7 @@
           <!--以下为实体的下拉菜单-->
           <div v-show="0===number">
             <el-select v-show="0===number" clearable @clear="clear" @change="chooseEntity" v-model="nodeLabels.index" placeholder="请选择实体类型"
-                       style="margin-top: 20px">
+                       style= "margin-top: 20px">
               <el-option
                 v-for="(item,index) in nodeLabels"
                 :key=index
@@ -117,12 +117,12 @@
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
           <span>知识图谱</span>
-          <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="visibles.settingsVisible = true">显示设置</el-button>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
 <!--        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>-->
-        <KGVisibleVisNetwork :current-node="nodeByName"></KGVisibleVisNetwork>
+        <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings"></KGVisibleVisNetwork>
       </el-card>
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
@@ -162,6 +162,36 @@
         </el-descriptions>
       </el-card>
 
+      <!--以下为显示设置卡片-->
+      <el-dialog
+        title="显示设置"
+        :visible.sync="visibles.settingsVisible"
+        width="50%"
+        center>
+
+        <el-form>
+          <el-form-item label="视图类型：">
+            <el-select v-model="flags.visibleTypeFlag" placeholder="请选择">
+              <el-option
+                v-for="item in visibleTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="关系链长度" v-show="flags.visibleTypeFlag == 3">
+            <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
+          </el-form-item>
+        </el-form>
+
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="visibles.settingsVisible = false">取 消</el-button>
+          <el-button type="primary" @click="handleSettings">确 定</el-button>
+        </span>
+      </el-dialog>
+
       <!--以下为修改实例卡片-->
       <el-dialog
         title="修改实例"
@@ -179,6 +209,7 @@
           <el-button type="primary" @click="editObiect">确 定</el-button>
         </span>
       </el-dialog>
+
 
       <!--以下为增加实例卡片-->
       <el-dialog
@@ -301,13 +332,16 @@ export default {
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       visibles:{
-        dialogVisible:false
+        dialogVisible:false,
+        settingsVisible:false
       },
       //标记类
       flags:{
         relLazyCountFlag:0,
         relLoadingFlag:false,
-        loadingFlag:false
+        loadingFlag:false,
+        visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链
+        lengthFlag:2,
       },
       //查询关键字
       key:{
@@ -316,6 +350,33 @@ export default {
       },
       kgInfo:{
 
+      },
+      visibleTypeOptions:[
+        {
+          value: 0,
+          label: '显示出边',
+        },
+        {
+          value: 1,
+          label: '显示入边(开发中)',
+        },
+        {
+          value: 2,
+          label: '显示该点完整关系',
+        },
+        {
+          value: 3,
+          label: '显示该点完整路径',
+        },
+        {
+          value: 4,
+          label: '流域概化图（开发中）',
+        },
+      ],
+      //显示设置
+      visibleSettings:{
+        length:2, //关系链长度，默认为2
+        visibleTypeFlag:1
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -996,6 +1057,54 @@ export default {
             this.nodeNames.push(item.name)
           }
         })
+      }else if (this.currentType == '测站'){
+        stationApi.getStationContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '断面'){
+        sectionApi.getSectionContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.sectionName)
+          }
+        })
+      }else if (this.currentType == '河流'){
+        riverApi.getRiverContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '水库'){
+        ReservoirApi.getReservoirContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.result
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.reservoirName)
+          }
+        })
+      }else if (this.currentType == '水闸'){
+        WaterGateApi.getWaterGateContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '流域'){
+        WaterShedApi.getWaterShedContainsName(this.key.nodeKey).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
       }
     },
     getRelsContainsNodeName(){
@@ -1008,6 +1117,11 @@ export default {
           }
         })
       }
+    },
+    handleSettings(){
+      this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag
+      this.visibleSettings.length = this.flags.lengthFlag
+      this.visibles.settingsVisible = false
     }
   },
   computed:{

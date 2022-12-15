@@ -15,4 +15,11 @@ export default {
       params:{sectionName}
     })
   },
+  getSectionContainsName(key) {
+    return request({
+      url: `/kg/instance/section/sectionContansName`,
+      method: 'get',
+      params: {sectionNameKey: key}
+    })
+  }
 }

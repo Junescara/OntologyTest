@@ -12,13 +12,14 @@
     </div>
     <div class="brush-main-down">
       <el-tabs style="width: 100%;height: 100%">
-        <el-tab-pane label="匹配结果" style="height: 100%">
+        <el-tab-pane label="滑动窗口" style="height: 100%">
           <!--          <result-chart/>-->
           <BrushResultChart/>
         </el-tab-pane>
-        <el-tab-pane label="预测结果" style="height: 100%">
+        <el-tab-pane label="选择匹配" style="height: 100%">
           <!--          <pre-flood-chart/>-->
 <!--          <ResultPreChart/>-->
+          <brush-all-result-chart/>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -29,9 +30,10 @@
 import SliderChart from "./components/SliderChart";
 import ZoomChart from "./components/ZoomChart";
 import BrushResultChart from "./components/BrushResultChart";
+import BrushAllResultChart from "./components/BrushAllResultChart";
 export default {
   name: "index",
-  components: {BrushResultChart, ZoomChart, SliderChart}
+  components: {BrushAllResultChart, BrushResultChart, ZoomChart, SliderChart}
 }
 </script>
 

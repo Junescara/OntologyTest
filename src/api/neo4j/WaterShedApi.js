@@ -24,4 +24,11 @@ export default {
       params:{watershedName}
     })
   },
+  getWaterShedContainsName(key) {
+    return request({
+      url: `/kg/instance/watershed/watershedContansName`,
+      method: 'get',
+      params: {watershedNameKey: key}
+    })
+  }
 }

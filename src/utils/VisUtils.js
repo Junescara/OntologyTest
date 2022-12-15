@@ -17,6 +17,7 @@ export default {
    */
   createRelsEdges(rels) {
     let linkList = []
+    console.log("此时的rels为=============",rels)
     for (let item of rels) {
       //这里用结点的name属性来指定关系边的头尾
       let linkItem = {
@@ -30,7 +31,39 @@ export default {
 
     return new Vis.DataSet(linkList)
   },
+  /**
+   * 创建格式化边数据集(本体对象专用)
+   * @param rels
+   */
+  createRelsEdgesForOntoObj(rels) {
+    let linkList = []
+    for (let item of rels) {
+      //这里用结点的name属性来指定关系边的头尾
+      let linkItem = {
+        from: item.start.toString(),
+        to: item.end.toString(),
+        label: item.relList[0]
+      }
 
+      linkList.push(linkItem)
+    }
+
+  createRelsEdgesV2(rels) {
+    let linkList = []
+    console.log("此时的rels为=============",rels)
+    for (let item of rels) {
+      //这里用结点的name属性来指定关系边的头尾
+      let linkItem = {
+        from: item.start.toString(),
+        to: item.end.toString(),
+        label: item.relName
+      }
+
+      linkList.push(linkItem)
+    }
+
+    return new Vis.DataSet(linkList)
+  },
   /**
    * 创建格式化点数据集
    * @param nodes
@@ -39,6 +72,7 @@ export default {
    */
   createNodes(nodes,startId) {
     let nodeList = []
+    let k = 0
     for (let item of nodes) {
 
       let node = CommonUtils.getNodeByType(item)
@@ -46,12 +80,33 @@ export default {
       if (node._id !=startId){
         let isStart = false;
         let nodeItem = this.switchNodeToItem(node,isStart)
-        nodeList.push(nodeItem)
+        if(!nodeList.includes(nodeItem)){
+          nodeList.push(nodeItem)
+        }
       } else {
         let isStart = true;
         let nodeItem = this.switchNodeToItem(node,isStart)
-        nodeList.push(nodeItem)
+        if(k===0){
+          nodeList.push(nodeItem)
+          k = 1;
+        }
+        console.log("result",!nodeList.includes(nodeItem))
       }
+    }
+
+    console.log("nodeList",nodeList)
+    return new Vis.DataSet(nodeList)
+  },
+  /**
+   * 直接利用转换好的结点生成vis的结点数据集
+   * @param nodes
+   * @returns {*}
+   */
+  createNodesV2(nodes) {
+    let nodeList = []
+    for (let item of nodes) {
+      let nodeItem = this.switchNodeToItem(item,false)
+      nodeList.push(nodeItem)
     }
     return new Vis.DataSet(nodeList)
   },
@@ -212,6 +267,70 @@ export default {
       return nodeItem
     }
   },
+
+  /**
+   * 将河对象本体转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   */
+  createOntologyObjItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.objName,
+        level:1,
+        titel:'我是头结点！'
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.objName,
+        level:2,
+        titel:'我是尾结点！'
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 将属性本体转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   */
+  createOntologyPropItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.propName,
+        level:1
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.propName,
+        level:2
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 为本体总览创建格式化点数据集
+   * @param nodes
+   * @returns {*[]}
+   */
+  createNodesForOntology(nodes) {
+    let nodeList = []
+    for (let node of nodes) {
+      let nodeItem = {
+        id:node._id,
+        label:node.objName,
+        level:1
+      }
+      nodeList.push(nodeItem)
+    }
+    return new Vis.DataSet(nodeList)
+  },
   /**
    * 将无类型的node存入dataList
    * @param node
@@ -232,8 +351,131 @@ export default {
       return this.createWaterGateItem(node,isStart)
     }else if (node.nodeType == '水库'){
       return this.createReservoirItem(node,isStart)
+    }else if (node.nodeType == '对象本体'){
+      return this.createOntologyObjItem(node,isStart)
+    }else if (node.nodeType == '属性本体'){
+      return this.createOntologyPropItem(node,isStart)
     }
-  }
+  },
+  /**
+   * 处理生成包括出边和入边完整图像的数据
+   * @param data
+   * @returns {{nodes: *, edges: ([]|*)}}
+   */
+  handleWholeVisibles(data){
+    let rels = []
+    let nodes = []
 
+    //首先获取出边数据
+    for (let rel of data.data.kgVisibleOutVoList[0].relationShips.relationList){
+      rels.push(rel)
+    }
+    //获取入边数据
+    for (let rel of data.data.kgVisibleInVoList[0].relationShips.relationList){
+      rels.push(rel)
+    }
+    //获取结点集
+    //首先要维护一个集合，用于结点id去重
+    let idSet = new Set()
+
+    for (let item of data.data.kgVisibleOutVoList[0].endNodes.nodeList){
+      let id = CommonUtils.getNodeByType(item)._id
+      if (idSet.has(id)){
+        //如果idset中包含这个元素,则无需再结点集中添加这个元素
+        continue;
+      }else{
+        //idset中不包含这个元素，添加进结点集
+        idSet.add(id)
+        nodes.push(CommonUtils.getNodeByType(item))  //直接存入提取过的node
+      }
+    }
+
+    for (let item of data.data.kgVisibleInVoList[0].startNodes.nodeList){
+      let id = CommonUtils.getNodeByType(item)._id
+      if (idSet.has(id)){
+        //如果idset中包含这个元素,则无需再结点集中添加这个元素
+        continue;
+      }else{
+        //idset中不包含这个元素，添加进结点集
+        idSet.add(id)
+        nodes.push(CommonUtils.getNodeByType(item))  //直接存入提取过的node
+      }
+    }
+
+    //最后加入起点（终点）
+    nodes.push(CommonUtils.getNodeByType(data.data.kgVisibleOutVoList[0].startNode))
+    idSet.add(CommonUtils.getNodeByType(data.data.kgVisibleOutVoList[0].startNode)._id)
+
+    //封装最终生成数据的数据集
+    const datas = {
+      nodes:this.createNodesV2(nodes),
+      edges:this.createRelsEdges(rels)
+    }
+
+    return datas
+  },
+
+  /**
+   * 处理生成包括出边完整图像的数据
+   * @param data
+   * @returns {{nodes: *, edges: ([]|*)}}
+   */
+  handleOutVisibles(data){
+    let rels = []
+    let nodes = []
+
+    //老版本的生成机制，仅仅只有起点的情况下
+    rels = data.data.relationShips.relationList
+    nodes = data.data.endNodes.nodeList
+    let startNode = data.data.startNode
+    nodes.push(startNode)
+    // console.log("此时的startNode",startNode)
+
+    const datas = {
+      nodes:this.createNodes(nodes,CommonUtils.getNodeByType(startNode)._id),
+      edges:this.createRelsEdges(rels)
+    }
+
+    return datas
+  },
+
+  /**
+   * 处理生成包括出边完整图像的数据
+   * @param data
+   * @returns {{nodes: *, edges: ([]|*)}}
+   */
+  handleRelLinkVisibles(data){
+    let rels = []
+    let nodes = []
+
+    //首先获取出边数据
+    for (let rel of data.data.relationItems){
+      rels.push(rel)
+    }
+
+    //获取结点集
+    //首先要维护一个集合，用于结点id去重
+    let idSet = new Set()
+
+    for (let item of data.data.finalNodeVos){
+      let id = CommonUtils.getNodeByType(item)._id
+      if (idSet.has(id)){
+        //如果idset中包含这个元素,则无需再结点集中添加这个元素
+        continue;
+      }else{
+        //idset中不包含这个元素，添加进结点集
+        idSet.add(id)
+        nodes.push(CommonUtils.getNodeByType(item))  //直接存入提取过的node
+      }
+    }
+
+    //封装最终生成数据的数据集
+    const datas = {
+      nodes:this.createNodesV2(nodes),
+      edges:this.createRelsEdgesV2(rels)
+    }
+
+    return datas
+  },
 
 }

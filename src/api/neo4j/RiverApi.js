@@ -24,4 +24,11 @@ export default {
       params:{riverName}
     })
   },
+  getRiverContainsName(key) {
+    return request({
+      url: `/kg/instance/river/riverContansName`,
+      method: 'get',
+      params: {riverNameKey: key}
+    })
+  }
 }

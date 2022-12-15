@@ -24,7 +24,7 @@ export default {
    */
   getNodeByType(node){
     let nodeItem = {}
-    console.log("此时的node为",node)
+    console.log("DDD此时的node为",node)
     if (node.nodeType.indexOf('行政区划') >= 0){
       nodeItem = node.regionalism
       nodeItem['nodeType'] = '行政区划'
@@ -52,6 +52,14 @@ export default {
     }else if (node.nodeType.indexOf('流域') >= 0){
       nodeItem = node.watershed
       nodeItem['nodeType'] = '流域'
+      return nodeItem
+    }else if (node.nodeType.indexOf('对象本体') >= 0){
+      nodeItem = node.ontologyObj
+      nodeItem['nodeType'] = '对象本体'
+      return nodeItem
+    }else if (node.nodeType.indexOf('属性本体') >= 0){
+      nodeItem = node.ontologyProp
+      nodeItem['nodeType'] = '属性本体'
       return nodeItem
     }
   }

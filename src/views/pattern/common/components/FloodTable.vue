@@ -215,7 +215,6 @@ export default {
       for (let i = 0; i < this.Features.length; i++) {
         let v = this.Features[i].value
         weights.push(v)
-
       }
       console.log(weights)
       this.start()

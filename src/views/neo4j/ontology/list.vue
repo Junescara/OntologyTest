@@ -6,7 +6,7 @@
         </el-table> -->
     <!-- </div> -->
     <div>
-        节点标签
+        节点标签 DDDDQYC
         <ul>
             <li v-for="label in labels" :key="label">{{ label }}</li>
         </ul>
@@ -18,7 +18,7 @@
 
 
 </template>
-  
+
 <script>
 import ontologyApi from '@/api/neo4j/ontology'
 export default {

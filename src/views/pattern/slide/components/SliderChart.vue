@@ -4,6 +4,10 @@
 </template>
 
 <script>
+import {postRequestJson} from "../../../../api/pattern/api";
+import {str2listForRain} from "../../../../api/pattern/dataUtils";
+import {mapMutations} from "vuex";
+
 export default {
   name: "SliderChart",
   data(){
@@ -23,14 +27,18 @@ export default {
       options:null,
       rightSide:30,
       sliderLength:30,
+      endFlag:0,
+
 
     }
   },
   methods:{
+    ...mapMutations(['changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood']),
     initChart(){
       let _this = this
       let el = document.getElementById('sliderChart')
       let chart = this.$echarts.init(el);
+
       let options ={
         legend: {
           data: ['流量', '降雨量'],
@@ -68,21 +76,19 @@ export default {
           xAxisIndex:0,
           toolbox:['lineX','clear'],
           outOfBrush: {
-            colorAlpha: 0.4
-          }
+            colorAlpha: 0.4,
+          },
+          throttleType:'debounce',
+          throttleDelay:300
+
         },
         series:[
           {
             name:'流量',
             type:'line',
-            lineStyle:{
-              width:1,
-              color:"#01b72a"
-            },
             itemStyle:{
               normal:{
                 color:"#3ecda0"
-
               }
             },
             emphasis:{
@@ -107,22 +113,71 @@ export default {
       };
 
       chart.setOption(options);
-      //初始化区域
-      // chart.dispatchAction({
-      //   type:'brush',
-      //   areas:[{
-      //     brushType:'lineX',
-      //     range:[_this.rightSide.value-_this.sliderLength.value,_this.rightSide.value],
-      //     xAxisIndex: 0
-      //   }]
-      // })
+
+      this.chart = chart
+      this.options = options
+      // 初始化区域
+      chart.dispatchAction({
+        type:'brush',
+        areas:[{
+          brushType:'lineX',
+          coordRange:[_this.rightSide-_this.sliderLength,_this.rightSide],
+          xAxisIndex: 0
+        }]
+      })
       //监听滑块的变化
-      // chart.on('brushSelected',function (params){//给出的是数据下标
-      //   let r = params.batch[0].selected[0].dataIndex.length
-      //   // console.log("我是滑块，我华东了")
-      //   _this.sliderLength.value = r //选取范围的总长度
-      //   _this.rightSide.value = params.batch[0].selected[0].dataIndex[r-1]//最右侧的数值
-      // })
+      chart.on('brushSelected',function (params){//给出的是数据下标
+        let r = params
+        console.log("我是滑块，我华东了",r)
+        if(_this.endFlag==1){
+          return
+        }
+        if (_this.rightSide + _this.sliderLength > _this.currentChartParam.flow.length){
+          _this.endFlag = 1
+          _this.rightSide = _this.currentChartParam.flow.length-1
+        }
+        let startValue = _this.rightSide - _this.sliderLength;
+        let endValue = _this.rightSide;
+        let data={}
+        data['id'] = 1
+        data['startValue'] = startValue
+        data['endValue'] = endValue
+        _this.changeLoadingFlag(true)
+        postRequestJson("/brush",JSON.stringify(data))
+          .then((res)=>{
+            console.log(res)
+
+            let data = res.data.data;
+            _this.changeMatchID(data.idResult);
+            let originSelect = data.x1Shapelet;
+            let matchSelect = data.x2Shapelet;
+            let originFlood = data.x1Line;
+            let matchedFlood = data.x2Line;
+
+            _this.changeOriginData(str2listForRain(originSelect));
+            _this.changeMatchedData(str2listForRain(matchSelect));
+            // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
+            _this.changeMatchedFlood(str2listForRain(matchedFlood));
+            _this.changeOriginFlood(str2listForRain(originFlood));
+
+
+            _this.changeLoadingFlag(false)
+            // console.log("fkfkfkfkfk")
+
+            //重新设置rightside
+            if (_this.endFlag==0){
+              _this.rightSide = _this.sliderLength + _this.rightSide
+            }
+
+            _this.flashChart()
+
+            // loading.value = false
+          })
+          .catch((err)=>{
+            _this.changeLoadingFlag(false)
+          })
+
+      })
       //添加窗口收缩的监听，重新绘制大小。
       window.addEventListener('resize',()=>{
         chart.resize()
@@ -132,6 +187,21 @@ export default {
         chart.resize()
       })
       observer.observe(el)
+
+      //测试动态刷新图表
+      // this.flashChart()
+    },
+    flashChart(){
+      // console.log("flashChart",this.rightSide-this.sliderLength,this.rightSide)
+      let _this = this
+      this.chart.dispatchAction({
+        type:'brush',
+        areas:[{
+          brushType:'lineX',
+          coordRange:[_this.rightSide-_this.sliderLength,_this.rightSide],
+          xAxisIndex: 0
+        }]
+      })
     }
   },
   mounted() {

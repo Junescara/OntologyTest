@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import {mapMutations} from "vuex";
+
 export default {
   name: "BrushResultChart",
   data(){
@@ -84,6 +86,9 @@ export default {
             itemStyle: {
               color:"#00a2ea"
             },
+            lineStyle:{
+              type:'dashed'
+            },
             emphasis: {
               focus: 'series'
             },
@@ -131,6 +136,7 @@ export default {
         this.originData = this.$store.state.brush.originData
         this.matchedData = this.$store.state.brush.matchedData
         this.dataLength = this.originData.length
+
         this.initChart()
       }
       this.loading = newValue

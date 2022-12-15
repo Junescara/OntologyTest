@@ -112,6 +112,12 @@ export default {
       method: 'get',
     })
   },
+  getNodeDetails(id){
+    return request({
+      url: `/kg/onto/relation/getNodeDetail/`+id,
+      method: 'get',
+    })
+  },
   getKGVisiblesData(ids){
     let url = `/kg/instance/relation/getWholeVisibleChartsByNodeIds/`
     let temp = '?ids=' + ids[0]
@@ -130,4 +136,27 @@ export default {
       params:params
     }))
   }
+  /**
+   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * @param id
+   * @returns {*}
+   */
+  getKGVisiblesDataForOntology(){
+    return request({
+      url: `/kg/onto/showOntology`,
+      method: 'get',
+    })
+  },
+  /**
+   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * @param id
+   * @returns {*}
+   */
+  getVisiblesDataForOntologySep(id){
+    return request({
+      url: `/kg/onto/showOntologySep`+id,
+      method: 'get',
+    })
+  },
+
 }

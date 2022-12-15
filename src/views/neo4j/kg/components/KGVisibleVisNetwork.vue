@@ -176,7 +176,26 @@ export default {
               // arrows: {  // 这里可以用来自定义箭头，type为image类型即可
               // middle: { enabled: true, type: 'image', imageHeight: 12, imageWidth: 12, src: getOpticalRed() }
               // },
+            font: {
+              align: 'left',
+              color: '#171615',
+              size: 12
+              // vadjust: 10, // 标签文本的垂直位置，值越大离节点越远
             },
+            labelHighlightBold: false,
+            // hidden: true, // 为true不会显示节点。但仍是物理模拟的一部分
+            // shape: 'image',
+            // image: {    // 路径问题要注意，一定要存储在静态文件夹中
+            //   unselected: '/static/images/icon_normal.svg',
+            //   selected: '/static/images/icon_selected.svg',
+            // },
+            size: 40, // 节点大小
+            // physics: false, // 关闭物理引擎
+            title: '这是一个结点！', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
+            widthConstraint: { // 节点的最小宽度与最大宽度
+              // maximum: 100,
+            }
+          },
             // 交互模块
             interaction: {
               hover: true, // 启用鼠标悬停

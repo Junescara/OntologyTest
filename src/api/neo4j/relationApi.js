@@ -122,5 +122,12 @@ export default {
       url: url + temp,
       method: 'get',
     }))
+  },
+  getLinkedRels(params){
+    return request(({
+      url: '/kg/instance/node/getNodeRelLink',
+      method: 'get',
+      params:params
+    }))
   }
 }

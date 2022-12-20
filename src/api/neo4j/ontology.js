@@ -15,4 +15,11 @@ export default {
       method: 'get'
     })
   },
+  //根据对象本体属性查询结点ID
+  getOntoIDbyName(name) {
+    return request({
+      url: `/kg/onto/getOntoIDbyName/`+name,
+      method: 'get',
+    })
+  },
 }

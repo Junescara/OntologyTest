@@ -41,64 +41,20 @@ export default {
           data: ['源数据', '匹配数据'],
           left: 10
         },
-        tooltip:{
-          trigger:'axis',
-          axisPointer:{
-            type:'cross',
-            animation:false,
-            label:{
-              backgroundColor:"#abc"
-            }
-          },
-        },
+
         xAxis:{
           type:'category',
           data:new Array(this.dataLength).fill(1).map((v, i) => ++i)
         },
-        yAxis:[
-          {
-            name:"流量",
-            type:'value'
-          }
-        ],
+        yAxis:{},
         series:[
-          {
-            name:'源数据',
-            type:'line',
-            lineStyle:{
-              width:1,
-              color:"#01b72a"
-            },
-            itemStyle:{
-              normal:{
-                color:"#3ecda0"
-
-              }
-            },
-            emphasis:{
-              focus:'series',
-            },
-            data:this.originData,
-          },
-          {
-            name: '匹配数据',
-            type: 'line',
-            itemStyle: {
-              color:"#00a2ea"
-            },
-            lineStyle:{
-              type:'dashed'
-            },
-            emphasis: {
-              focus: 'series'
-            },
-            data: this.matchedData
-          }
         ]
 
       };
 
       chart.setOption(options);
+      this.chart = chart
+      this.options = options
       //初始化区域
       // chart.dispatchAction({
       //   type:'brush',
@@ -131,15 +87,69 @@ export default {
 
   },
   watch:{
-    '$store.state.pattern.brushLoadingFlag'(newValue,oldValue){
-      if (this.$store.state.brush.originData.length!=0){
-        this.originData = this.$store.state.brush.originData
-        this.matchedData = this.$store.state.brush.matchedData
-        this.dataLength = this.originData.length
-
-        this.initChart()
+    '$store.state.brush.girdValues'(newValue,oldValue){
+      let size = newValue.length;
+      let originData = this.$store.state.brush.originalGridValues
+      let matchData = this.$store.state.brush.girdValues
+      // console.log(originData,matchData,"okoko")
+      let rowNumber = 3;
+      let grids =[]
+      let xAxis = []
+      let yAxis = []
+      let series = []
+      for (let i = 0; i < size; i++) {
+        grids.push({
+          show: true,
+          borderWidth: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.3)',
+          shadowBlur: 2,
+          tooltip:{
+            show:true,
+          }
+        })
+        xAxis.push({
+          type: 'category',
+          show: true,
+          gridIndex: i,
+          data:new Array(30).fill(1).map((v, i) => ++i)
+        });
+        yAxis.push({
+          type: 'value',
+          show: true,
+          gridIndex: i
+        });
+        series.push({
+          name:"源数据",
+          type: 'line',
+          xAxisIndex: i,
+          yAxisIndex: i,
+          data: originData[i],
+        });
+        series.push({
+          name:"匹配数据",
+          type: 'line',
+          xAxisIndex: i,
+          yAxisIndex: i,
+          data: matchData[i],
+          lineStyle:{
+            type:'dashed'
+          },
+        });
       }
-      this.loading = newValue
+      grids.forEach(function (grid, idx) {
+        grid.left = ((idx % rowNumber) / rowNumber) * 100 + 1 + '%';
+        grid.top = (Math.floor(idx / rowNumber) / rowNumber) * 100 + 1 + '%';
+        grid.width = (1 / rowNumber) * 100 - 5 + '%';
+        grid.height = (1 / rowNumber) * 100 - 5 + '%';
+      });
+      // console.log("this is series",this.options)
+      this.options.series = series
+      this.options.xAxis = xAxis;
+      this.options.yAxis = yAxis;
+      this.options.grid = grids;
+      this.chart.setOption(this.options)
+
+
     }
 
   }

@@ -1,12 +1,27 @@
 <template>
-  <div id="sliderChart"></div>
+  <div style="min-height: calc(50vh - 96px);width: 100%;">
+    <div class="slider-control">
+      <el-switch
+        style="display: block"
+        v-model="manual"
+        active-color="#13ce66"
+        inactive-color="#ff4949"
+        active-text="自动滑动"
+        inactive-text="手动选择">
+      </el-switch>
+      <el-input v-model="sliderLength" placeholder="输入匹配步长"></el-input>
+      <el-button type="success" round mini @click="startMatch">开始匹配</el-button>
+    </div>
+    <div id="sliderChart"></div>
+  </div>
 
 </template>
 
 <script>
 import {postRequestJson} from "../../../../api/pattern/api";
 import {str2listForRain} from "../../../../api/pattern/dataUtils";
-import {mapMutations} from "vuex";
+import {mapActions, mapMutations} from "vuex";
+import {Message} from "element-ui";
 
 export default {
   name: "SliderChart",
@@ -28,12 +43,15 @@ export default {
       rightSide:30,
       sliderLength:30,
       endFlag:0,
+      manual:true,
 
 
     }
   },
   methods:{
-    ...mapMutations(['changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood']),
+    ...mapMutations(['changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood',
+    'addGridValues','addOriginalGridValues','clearGrid']),
+    // ...mapActions(['gridValueAsync','originalGridValueAsync']),
     initChart(){
       let _this = this
       let el = document.getElementById('sliderChart')
@@ -117,67 +135,15 @@ export default {
       this.chart = chart
       this.options = options
       // 初始化区域
-      chart.dispatchAction({
-        type:'brush',
-        areas:[{
-          brushType:'lineX',
-          coordRange:[_this.rightSide-_this.sliderLength,_this.rightSide],
-          xAxisIndex: 0
-        }]
-      })
-      //监听滑块的变化
-      chart.on('brushSelected',function (params){//给出的是数据下标
-        let r = params
-        console.log("我是滑块，我华东了",r)
-        if(_this.endFlag==1){
-          return
-        }
-        if (_this.rightSide + _this.sliderLength > _this.currentChartParam.flow.length){
-          _this.endFlag = 1
-          _this.rightSide = _this.currentChartParam.flow.length-1
-        }
-        let startValue = _this.rightSide - _this.sliderLength;
-        let endValue = _this.rightSide;
-        let data={}
-        data['id'] = 1
-        data['startValue'] = startValue
-        data['endValue'] = endValue
-        _this.changeLoadingFlag(true)
-        postRequestJson("/brush",JSON.stringify(data))
-          .then((res)=>{
-            console.log(res)
+      // chart.dispatchAction({
+      //   type:'brush',
+      //   areas:[{
+      //     brushType:'lineX',
+      //     coordRange:[_this.rightSide-_this.sliderLength,_this.rightSide],
+      //     xAxisIndex: 0
+      //   }]
+      // })
 
-            let data = res.data.data;
-            _this.changeMatchID(data.idResult);
-            let originSelect = data.x1Shapelet;
-            let matchSelect = data.x2Shapelet;
-            let originFlood = data.x1Line;
-            let matchedFlood = data.x2Line;
-
-            _this.changeOriginData(str2listForRain(originSelect));
-            _this.changeMatchedData(str2listForRain(matchSelect));
-            // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
-            _this.changeMatchedFlood(str2listForRain(matchedFlood));
-            _this.changeOriginFlood(str2listForRain(originFlood));
-
-
-            _this.changeLoadingFlag(false)
-            // console.log("fkfkfkfkfk")
-
-            //重新设置rightside
-            if (_this.endFlag==0){
-              _this.rightSide = _this.sliderLength + _this.rightSide
-            }
-
-            _this.flashChart()
-
-            // loading.value = false
-          })
-          .catch((err)=>{
-            _this.changeLoadingFlag(false)
-          })
-
-      })
       //添加窗口收缩的监听，重新绘制大小。
       window.addEventListener('resize',()=>{
         chart.resize()
@@ -192,16 +158,85 @@ export default {
       // this.flashChart()
     },
     flashChart(){
-      // console.log("flashChart",this.rightSide-this.sliderLength,this.rightSide)
+      // console.log(this.rightSide,this.sliderLength)
+
+
+      let left = Number(this.rightSide - this.sliderLength);
+      let right = Number(this.rightSide);
+      // console.log("flashChart",left,right)
       let _this = this
       this.chart.dispatchAction({
         type:'brush',
         areas:[{
           brushType:'lineX',
-          coordRange:[_this.rightSide-_this.sliderLength,_this.rightSide],
+          coordRange:[left,right],
           xAxisIndex: 0
         }]
       })
+    },
+    startMatch(){
+      if(this.manual==true){
+        //清除当前vuex中缓存的匹配数据,因为存放的时候是采用数组push的方式。
+        this.clearGrid()
+
+        let _this = this
+        //自动滑动
+        //更新到最初的位置
+        // console.log(this.sliderLength)
+        this.sliderLength = Number(this.sliderLength)
+        this.rightSide = Number(this.sliderLength)
+        this.flashChart()
+        //监听滑块的变化
+        this.chart.on('brushSelected',function (params){//给出的是数据下标
+          let r = params
+          console.log("我是滑块，我华东了",r)
+          if(_this.endFlag==1){//停止滑动了
+            _this.endFlag = 0//首先要把flag置0，为了下次可以用
+            _this.chart.off('brushSelected')//第二要把监听取消掉，否则第二次匹配的时候，存在两个监听，存在错误。
+            return
+          }
+          if (_this.rightSide + _this.sliderLength > _this.currentChartParam.flow.length){//判断滑块是否到最后
+            // console.log(_this.rightSide,_this.sliderLength,_this.currentChartParam.flow.length)
+            _this.endFlag = 1
+            _this.rightSide = _this.currentChartParam.flow.length-1
+          }
+          let startValue = _this.rightSide - _this.sliderLength;
+          let endValue = _this.rightSide;
+          let data={}
+          data['id'] = 1
+          data['startValue'] = startValue
+          data['endValue'] = endValue
+          postRequestJson("/brush",JSON.stringify(data))
+            .then((res)=>{
+              console.log(res)
+              let data = res.data.data;
+              _this.changeMatchID(data.idResult);
+              let originSelect = data.x1Shapelet;
+              let matchSelect = data.x2Shapelet;
+              let originFlood = data.x1Line;
+              let matchedFlood = data.x2Line;
+
+              _this.changeOriginData(str2listForRain(originSelect));
+              _this.changeMatchedData(str2listForRain(matchSelect));
+              // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
+              _this.changeMatchedFlood(str2listForRain(matchedFlood));
+              _this.changeOriginFlood(str2listForRain(originFlood));
+              _this.addGridValues(str2listForRain(matchSelect));
+              _this.addOriginalGridValues(str2listForRain(originSelect));
+
+              //重新设置rightside
+              if (_this.endFlag==0){
+                _this.rightSide = _this.sliderLength + _this.rightSide
+              }
+              //刷新窗口
+              _this.flashChart()
+            })
+            .catch((err)=>{
+              Message("SliderChart错误:",err)
+            })
+        })
+      }
+
     }
   },
   mounted() {
@@ -209,6 +244,16 @@ export default {
 
   },
   watch:{
+    // sliderLength(newValue,oldvalue){
+    //   this.chart.dispatchAction({
+    //     type:'brush',
+    //     areas:[{
+    //       brushType:'lineX',
+    //       coordRange:[0,newValue],
+    //       xAxisIndex: 0
+    //     }]
+    //   })
+    // }
 
   }
 }
@@ -218,6 +263,14 @@ export default {
 #sliderChart{
   width: 100%;
   height: calc(50vh - 96px);
+}
+.slider-control{
+  display: flex;
+  flex-direction: row;
+
+}
+.slider-control > .el-input{
+  width: 10%;
 }
 
 </style>

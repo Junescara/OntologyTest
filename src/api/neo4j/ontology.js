@@ -15,4 +15,9 @@ export default {
       method: 'get'
     })
   },
+
+  //添加本体
+  addNode(addForm) {
+    return request.post(`/kg/onto/addNode`, addForm,{headers:{'Content-Type': 'application/json'}})
+  },
 }

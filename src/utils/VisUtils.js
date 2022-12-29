@@ -49,6 +49,8 @@ export default {
     }
   },
 
+    return new Vis.DataSet(linkList)
+  },
   createRelsEdgesV2(rels) {
     let linkList = []
     console.log("此时的rels为=============",rels)

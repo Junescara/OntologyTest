@@ -30,6 +30,8 @@ export default {
       originEnd:0,
       matchStart:0,
       matchEnd:0,
+      currentID:this.$store.state.brush.currentID,
+      matchID:this.$store.state.brush.matchID
 
 
     }
@@ -53,6 +55,15 @@ export default {
               backgroundColor:"#abc"
             }
           },
+          formatter:function (para){
+            // console.log(para)
+            let res = '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">信息</div>';
+            if(para.length>1){
+              res += "源数据ID： "+ _this.currentID+'当前数值: '+para[0].data+'<br>';
+              res += "匹配数据ID： "+ _this.matchID+'当前数值: '+para[1].data+'<br>';
+            }
+            return res
+          }
         },
         xAxis:{
           type:'category',
@@ -62,6 +73,8 @@ export default {
           {
             dimension:0,
             seriesIndex:0,
+            showLabel:false,
+            show:false,
             color:"#aabbcc",
             pieces:[
               {
@@ -83,6 +96,8 @@ export default {
           {
             dimension:0,
             seriesIndex:1,
+            showLabel:false,
+            show:false,
             color:"#ccbbaa",
             pieces:[
               {
@@ -191,8 +206,10 @@ export default {
         this.initChart()
       }
       this.loading = newValue
+    },
+    '$store.state.brush.matchID'(newValue,oldValue) {
+      this.matchID = newValue
     }
-
 
   }
 }

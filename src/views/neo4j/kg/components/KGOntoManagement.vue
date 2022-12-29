@@ -3,6 +3,7 @@
     <el-card class="box-card">
       <div slot="header" class="clearfix">
         <span>知识库管理</span>
+        <el-button @click="addObjVisible = true" style="float: right; padding-top: 1px" type="text">增加</el-button>
       </div>
       <div>
         <el-button @click="change(0)">对象本体</el-button>
@@ -36,13 +37,49 @@
       <KGVisForOntology v-show="0===visStyle"></KGVisForOntology>
       <KGVisForOnto2 v-show="1===visStyle" :current-node="currentOnto"></KGVisForOnto2>
     </el-card>
+
+
+    <!--以下为增加本体卡片-->
+    <el-dialog
+      title="增加本体"
+      :visible.sync="addObjVisible"
+      width="25%"
+      center>
+              <el-form :model="OntologyForm" class="demo-form-inline">
+                <el-form-item label="请选择需要增加的本体类型" prop="name">
+                  <el-cascader
+                    v-model="OntologyForm.types"
+                    :options="addOptions"
+                    :props="{ expandTrigger: 'hover' }"
+                    style="margin-left: 6px "
+                    @change="chooseAddAtts"></el-cascader>
+                </el-form-item>
+                <el-form-item
+                  v-for="(domain) in OntologyForm.attributes"
+                  :label="domain.name"
+                  :key="domain.key"
+                  :prop="domain.key">
+                  <el-input v-model="domain.value"></el-input>
+                </el-form-item>
+              </el-form>
+
+
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="addObjVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addOntology">确 定</el-button>
+              </span>
+    </el-dialog>
+
+
   </div>
+
 </template>
 
 <script>
   import KGVisible from './KGVisible'
   import KGVisForOntology from "./KGVisForOntology";
   import KGVisForOnto2 from "./KGVisForOnto2";
+  import ontologyApi from "../../../../api/neo4j/ontology";
   import aggregateApi from '@/api/neo4j/aggregate';
   import KGVisibleEcahrts from "./KGVisibleEcahrts";
   import relationApi from "../../../../api/neo4j/relationApi";
@@ -62,6 +99,36 @@ export default {
       visStyle:0,
       objName:null,
       propName:null,
+      //增加对话框是否开启
+      addObjVisible: false,
+      //增加本体的相关信息
+      OntologyForm: {
+        //本体的标签信息
+        types:[],
+        //本体的属性列表，记录要添加的属性
+        attributes:[{
+        }]
+      },
+      //增加、修改本体时用于提交的数据格式
+      submitOntology: {
+        //本体的标签信息
+        types:[],
+        //本体的属性列表，记录要添加的属性
+        attributes:[]
+      },
+      //“增加本体或关系”标签选择
+      addOptions:[{
+        value: '对象本体',
+        label: '对象本体'
+      },
+        {
+        value: '属性本体',
+        label: '属性本体'
+      },
+        {
+          value: '对象关系',
+          label: '对象关系'
+        }],
       LabelOfOntoObj:[
         "水利对象",
         "水库",
@@ -79,10 +146,77 @@ export default {
       this.propName = null;
 
     },
-    //清空查询出来的实体类型
+    //清空查询出来的本体类型
     clear() {
       this.objName = null
       this.propName = null
+    },
+    //增加选定本体
+    addOntology() {
+      this.submitOntology.attributes = []
+      this.submitOntology.types = []
+      this.submitOntology.types.push(this.OntologyForm.types[0]);
+      this.OntologyForm.attributes.forEach((item) => {
+        if(item.value !== "" && item.value !== null){
+          this.submitOntology.attributes.push({
+            name: item.name,
+            value: item.value
+          });
+        }
+      });
+      if(this.OntologyForm.types[0]==="对象关系"){
+        this.submitOntology.types.pop();
+        this.submitOntology.types.push(this.submitOntology.attributes[0].value)
+        this.submitOntology.attributes.splice(0,1)
+        console.log(JSON.stringify(this.submitOntology))
+        relationApi.addRel(JSON.stringify(this.submitOntology))
+          .then(
+            (response) => {
+              //如果起始本体不存在
+              if(response.data.data===-1){
+                this.$message({
+                  type: 'error',
+                  message: '起始本体不存在!'
+                });
+              } else if(response.data.data===-2){
+                this.$message({
+                  type: 'error',
+                  message: '终止本体不存在!'
+                });
+              }else{
+                let mes = 'id为' + response.data.data + '的关系创建成功!'
+                this.$message({
+                  type: 'success',
+                  message: mes
+                });
+              }
+            })
+          .catch(
+            (error) => {
+              console.log(error);
+            }
+          );
+        this.addObjVisible = false
+      }
+      else{
+        console.log(JSON.stringify(this.submitOntology))
+        ontologyApi.addNode(JSON.stringify(this.submitOntology))
+          .then(
+                (response) => {
+                  let mes = 'id为' + response.data.data + '的本体创建成功!'
+                  this.$message({
+                    type: 'success',
+                    message: mes
+                  });
+                })
+          .catch(
+            (error) => {
+                    console.log(error);
+                  }
+          );
+
+        this.addObjVisible = false
+      }
     },
     objChange(value) {
       switch (value) {
@@ -110,6 +244,83 @@ export default {
           this.visStyle = 1
           this.currentOnto = 7
       }
+    },
+    //增加功能 —— 根据标签选择对应本体或关系的属性
+    chooseAddAtts(types){
+
+      //清空属性列表
+      this.OntologyForm.attributes = [];
+
+      if(types[0]==="对象关系"){
+        this.OntologyForm.attributes.push({
+          key: "relationType",
+          name: "关系类型",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "startOntoId",
+          name: "起始本体id",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "endOntoId",
+          name: "终止本体id",
+          value: ""
+        });
+      }
+      else if(types[0]==="对象本体"){
+        this.OntologyForm.attributes.push({
+          key: "objName",
+          name: "对象名称",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "ObjInfo",
+          name: "对象标识信息",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "featureInfo",
+          name: "主要特征信息",
+          value: ""
+        });
+      }
+      else if(types[0]==="属性本体"){
+        this.OntologyForm.attributes.push({
+          key: "attName",
+          name: "属性名称",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "attEngName",
+          name: "属性标识",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "attTypeAndLength",
+          name: "类型及长度",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "hasNull",
+          name: "有无空值",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "unit",
+          name: "计量单位",
+          value: ""
+        });
+        this.OntologyForm.attributes.push({
+          key: "isKey",
+          name: "主键",
+          value: ""
+        });
+      }
+      else{
+        console.log("没有写");
+      }
+
     },
   },
 }

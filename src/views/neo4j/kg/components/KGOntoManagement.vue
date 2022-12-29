@@ -7,7 +7,7 @@
       </div>
       <div>
         <el-button @click="change(0)">对象本体</el-button>
-        <el-button @click="change(1)">属性本体</el-button>
+        <el-button @click="change(2)">属性本体</el-button>
         <div v-show="0===number">
           <el-select v-show="0===number" clearable @clear="clear" @change="objChange" v-model="LabelOfOntoObj.index" placeholder="请选择类型"
                      style="margin-top: 20px">
@@ -35,6 +35,7 @@
     </el-card>
     <el-card class="box-card-2">
       <KGVisForOntology v-show="0===visStyle"></KGVisForOntology>
+      <KGVisForOntologyProp v-show="2===visStyle"></KGVisForOntologyProp>
       <KGVisForOnto2 v-show="1===visStyle" :current-node="currentOnto"></KGVisForOnto2>
     </el-card>
 
@@ -79,6 +80,7 @@
   import KGVisible from './KGVisible'
   import KGVisForOntology from "./KGVisForOntology";
   import KGVisForOnto2 from "./KGVisForOnto2";
+  import KGVisForOntologyProp from "./KGVisForOntologyProp";
   import ontologyApi from "../../../../api/neo4j/ontology";
   import aggregateApi from '@/api/neo4j/aggregate';
   import KGVisibleEcahrts from "./KGVisibleEcahrts";
@@ -89,9 +91,10 @@
   import WaterGateApi from "../../../../api/neo4j/WaterGateApi";
   import RiverApi from "../../../../api/neo4j/RiverApi";
   import WaterShedApi from "../../../../api/neo4j/WaterShedApi";
+  import ontology from "../../../../api/neo4j/ontology";
 export default {
   name: 'KGOntoManagement',
-  components: {KGVisible,KGVisForOntology,KGVisForOnto2},
+  components: {KGVisible,KGVisForOntology,KGVisForOnto2,KGVisForOntologyProp},
   data(){
     return{
       number: 0,
@@ -135,12 +138,16 @@ export default {
         "流域",
         "测站",
         "湖泊",
+        "断面",
+        "河段",
+        "水闸",
+        "河流",
       ],
     }
   },
   methods:{
     change(index) {
-      this.visStyle = 0;
+      this.visStyle = index;
       this.number = index;
       this.objName = null;
       this.propName = null;
@@ -221,24 +228,94 @@ export default {
     objChange(value) {
       switch (value) {
         case '水利对象':
-          this.visStyle = 1
-          this.currentOnto = 7
+          ontology.getOntoIDbyName("水利对象")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
           break;
         case '湖泊':
-          this.visStyle = 1
-          this.currentOnto = 10
+          ontology.getOntoIDbyName("湖泊")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
           break;
         case '水库':
-          this.visStyle = 1
-          this.currentOnto = 20
+          ontology.getOntoIDbyName("水库")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
           break;
         case '流域':
-          this.visStyle = 1
-          this.currentOnto = 8
+          ontology.getOntoIDbyName("流域")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
           break;
         case '测站':
-          this.visStyle = 1
-          this.currentOnto = 17
+          ontology.getOntoIDbyName("测站")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '河流':
+          ontology.getOntoIDbyName("河流")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '河段':
+          ontology.getOntoIDbyName("河段")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '水闸':
+          ontology.getOntoIDbyName("水闸")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '断面':
+          ontology.getOntoIDbyName("断面")
+            .then((response) => {
+              this.visStyle = 1
+              this.currentOnto = response.data.data
+            })
+            .catch((error) => {
+              console.log(error);
+            });
           break;
         default:
           this.visStyle = 1

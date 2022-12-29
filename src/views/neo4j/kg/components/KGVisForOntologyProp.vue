@@ -1,19 +1,14 @@
 <!--
- * @author     ：Wangziyi
- * @date       ：Created in 2022/12/2 17:34
- * @description：基于vis-network实现的图谱可视化
+ * @author     ：QYC
+ * @date       ：Created in 2022/12/9 17:34
+ * @description：本体展示
  * @modified By：
  * @version:     1.0
  -->
 <template>
   <div>
-    <div id="KGNetwork" ref="KGNetwork" class="network"></div>
-    <div class="divHoverNode" id="divHoverNode">
-      <ul>详细信息：</ul>
-      <li v-for="(item,index) in detailOfNode" :key="index"> {{index}}:{{item}}</li>
-    </div>
+    <div id="KGNetwork" ref="KGNetwork"></div>
   </div>
-
 </template>
 
 <script>
@@ -22,24 +17,22 @@ import relationApi from "../../../../api/neo4j/relationApi";
 import EchartsUtils from "../../../../utils/EchartsUtils";
 import VisUtils from "../../../../utils/VisUtils";
 import CommonUtils from "../../../../utils/commonUtils";
-import * as network from "vis";
 
 export default {
-  name: "KGVisibleVisNetwork",
+  name: "KGVisForOntology",
   data() {
     return {
       nodes: null,
       edges: null,
       options: null,
       network: null,
-      currentNodeId:7,
-      detailOfNode: {},
+      currentNodeId:64,
     }
   },
   props: {
     currentNode: {
-      type: Number,
-      default: 7
+      type: Array,
+      default: () => [{}]
     }
   },
   created() {
@@ -68,25 +61,19 @@ export default {
     ]);
   },
   mounted() {
-    this.initKG();
+    this.initKG()
   },
   methods: {
     initKG() {
       let rels = []
       let nodes = []
       let _this = this
-      relationApi.getKGVisiblesDataOfOnto(this.currentNodeId).then(({data}) => {
-        rels = data.data.relationShips.relationList
-        nodes = data.data.endNodes.nodeList
-        let startNode = data.data.startNode
-        nodes.push(startNode)
-        console.log("从库中查得得nodes",nodes)
-
+      relationApi.getKGVisiblesDataForOntologyProp().then(({data}) => {
+        nodes = data.data.ontologyProps
         const datas = {
-          nodes:VisUtils.createNodes(nodes,CommonUtils.getNodeByType(startNode)._id),
-          edges:VisUtils.createRelsEdges(rels)
+          nodes:VisUtils.createNodesForOntologyProp(nodes),
         }
-
+        // console.log("此时的Node",datas)
         const container = this.$refs.KGNetwork;
         _this.options = {
           autoResize: true, // 默认true,自动调整容器的大小
@@ -112,7 +99,7 @@ export default {
           },
           // 配置模块
           configure: {
-            enabled: true, // false时不会在界面上出现各种配置项
+            enabled: false, // false时不会在界面上出现各种配置项
           },
           // 节点模块
           nodes: {
@@ -154,7 +141,7 @@ export default {
           edges: {
             // label: '哈哈哈',
             width: 2,
-            length: 200,
+            length: 200,  //QYC changed it from 260 to 160 in 2022/12/10
             // physics: false,
             font: {
               //字体配置
@@ -200,9 +187,9 @@ export default {
           physics: {
             enabled: true,
             barnesHut: {
-              gravitationalConstant: -5000, //斥力
+              gravitationalConstant: -2500, //斥力
               centralGravity: 0.3,
-              springLength: 400, //弹簧长度
+              springLength: 420, //弹簧长度
               springConstant: 0.04,
               damping: 0.09,
               avoidOverlap: 0
@@ -219,57 +206,22 @@ export default {
           // 布局
           layout: {
             randomSeed: 2000,
-            // hierarchical: {
-            //   enabled: true,
-            //   levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字
-            //   nodeSpacing: 100,     // 节点之间的距离
-            //   treeSpacing: 100,     // 树之间的距离
-            //   sortMethod: 'directed',
-            // },
+            improvedLayout: true,
           },
         }
         _this.network = new Vis.Network(container, datas, _this.options);
-        this.network.on("hoverNode", (e) => {
-          // 通过nodes：[],来判断是节点还是线
-          // 如果nodes是空则是线，反之则是节点
-          // this.$message({
-          //   message: '这是一个本体结点！！!',
-          //   type: 'success'
-          // });
-          console.log("接收的参数",e)
-          let details = document.getElementById("divHoverNode");
-          let x = e.event.offsetX + 15;
-          let y = e.event.offsetY + 15;
-          relationApi.getNodeDetails(e.node).then(({data}) =>{
-            this.detailOfNode = data.data
-            }
-          );
-          this.setPosition(x,y);
-        });
-        this.network.on("blurNode", (e) => {
-          let details = document.getElementById("divHoverNode");
-          details.style = `display:none;`;
-        });
 
-      });
-
-
-
-
+      })
       // setTimeout(() => {
       //   this.nodes.update({id: 9, label: '更新后的9'})
       // },10000)
-    },
-    setPosition(x,y){
-      let details = document.getElementById("divHoverNode");
-      details.style = `left: ${x}px; top: ${y}px;display:block;`;
     }
   },
   watch:{
     currentNode: {
       handler(newValue, oldValue) {
-        console.log("currentId",newValue)
-        this.currentNodeId = newValue
+        console.log("currentId",newValue[0]._id)
+        this.currentNodeId = newValue[0]._id
         this.initKG()
       },
       // 因为option是个对象，而我们对于echarts的配置项，要更改的数据往往不在一级属性里面
@@ -285,20 +237,6 @@ export default {
   width: 1450px;
   height: 760px;
 }
-  .divHoverNode{
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    width: 250px;
-    height: 260px;
-    border: 5px;
-    border-radius: 10px;
-    box-sizing: border-box;
-    z-index: 10;
-    display: none;
-    background: #cee2ff;
-    border-style: groove;
-  }
 </style>
 
 

@@ -113,7 +113,7 @@ export default {
   },
   getNodeDetails(id){
     return request({
-      url: `/kg/onto/relation/getNodeDetail/`+id,
+      url: `/kg/onto/getNodeDetail/`+id,
       method: 'get',
     })
   },
@@ -144,7 +144,6 @@ export default {
   },
   /**
    * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
-   * @param id
    * @returns {*}
    */
   getKGVisiblesDataForOntology(){
@@ -154,15 +153,13 @@ export default {
     })
   },
   /**
-   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
-   * @param id
+   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据-属性
    * @returns {*}
    */
-  getVisiblesDataForOntologySep(id){
+  getKGVisiblesDataForOntologyProp(){
     return request({
-      url: `/kg/onto/showOntologySep`+id,
+      url: `/kg/onto/showOntologyProp`,
       method: 'get',
     })
   },
-
 }

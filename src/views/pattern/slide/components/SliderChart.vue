@@ -9,7 +9,9 @@
         active-text="自动滑动"
         inactive-text="手动选择">
       </el-switch>
-      <el-input v-model="sliderLength" placeholder="输入匹配步长"></el-input>
+      <el-input type="text"  v-model="sliderLength" oninput="value=value.replace(/\D|^0/g, '')">
+        <template slot="append">小时</template>
+      </el-input>
       <el-button type="success" round mini @click="startMatch">开始匹配</el-button>
     </div>
     <div id="sliderChart"></div>
@@ -22,6 +24,7 @@ import {postRequestJson} from "../../../../api/pattern/api";
 import {str2listForRain} from "../../../../api/pattern/dataUtils";
 import {mapActions, mapMutations} from "vuex";
 import {Message} from "element-ui";
+import {matchStepLength} from "../../../../utils/validate"
 
 export default {
   name: "SliderChart",
@@ -50,7 +53,8 @@ export default {
   },
   methods:{
     ...mapMutations(['changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood',
-    'addGridValues','addOriginalGridValues','clearGrid']),
+    'addGridValues','addOriginalGridValues','clearGrid','addMatchedIDValues','changeOriginStart','changeOriginEnd','changeMatchEnd','changeMatchStart','changeAllDataLoading',
+    'setMatchLength']),
     // ...mapActions(['gridValueAsync','originalGridValueAsync']),
     initChart(){
       let _this = this
@@ -97,8 +101,7 @@ export default {
             colorAlpha: 0.4,
           },
           throttleType:'debounce',
-          throttleDelay:300
-
+          throttleDelay:500
         },
         series:[
           {
@@ -174,6 +177,16 @@ export default {
         }]
       })
     },
+    initBrush(){
+      this.chart.dispatchAction({
+        type:'brush',
+        areas:[{
+          brushType:'lineX',
+          coordRange:[0,Number(this.sliderLength)],
+          xAxisIndex: 0
+        }]
+      })
+    },
     startMatch(){
       if(this.manual==true){
         //清除当前vuex中缓存的匹配数据,因为存放的时候是采用数组push的方式。
@@ -185,6 +198,8 @@ export default {
         // console.log(this.sliderLength)
         this.sliderLength = Number(this.sliderLength)
         this.rightSide = Number(this.sliderLength)
+        //把长度保存到vuex
+        this.setMatchLength(Number(this.sliderLength))
         this.flashChart()
         //监听滑块的变化
         this.chart.on('brushSelected',function (params){//给出的是数据下标
@@ -196,7 +211,7 @@ export default {
             return
           }
           if (_this.rightSide + _this.sliderLength > _this.currentChartParam.flow.length){//判断滑块是否到最后
-            // console.log(_this.rightSide,_this.sliderLength,_this.currentChartParam.flow.length)
+            console.log(_this.rightSide,_this.sliderLength,_this.currentChartParam.flow.length)
             _this.endFlag = 1
             _this.rightSide = _this.currentChartParam.flow.length-1
           }
@@ -223,6 +238,7 @@ export default {
               _this.changeOriginFlood(str2listForRain(originFlood));
               _this.addGridValues(str2listForRain(matchSelect));
               _this.addOriginalGridValues(str2listForRain(originSelect));
+              _this.addMatchedIDValues(data.idResult)
 
               //重新设置rightside
               if (_this.endFlag==0){
@@ -237,6 +253,19 @@ export default {
         })
       }
 
+    },
+    stopScroll(evt) {
+      evt = evt || window.event;
+      if (evt.preventDefault) {
+        // Firefox
+        evt.preventDefault();
+        evt.stopPropagation();
+      } else {
+        // IE
+        evt.cancelBubble = true;
+        evt.returnValue = false;
+      }
+      return false;
     }
   },
   mounted() {
@@ -244,16 +273,76 @@ export default {
 
   },
   watch:{
-    // sliderLength(newValue,oldvalue){
-    //   this.chart.dispatchAction({
-    //     type:'brush',
-    //     areas:[{
-    //       brushType:'lineX',
-    //       coordRange:[0,newValue],
-    //       xAxisIndex: 0
-    //     }]
-    //   })
-    // }
+    manual(newValue,oldValue){
+      // console.log(newValue)
+      //false，也就是手动滑动，这个时候应该是自己选取多少匹配多少。滑倒哪里匹配哪里
+      if (newValue==false){
+        let _this = this
+        this.initBrush()
+        this.chart.on('brushselected',function (params) {
+          console.log(params)
+          let startValue = params.batch[0].selected[1].dataIndex[0]
+          let l = params.batch[0].selected[1].dataIndex.length
+          let endValue = params.batch[0].selected[1].dataIndex[l-1];
+          console.log(startValue,endValue)
+          if (startValue == endValue){
+            //说明是返回的情况
+            // loading.value = false
+            return
+          }
+          _this.changeAllDataLoading(true)
+
+
+          console.log(startValue,endValue)
+          // console.log("现在选取的：",_this.currentChartParam.flow.slice(startValue,endValue))
+
+
+          let data={}
+          data['id'] = 1
+          data['startValue'] = startValue
+          data['endValue'] = endValue
+          postRequestJson("/brush",JSON.stringify(data))
+            .then((res)=>{
+              console.log(res)
+
+              let data = res.data.data;
+              _this.changeMatchID(data.idResult);
+              let originSelect = data.x1Shapelet;
+              let matchSelect = data.x2Shapelet;
+              let originFlood = data.x1Line;
+              let matchedFlood = data.x2Line;
+
+              _this.changeOriginData(str2listForRain(originSelect));
+              _this.changeMatchedData(str2listForRain(matchSelect));
+              // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
+              _this.changeMatchedFlood(str2listForRain(matchedFlood));
+              _this.changeOriginFlood(str2listForRain(originFlood));
+              //记录匹配到数据的结束和开头
+              let matchEnd = data.endIndex;
+              let matchStart = data.startIndex;
+              console.log("matchEnd",matchEnd,matchStart)
+
+              _this.changeMatchStart(matchStart);
+              _this.changeMatchEnd(matchEnd);
+              _this.changeOriginStart(startValue)
+              _this.changeOriginEnd(endValue)
+
+
+
+              _this.changeAllDataLoading(false)
+
+              // loading.value = false
+            })
+            .catch((err)=>{
+              _this.changeAllDataLoading(false)
+            })
+
+        })
+      }
+      else{
+        this.chart.off('brushselected');
+      }
+    },
 
   }
 }
@@ -267,10 +356,16 @@ export default {
 .slider-control{
   display: flex;
   flex-direction: row;
+  justify-content: right;
+  align-items: center;
 
 }
 .slider-control > .el-input{
-  width: 10%;
+  width: 17%;
+  padding-left: 10px;
+  margin-right: 10px;
+  overflow: hidden;
 }
+
 
 </style>

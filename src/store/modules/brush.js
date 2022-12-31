@@ -17,8 +17,12 @@ const brush = {
     originEnd:0,
     matchEnd:0,
     matchStart:0,
+    //用来绘制滑动窗口的数据
     girdValues:[],
-    originalGridValues:[]
+    originalGridValues:[],
+    matchedIDValues:[],
+    //匹配窗口的大小
+    matchLength:30
   },
   mutations: {
     changeCurrentID:(state,id)=>{
@@ -60,10 +64,17 @@ const brush = {
     addOriginalGridValues:(state,data)=>{
       state.originalGridValues.push(data)
     },
+    addMatchedIDValues:(state,data)=>{
+      state.matchedIDValues.push(data)
+    },
     clearGrid:(state)=>{
       state.originalGridValues = []
       state.girdValues = []
-}
+      state.matchedIDValues = []
+    },
+    setMatchLength:(state,data)=>{
+      state.matchLength = data
+    }
   },
   actions: {
     gridValueAsync(context,value){

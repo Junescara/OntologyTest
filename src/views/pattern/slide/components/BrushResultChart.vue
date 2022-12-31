@@ -27,7 +27,8 @@ export default {
       loading:false,
       originData:[],
       matchedData:[],
-      dataLength:0
+      dataLength:0,
+      matchIdValues:[]//记录匹配到的id数组
 
     }
   },
@@ -40,6 +41,12 @@ export default {
         legend: {
           data: ['源数据', '匹配数据'],
           left: 10
+        },
+        grid:{
+
+        },
+        tooltip:{
+
         },
 
         xAxis:{
@@ -84,34 +91,35 @@ export default {
   },
   mounted() {
     this.initChart()
-
   },
   watch:{
     '$store.state.brush.girdValues'(newValue,oldValue){
+      let _this = this;
       let size = newValue.length;
       let originData = this.$store.state.brush.originalGridValues
       let matchData = this.$store.state.brush.girdValues
+      this.matchIdValues = this.$store.state.brush.matchedIDValues
+      this.sliderLength = this.$store.state.brush.matchLength
       // console.log(originData,matchData,"okoko")
       let rowNumber = 3;
       let grids =[]
       let xAxis = []
       let yAxis = []
       let series = []
+      let titles =[]
       for (let i = 0; i < size; i++) {
         grids.push({
-          show: true,
+          show: false,
           borderWidth: 0,
           shadowColor: 'rgba(0, 0, 0, 0.3)',
           shadowBlur: 2,
-          tooltip:{
-            show:true,
-          }
+
         })
         xAxis.push({
           type: 'category',
           show: true,
           gridIndex: i,
-          data:new Array(30).fill(1).map((v, i) => ++i)
+          data:new Array(_this.sliderLength).fill(1).map((v, i) => ++i),
         });
         yAxis.push({
           type: 'value',
@@ -135,21 +143,47 @@ export default {
             type:'dashed'
           },
         });
+        titles.push({
+          textAlign: 'center',
+          text: "选中场次ID: "+this.$store.state.brush.currentID+" 匹配场次ID: "+this.matchIdValues[i],
+          textStyle: {
+            fontSize: 12,
+            fontWeight: 'normal'
+          }
+        })
       }
       grids.forEach(function (grid, idx) {
-        grid.left = ((idx % rowNumber) / rowNumber) * 100 + 1 + '%';
-        grid.top = (Math.floor(idx / rowNumber) / rowNumber) * 100 + 1 + '%';
+        grid.left = ((idx % rowNumber) / rowNumber) * 100 + 5 + '%';
+        grid.top = (Math.floor(idx / rowNumber) / rowNumber) * 100 +5 + '%';
         grid.width = (1 / rowNumber) * 100 - 5 + '%';
-        grid.height = (1 / rowNumber) * 100 - 5 + '%';
+        grid.height = (1 / rowNumber) * 100 - 15 + '%';
+        grid.show = false
+        titles[idx].left = parseFloat(grid.left) + parseFloat(grid.width) / 2 + '%';
+        titles[idx].top = parseFloat(grid.top) - 5 +  '%';
       });
-      // console.log("this is series",this.options)
+
       this.options.series = series
       this.options.xAxis = xAxis;
       this.options.yAxis = yAxis;
       this.options.grid = grids;
+      this.options.title = titles;
+      this.options.tooltip = {
+        show:true,
+        trigger:'axis',
+        formatter:function (params){
+
+          let seriesID = params[0].seriesIndex / 2;//获得当前是第几个图表
+          // console.log(params)
+          let html = "";
+          html+="匹配ID:&nbsp"+_this.matchIdValues[seriesID]+'</br>';
+          for (let i = 0; i < params.length; i++) {
+            html+=params[i].marker+params[i].seriesName+':'+params[i].value+'&nbsp';
+          }
+          return html;
+        }
+      }
+      // console.log("this is series",this.chart.getOption())
       this.chart.setOption(this.options)
-
-
     }
 
   }

@@ -41,6 +41,7 @@
         <div slot="header" class="clearfix">
           <span>知识库管理</span>
           <el-button @click="addObjVisible = true" style="float: right; padding-top: 1px" type="text">增加</el-button>
+
         </div>
         <div>
           <el-button @click="change(0)">实体</el-button>
@@ -856,19 +857,24 @@ export default {
         }
       });
       if(this.InstanceForm.types[0]==="关系"){
+        console.log(JSON.stringify(this.submitInstance))
         relationApi.addRel(JSON.stringify(this.submitInstance))
         .then(
           (response) => {
-            //如果起始实体不存在
-            if(response.data.data==-1){
+            if(response.data.data===-1){
               this.$message({
                 type: 'error',
                 message: '起始实体不存在!'
               });
-            } else if(response.data.data==-2){
+            } else if(response.data.data===-2){
               this.$message({
                 type: 'error',
                 message: '终止实体不存在!'
+              });
+            }else if(response.data.data===-3){
+              this.$message({
+                type: 'error',
+                message: '关系类型不合法!'
               });
             }else{
               let mes = 'id为' + response.data.data + '的关系创建成功!'
@@ -889,7 +895,7 @@ export default {
         this.addObjVisible = false
       }
       else if(this.InstanceForm.types[0]==="实体"){
-
+        console.log(JSON.stringify(this.submitInstance))
         aggregateApi.addNode(JSON.stringify(this.submitInstance))
         .then(
           (response) => {

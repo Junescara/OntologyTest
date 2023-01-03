@@ -352,7 +352,7 @@ export default {
           value: ""
         });
         this.OntologyForm.attributes.push({
-          key: "ObjInfo",
+          key: "objInfo",
           name: "对象标识信息",
           value: ""
         });

@@ -253,19 +253,6 @@ export default {
         })
       }
 
-    },
-    stopScroll(evt) {
-      evt = evt || window.event;
-      if (evt.preventDefault) {
-        // Firefox
-        evt.preventDefault();
-        evt.stopPropagation();
-      } else {
-        // IE
-        evt.cancelBubble = true;
-        evt.returnValue = false;
-      }
-      return false;
     }
   },
   mounted() {

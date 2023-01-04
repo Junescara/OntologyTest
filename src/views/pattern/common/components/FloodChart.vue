@@ -1,18 +1,36 @@
 <template>
   <div class="rain-flood-main">
+    <div class="slider-control">
+      <el-switch
+        style="display: block"
+        v-model="manual"
+        active-color="#13ce66"
+        inactive-color="#ff4949"
+        active-text="自动滑动"
+        inactive-text="手动选择"
+      >
+      </el-switch>
+      <el-input type="text"  v-model="sliderLength" oninput="value=value.replace(/\D|^0/g, '')">
+        <template slot="append">小时</template>
+      </el-input>
+      <el-button type="success" round mini @click="startMatch">开始匹配</el-button>
+      <el-button type="danger" round mini @click="clearSelect">清除框选</el-button>
+    </div>
     <div class="rain-flood-chart" ref="rainFlood" id="rainChart"> </div>
   </div>
 </template>
 
 <script>
 import {mapState,mapMutations} from 'vuex'
-import {postRequest} from "../../../../api/pattern/api";
+import {postRequest, postRequestJson} from "../../../../api/pattern/api";
 import {str2listForRain, str2listForTimeStamp} from "../../../../api/pattern/dataUtils";
+import {Message} from "element-ui";
 export default {
   name: "FloodChart",
   data(){
     return{
       chart:null,
+      option:null,
       data:null,
       currentFloodID:this.floodId,
       currentChartParam :{
@@ -26,10 +44,17 @@ export default {
           11.7538, 13.4416, 13.5592, 14.8434, 13.7507, 16.6416, 14.7373, 11.8232, 8.8359, 10.973, 8.8159, 7.4944, 8.7974, 14.5718, 19.4237, 16.0455, 16.8294, 29.2216, 26.465, 21.1603, 19.1063, 13.9551, 8.3066, 5.4786, 11.4713, 31.7906, 26.0618, 18.5178, 16.1366, 14.7613, 20.2183, 19.1402, 18.5676, 18.8343, 18.5211, 16.8601, 23.6545, 21.9925, 15.4206, 12.6777, 16.9084, 12.0465, 19.3491, 18.4239, 11.3733, 6.4314, 3.2606, 2.7237, 0.8051, 5.6171, 7.849, 7.6681, 9.1071, 7.8192, 6.3474, 4.5753, 9.8178, 13.9542, 7.5524, 4.853, 6.2662, 10.5524, 6.8096, 5.2608, 6.4786, 4.5084, 4.3577, 8.5521, 11.7031, 19.3441, 21.4582, 19.8855, 12.7716, 8.2571, 5.1557, 4.4047, 5.8862, 7.7395, 11.2415, 8.1024, 5.4054, 4.8416, 5.0392, 5.45, 5.4774, 5.8948, 7.3427, 6.5695, 9.5376, 14.4096, 11.4382, 10.7148, 13.4251, 11.8031, 13.9429, 18.2878, 9.7821, 5.6693, 6.2615, 10.2089, 10.408, 6.1354, 9.2423, 8.2122, 8.781, 9.6242, 9.3052, 7.961, 7.5152, 6.6953, 5.231, 3.8402, 2.3767, 1.7936, 2.3192, 2.8756, 2.6369, 2.4585, 2.1958, 2.2909, 0.0542, 1.9956, 2.4406, 2.3791, 3.1413, 2.3434, 2.7274, 2.0718, 1.7751, 1.3768, 1.1375, 1.2239, 1.134, 0.7929, 1.1228, 0.6176, 0.8584, 0.7829, 0.8233, 2.5277, 0.7679, 0.9122, 0.6087, 1.0735, 0.0, 1.865, 1.669, 1.4415, 2.7967, 1.5385, 3.2864, 2.5786, 2.3965, 1.4207, 0.5991, 1.6087, 0.1875, 0.3336, 0.2632, 0.001, 0.2301, 0.0045, 0.0117, 0.0826, 0.135, 0.0754, 0.0, 0.0364, 0.0, 0.6535, 1.3098, 2.0641, 1.8003, 0.4803, 0.0047, 0.126, 0.0652, 0.2118, 0.004, 0.0817, 0.0019, 0.0, 0.0859, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.2629, 1.5613, 0.1383, 0.3716, 0.0, 0.0601, 0.0, 0.0516, 0.0, 0.078, 0.2598, 0.0491, 0.1716, 0.0, 0.0613, 0.0728, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0486, 2.7376, 2.9073, 1.7589, 1.9258, 1.7477, 1.3024, 0.0073, 0.0, 0.1749, 0.0613, 0.061, 0.0491, 0.0, 0.0, 0.0613, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.873, 1.9352, 0.8831, 0.7268, 0.7272, 0.6767, 0.6761, 0.3458, 0.0564, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.276, 0.4876, 2.2984, 3.342, 3.0214, 3.0328, 3.5998, 4.3341, 4.5244, 4.0077, 3.4111, 2.2111, 1.1747, 1.4784, 0.6051, 0.7085, 1.2258, 0.9986, 0.2646, 0.0, 0.5096, 0.0584, 0.0, 0.1, 0.0878, 0.0, 0.0319
         ]
       },
-
+      manual:true,
+      rightSide:30,
+      sliderLength:30,
+      endFlag:0,
     }
   },
   methods:{
+    ...mapState(['selectedFlood']),
+    ...mapMutations(['selectedFloodChanged','changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood',
+      'addGridValues','addOriginalGridValues','clearGrid','addMatchedIDValues','changeOriginStart','changeOriginEnd','changeMatchEnd','changeMatchStart','changeAllDataLoading',
+      'setMatchLength']),
     initChart(){
       let el = document.getElementById("rainChart")
       let myChart = this.$echarts.init(el);
@@ -48,6 +73,17 @@ export default {
               backgroundColor:"#abc"
             }
           },
+        },
+        toolbox:{
+          show:false
+        },
+        brush:{
+          xAxisIndex:0,
+          outOfBrush: {
+            colorAlpha: 0.4,
+          },
+          throttleType:'debounce',
+          throttleDelay:500
         },
         xAxis:{
           type:'category',
@@ -100,6 +136,7 @@ export default {
           }
         ]
       }
+      this.option = options;
       myChart.setOption(options);
       //添加窗口收缩的监听，重新绘制大小。
       window.addEventListener('resize',()=>{
@@ -111,8 +148,166 @@ export default {
       })
       observer.observe(el)
     },
-    ...mapState(['selectedFlood']),
-    ...mapMutations(['selectedFloodChanged'])
+    startMatch(){
+      if(this.manual==true){
+        //清除当前vuex中缓存的匹配数据,因为存放的时候是采用数组push的方式。
+        this.clearGrid()
+
+        let _this = this
+        //取消监听
+        this.chart.off('brushselected');
+        //自动滑动
+        //更新到最初的位置
+        // console.log(this.sliderLength)
+        this.sliderLength = Number(this.sliderLength)
+        this.rightSide = Number(this.sliderLength)
+        //把长度保存到vuex
+        this.setMatchLength(Number(this.sliderLength))
+        this.flashChart()
+        //监听滑块的变化
+        this.chart.on('brushSelected',function (params){//给出的是数据下标
+          let r = params
+          console.log("我是滑块，我华东了",r)
+          if(_this.endFlag==1){//停止滑动了
+            _this.endFlag = 0//首先要把flag置0，为了下次可以用
+            _this.chart.off('brushSelected')//第二要把监听取消掉，否则第二次匹配的时候，存在两个监听，存在错误。
+            return
+          }
+          if (_this.rightSide + _this.sliderLength > _this.currentChartParam.flow.length){//判断滑块是否到最后
+            console.log(_this.rightSide,_this.sliderLength,_this.currentChartParam.flow.length)
+            _this.endFlag = 1
+            _this.rightSide = _this.currentChartParam.flow.length-1
+          }
+          let startValue = _this.rightSide - _this.sliderLength;
+          let endValue = _this.rightSide;
+          let data={}
+          data['id'] = _this.$store.state.pattern.selectedFlood;
+          data['startValue'] = startValue
+          data['endValue'] = endValue
+          postRequestJson("/brush",JSON.stringify(data))
+            .then((res)=>{
+              console.log(res)
+              let data = res.data.data;
+              _this.changeMatchID(data.idResult);
+              let originSelect = data.x1Shapelet;
+              let matchSelect = data.x2Shapelet;
+              let originFlood = data.x1Line;
+              let matchedFlood = data.x2Line;
+
+              _this.changeOriginData(str2listForRain(originSelect));
+              _this.changeMatchedData(str2listForRain(matchSelect));
+              // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
+              _this.changeMatchedFlood(str2listForRain(matchedFlood));
+              _this.changeOriginFlood(str2listForRain(originFlood));
+              _this.addGridValues(str2listForRain(matchSelect));
+              _this.addOriginalGridValues(str2listForRain(originSelect));
+              _this.addMatchedIDValues(data.idResult)
+
+              //重新设置rightside
+              if (_this.endFlag==0){
+                _this.rightSide = _this.sliderLength + _this.rightSide
+              }
+              //刷新窗口
+              _this.flashChart()
+            })
+            .catch((err)=>{
+              Message("SliderChart错误:",err)
+            })
+        })
+      }else{
+        let _this = this
+        this.initBrush()
+        this.chart.on('brushselected',function (params) {
+          console.log(params)
+          let startValue = params.batch[0].selected[1].dataIndex[0]
+          let l = params.batch[0].selected[1].dataIndex.length
+          let endValue = params.batch[0].selected[1].dataIndex[l-1];
+          console.log(startValue,endValue)
+          if (startValue == endValue){
+            //说明是返回的情况
+            // loading.value = false
+            return
+          }
+          _this.changeAllDataLoading(true)
+
+
+          console.log(startValue,endValue)
+          // console.log("现在选取的：",_this.currentChartParam.flow.slice(startValue,endValue))
+
+
+          let data={}
+          data['id'] = _this.$store.state.pattern.selectedFlood;
+          data['startValue'] = startValue
+          data['endValue'] = endValue
+          postRequestJson("/brush",JSON.stringify(data))
+            .then((res)=>{
+              console.log(res)
+              let data = res.data.data;
+              _this.changeMatchID(data.idResult);
+              let originSelect = data.x1Shapelet;
+              let matchSelect = data.x2Shapelet;
+              let originFlood = data.x1Line;
+              let matchedFlood = data.x2Line;
+
+              _this.changeOriginData(str2listForRain(originSelect));
+              _this.changeMatchedData(str2listForRain(matchSelect));
+              // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
+              _this.changeMatchedFlood(str2listForRain(matchedFlood));
+              _this.changeOriginFlood(str2listForRain(originFlood));
+              //记录匹配到数据的结束和开头
+              let matchEnd = data.endIndex;
+              let matchStart = data.startIndex;
+              console.log("matchEnd",matchEnd,matchStart)
+
+              _this.changeMatchStart(matchStart);
+              _this.changeMatchEnd(matchEnd);
+              _this.changeOriginStart(startValue)
+              _this.changeOriginEnd(endValue)
+
+
+
+              _this.changeAllDataLoading(false)
+
+              // loading.value = false
+            })
+            .catch((err)=>{
+              _this.changeAllDataLoading(false)
+            })
+
+        })
+      }
+    },
+    initBrush(){
+      this.chart.dispatchAction({
+        type:'brush',
+        areas:[{
+          brushType:'lineX',
+          coordRange:[0,Number(this.sliderLength)],
+          xAxisIndex: 0
+        }]
+      })
+    },
+    flashChart(){
+      // console.log(this.rightSide,this.sliderLength)
+      let left = Number(this.rightSide - this.sliderLength);
+      let right = Number(this.rightSide);
+      // console.log("flashChart",left,right)
+      let _this = this
+      this.chart.dispatchAction({
+        type:'brush',
+        areas:[{
+          brushType:'lineX',
+          coordRange:[left,right],
+          xAxisIndex: 0
+        }]
+      })
+    },
+    clearSelect(){
+      this.chart.dispatchAction({
+        type: 'brush',
+        areas:[]
+      })
+    }
 
   },
   mounted() {
@@ -141,7 +336,7 @@ export default {
     },
     isCollapse(val){
       console.log("侧边栏有变化",val)
-    }
+    },
   }
 }
 </script>
@@ -154,6 +349,20 @@ export default {
 .rain-flood-main{
   width: 100%;
   height: 100%;
+}
+
+.slider-control{
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  align-items: center;
+
+}
+.slider-control > .el-input{
+  width: 17%;
+  padding-left: 10px;
+  margin-right: 10px;
+  overflow: hidden;
 }
 
 </style>

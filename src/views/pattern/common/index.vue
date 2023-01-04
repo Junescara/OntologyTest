@@ -19,6 +19,14 @@
 <!--          <pre-flood-chart/>-->
           <ResultPreChart/>
         </el-tab-pane>
+        <el-tab-pane label="滑动匹配" style="height: 100%">
+          <!--          <pre-flood-chart/>-->
+          <BrushResultChart/>
+        </el-tab-pane>
+        <el-tab-pane label="拖选匹配" style="height: 100%">
+          <!--          <pre-flood-chart/>-->
+          <BrushAllResultChart/>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -33,9 +41,11 @@ import FloodChart from "./components/FloodChart";
 import FloodTable from "./components/FloodTable";
 import ResultSimChart from "./components/ResultSimChart";
 import ResultPreChart from "./components/ResultPreChart";
+import BrushResultChart from "../slide/components/BrushResultChart";
+import BrushAllResultChart from "../slide/components/BrushAllResultChart";
 export default {
   name: "index",
-  components: {ResultPreChart, ResultSimChart, FloodTable, FloodChart},
+  components: {BrushAllResultChart, BrushResultChart, ResultPreChart, ResultSimChart, FloodTable, FloodChart},
   // components: {PreFloodChart, ResultChart, FloodTable, RainAndflood},
   data(){
     return {

@@ -4,6 +4,7 @@
       :data="tableData"
       style="width: 100%"
       @row-dblclick="dbClick2ChangeTableData"
+      highlight-current-row
     >
       <el-table-column prop="floodId" label="洪水场次" width="80"></el-table-column>
       <el-table-column prop="floodStartTime" label="起涨时间" width="110" :formatter="tableTimeFormatter"></el-table-column>

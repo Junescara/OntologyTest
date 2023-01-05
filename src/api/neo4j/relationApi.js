@@ -102,13 +102,24 @@ export default {
     })
   },
   /**
-   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * 查询生成出边可视化知识图谱所需的内容，一次性返回所有需要的数据
    * @param id
    * @returns {*}
    */
   getKGVisiblesOutData(id){
     return request({
       url: `/kg/instance/relation/getVisibleChartsByNodeId/`+id,
+      method: 'get',
+    })
+  },
+  /**
+   * 查询生成入边可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * @param id
+   * @returns {*}
+   */
+  getKGVisiblesInData(id){
+    return request({
+      url: `/kg/instance/relation/getVisibleChartsInByNodeId/`+id,
       method: 'get',
     })
   },
@@ -129,5 +140,6 @@ export default {
       method: 'get',
       params:params
     }))
-  }
+  },
+
 }

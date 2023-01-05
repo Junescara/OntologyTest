@@ -48,7 +48,7 @@
           <!--以下为实体的下拉菜单-->
           <div v-show="0===number">
             <el-select v-show="0===number" clearable @clear="clear" @change="chooseEntity" v-model="nodeLabels.index" placeholder="请选择实体类型"
-                       style="margin-top: 20px">
+                       style= "margin-top: 20px">
               <el-option
                 v-for="(item,index) in nodeLabels"
                 :key=index

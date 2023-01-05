@@ -101,7 +101,7 @@ export default {
     })
   },
   /**
-   * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * 查询生成出边可视化知识图谱所需的内容，一次性返回所有需要的数据
    * @param id
    * @returns {*}
    */
@@ -111,9 +111,14 @@ export default {
       method: 'get',
     })
   },
-  getNodeDetails(id){
+  /**
+   * 查询生成入边可视化知识图谱所需的内容，一次性返回所有需要的数据
+   * @param id
+   * @returns {*}
+   */
+  getKGVisiblesInData(id){
     return request({
-      url: `/kg/onto/getNodeDetail/`+id,
+      url: `/kg/instance/relation/getVisibleChartsInByNodeId/`+id,
       method: 'get',
     })
   },

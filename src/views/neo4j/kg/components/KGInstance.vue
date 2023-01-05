@@ -118,6 +118,9 @@
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
           <span>知识图谱</span>
+          <el-tag>
+            {{currentVisibleType}}
+          </el-tag>
           <el-button style="float: right; padding: 3px 0" type="text" @click="visibles.settingsVisible = true">显示设置</el-button>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
@@ -341,7 +344,7 @@ export default {
         relLazyCountFlag:0,
         relLoadingFlag:false,
         loadingFlag:false,
-        visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链
+        visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
         lengthFlag:2,
       },
       //查询关键字
@@ -359,7 +362,7 @@ export default {
         },
         {
           value: 1,
-          label: '显示入边(开发中)',
+          label: '显示入边',
         },
         {
           value: 2,
@@ -1128,6 +1131,19 @@ export default {
       this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag
       this.visibleSettings.length = this.flags.lengthFlag
       this.visibles.settingsVisible = false
+    },
+    getCurrentVisibleType(){
+      if (this.flags.visibleTypeFlag == 0){
+        return '显示出边'
+      }else if (this.flags.visibleTypeFlag == 1){
+        return '显示入边'
+      }else if (this.flags.visibleTypeFlag == 2){
+        return '显示该点完整关系'
+      }else if (this.flags.visibleTypeFlag == 3){
+        return '显示该点完整路径'
+      }else if (this.flags.visibleTypeFlag == 4){
+        return '流域概化图'
+      }
     }
   },
   computed:{
@@ -1139,6 +1155,9 @@ export default {
     noMore () {
       return this.flags.relLazyCountFlag >= this.relNames.length
     },
+    currentVisibleType(){
+      return this.getCurrentVisibleType()
+    }
   },
   watch:{
     relNames:{

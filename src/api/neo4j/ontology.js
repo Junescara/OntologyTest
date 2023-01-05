@@ -15,4 +15,16 @@ export default {
       method: 'get'
     })
   },
+  //根据对象本体属性查询结点ID
+  getOntoIDbyName(name) {
+    return request({
+      url: `/kg/onto/getOntoIDbyName/`+name,
+      method: 'get',
+    })
+  },
+
+  //添加本体
+  addNode(addForm) {
+    return request.post(`/kg/onto/addNode`, addForm,{headers:{'Content-Type': 'application/json'}})
+  },
 }

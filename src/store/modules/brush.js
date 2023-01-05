@@ -17,6 +17,8 @@ const brush = {
     originEnd:0,
     matchEnd:0,
     matchStart:0,
+    girdValues:[],
+    originalGridValues:[]
   },
   mutations: {
     changeCurrentID:(state,id)=>{
@@ -52,9 +54,24 @@ const brush = {
     changeMatchStart:(state,data)=>{
       state.matchStart = data
     },
-
+    addGridValues:(state,data)=>{
+      state.girdValues.push(data)
+    },
+    addOriginalGridValues:(state,data)=>{
+      state.originalGridValues.push(data)
+    },
+    clearGrid:(state)=>{
+      state.originalGridValues = []
+      state.girdValues = []
+}
   },
   actions: {
+    gridValueAsync(context,value){
+        context.commit('addGridValues',value)
+    },
+    originalGridValueAsync(context,value){
+      context.commit('addOriginalGridValues',value)
+    }
 
   },
   getters:{

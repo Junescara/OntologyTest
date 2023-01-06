@@ -121,6 +121,17 @@
             {{currentVisibleType}}
           </el-tag>
           <el-button style="float: right; padding: 3px 0" type="text" @click="visibles.settingsVisible = true">显示设置</el-button>
+          <br>
+          <el-divider content-position="left">图例</el-divider>
+          <div>
+            <el-tag size="mini" color="#0ce3ca" effect="dark">河流</el-tag>
+            <el-tag size="mini" color="#094b2d" effect="dark">流域</el-tag>
+            <el-tag size="mini" color="#f3022e" effect="dark">行政区划</el-tag>
+            <el-tag size="mini" color="#af36d7" effect="dark">测站</el-tag>
+            <el-tag size="mini" color="#f1a94b" effect="dark">断面</el-tag>
+            <el-tag size="mini" color="#7e8ead" effect="dark">水库</el-tag>
+            <el-tag size="mini" color="#00ff00" effect="dark">水闸</el-tag>
+          </div>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
@@ -183,8 +194,19 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="关系链长度" v-show="flags.visibleTypeFlag == 3">
+          <el-form-item label="关系链长度：" v-show="flags.visibleTypeFlag == 3">
             <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
+          </el-form-item>
+          <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 4">
+            <el-select clearable v-model="flags.relTypeFlag" placeholder="请选择关系类型" @click="chooseRelType"
+                       style="margin-top: 20px">
+              <el-option
+                v-for="(item,index) in relLabels"
+                :key=index
+                :label=item
+                :value=item
+              />
+            </el-select>
           </el-form-item>
         </el-form>
 
@@ -345,6 +367,7 @@ export default {
         loadingFlag:false,
         visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
         lengthFlag:2,
+        relTypeFlag:'',
       },
       //查询关键字
       key:{
@@ -379,7 +402,8 @@ export default {
       //显示设置
       visibleSettings:{
         length:2, //关系链长度，默认为2
-        visibleTypeFlag:1
+        visibleTypeFlag:1,
+        relType:'',
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -1124,6 +1148,7 @@ export default {
     handleSettings(){
       this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag
       this.visibleSettings.length = this.flags.lengthFlag
+      this.visibleSettings.relType = this.flags.relTypeFlag
       this.visibles.settingsVisible = false
     },
     getCurrentVisibleType(){
@@ -1138,6 +1163,9 @@ export default {
       }else if (this.flags.visibleTypeFlag == 4){
         return '流域概化图'
       }
+    },
+    chooseRelType(){
+      this.visibleSettings.relType = this.flags.relTypeFlag
     }
   },
   computed:{
@@ -1193,7 +1221,7 @@ export default {
 
 .box-card-2 {
   width: 750px;
-  height: 500px;
+  height: 550px;
   margin-top: 20px;
   margin-left: 20px;
 }

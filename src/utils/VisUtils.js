@@ -9,6 +9,7 @@
 import Vis from "vis-network/dist/vis-network.min"
 import CommonUtils from "./commonUtils";
 import th from "element-ui/src/locale/lang/th";
+import {rgba} from "mockjs/src/mock/random/color";
 export default {
 
   /**
@@ -120,14 +121,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.sectionName,
-        level:1
+        level:1,
+        group: 'section'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.sectionName,
-        level:2
+        level:2,
+        group: 'section'
       }
       return nodeItem
     }
@@ -143,14 +146,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:1
+        level:1,
+        group: 'station'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:2
+        level:2,
+        group: 'station'
       }
       return nodeItem
     }
@@ -165,14 +170,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:1
+        level:1,
+        group: 'regionalism'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:2
+        level:2,
+        group: 'regionalism'
       }
       return nodeItem
     }
@@ -188,14 +195,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.reservoirName,
-        level:1
+        level:1,
+        group: 'reservoir'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.reservoirName,
-        level:2
+        level:2,
+        group: 'reservoir'
       }
       return nodeItem
     }
@@ -211,14 +220,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:1
+        level:1,
+        group: 'waterGate'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:2
+        level:2,
+        group: 'waterGate'
       }
       return nodeItem
     }
@@ -233,14 +244,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:1
+        level:1,
+        group: 'waterShed'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:2
+        level:2,
+        group: 'waterShed'
       }
       return nodeItem
     }
@@ -255,14 +268,16 @@ export default {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:1
+        level:1,
+        group: 'river'
       }
       return nodeItem
     }else {
       let nodeItem = {
         id:node._id,
         label:node.name,
-        level:2
+        level:2,
+        group: 'river'
       }
       return nodeItem
     }
@@ -546,9 +561,9 @@ export default {
             }
           },
           font: {
-            align: 'left',
-            color: '#171615',
-            size: 12
+            align: 'center',
+            color: '#000000',
+            size: 20,
             // vadjust: 10, // 标签文本的垂直位置，值越大离节点越远
           },
           labelHighlightBold: false,
@@ -563,6 +578,29 @@ export default {
           title: '实体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
           widthConstraint: { // 节点的最小宽度与最大宽度
             // maximum: 100,
+          }
+        },
+        groups:{
+          waterGate:{
+            color:'#00ff00'
+          },
+          reservoir:{
+            color:'#7e8ead'
+          },
+          section:{
+            color:'#f1a94b'
+          },
+          station:{
+            color:'#af36d7'
+          },
+          regionalism:{
+            color:'#f3022e'
+          },
+          waterShed:{
+            color:'#094b2d'
+          },
+          river:{
+            color:'#0ce3ca'
           }
         },
         // 边模块
@@ -671,10 +709,33 @@ export default {
         configure: {
           enabled: false, // false时不会在界面上出现各种配置项
         },
+        groups:{
+          waterGate:{
+            color:'#00ff00'
+          },
+          reservoir:{
+            color:'#7e8ead'
+          },
+          section:{
+            color:'#f1a94b'
+          },
+          station:{
+            color:'#af36d7'
+          },
+          regionalism:{
+            color:'#f3022e'
+          },
+          waterShed:{
+            color:'#094b2d'
+          },
+          river:{
+            color:'#0ce3ca'
+          }
+        },
         // 节点模块
         nodes: {
           chosen: true, // 对选择节点做出反应
-          shape: "circle",
+          shape: "box",
           color: {
             border: '#2B7CE9',
             background: '#97C2FD',

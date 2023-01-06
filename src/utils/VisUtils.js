@@ -347,6 +347,23 @@ export default {
     return new Vis.DataSet(nodeList)
   },
   /**
+   * 为本体总览创建格式化点数据集
+   * @param nodes
+   * @returns {*[]}
+   */
+  createNodesForOntologyProp(nodes) {
+    let nodeList = []
+    for (let node of nodes) {
+      let nodeItem = {
+        id:node._id,
+        label:node.propName,
+        level:1
+      }
+      nodeList.push(nodeItem)
+    }
+    return new Vis.DataSet(nodeList)
+  },
+  /**
    * 将无类型的node存入dataList
    * @param node
    * @param isStart

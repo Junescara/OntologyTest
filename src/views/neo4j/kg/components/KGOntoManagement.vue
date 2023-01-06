@@ -30,7 +30,23 @@
             <el-button slot="append" icon="el-icon-search"/>
           </el-input>
         </div>
-        <el-empty description="描述文字"/>
+        <el-table style="width: 100%" :data="ontoData" v-infinite-scroll="load" height="550">
+          <el-table-column
+            prop="_id"
+            label="id"
+            width="75">
+          </el-table-column>
+          <el-table-column
+            prop="objName"
+            label="名称"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="objMessage"
+            label="属性"
+            width="200">
+          </el-table-column>
+        </el-table>
       </div>
     </el-card>
     <el-card class="box-card-2">
@@ -143,6 +159,7 @@ export default {
         "水闸",
         "河流",
       ],
+      ontoData:[]
     }
   },
   methods:{
@@ -399,7 +416,19 @@ export default {
       }
 
     },
+    getOntoTableList() {
+      ontologyApi.getOntoTableList().then(({data}) => {
+        this.ontoData = data.data.ontologyTableList
+        console.log("ontoData++++++",this.ontoData)
+      })
+    },
+    load(){
+
+    }
   },
+  mounted() {
+    this.getOntoTableList()
+  }
 }
 </script>
 

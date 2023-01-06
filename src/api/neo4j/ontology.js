@@ -27,4 +27,11 @@ export default {
   addNode(addForm) {
     return request.post(`/kg/onto/addNode`, addForm,{headers:{'Content-Type': 'application/json'}})
   },
+
+  getOntoTableList(){
+    return request({
+      url: `/kg/onto/showOntologyTable`,
+      method: 'get',
+    })
+  }
 }

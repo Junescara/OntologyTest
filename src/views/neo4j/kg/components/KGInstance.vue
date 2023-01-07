@@ -40,7 +40,7 @@
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span>知识库管理</span>
-          <el-button @click="addObjVisible = true" style="float: right; padding-top: 1px" type="text">增加</el-button>
+          <el-button @click="initAddCard" style="float: right; padding-top: 1px" type="text">增加</el-button>
 
         </div>
         <div>
@@ -300,6 +300,7 @@ import WaterShedApi from "../../../../api/neo4j/WaterShedApi";
 import RiverApi from "../../../../api/neo4j/RiverApi";
 import riverApi from "../../../../api/neo4j/RiverApi";
 import waterShedApi from "../../../../api/neo4j/WaterShedApi";
+import ontologyApi from "../../../../api/neo4j/ontology";
 export default {
   name: 'KGInstance',
   components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile},
@@ -331,29 +332,12 @@ export default {
       addOptions:[{
         value: '实体',
         label: '实体',
-        children: [{
-          value: '行政区划',
-          label: '行政区划',
+        children: []
         },
-          {
-            value: '测站',
-            label: '测站',
-          },
-          {
-            value: '断面',
-            label: '断面',
-          }]
-      }, {
+        {
           value: '关系',
           label: '关系',
-          children: [{
-            value: '关联',
-            label: '关联',
-          },
-            {
-              value: '下级行政区划',
-              label: '下级行政区划',
-            }]
+          children: []
         }],
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
@@ -778,6 +762,51 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    //增加功能 —— 初始化增加功能模态框
+    initAddCard(){
+
+      //清空增加选项列表
+      this.addOptions[0].children=[];
+      this.addOptions[1].children=[];
+
+      //根据本体库获取可增加的实例类型列表
+      ontologyApi.getOntoList(0)
+      .then((response) => {
+        const ontoList = response.data.data.ontoList;
+        //将实例类型列表添加入选项列表
+        ontoList.forEach((item) => {
+          let tempChild = {
+            value:item,
+            label:item
+          }
+          this.addOptions[0].children.push(tempChild)
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+        });
+
+    //根据本体库获取可增加的关系类型列表
+      ontologyApi.getOntoRelList(0)
+        .then((response) => {
+          const ontoRelList = response.data.data.ontoRelList;
+          //将关系类型列表添加入选项列表
+          ontoRelList.forEach((item) => {
+            let tempChild = {
+              value:item,
+              label:item
+            }
+            this.addOptions[1].children.push(tempChild)
+          })
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      //打开增加模态框
+      this.addObjVisible = true;
     },
     //增加功能 —— 根据标签选择对应实体或关系的属性
     chooseAddAtts(types){

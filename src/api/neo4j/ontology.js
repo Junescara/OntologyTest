@@ -49,4 +49,11 @@ export default {
     })
   },
 
+  getAttListByObjName(name){
+    return request({
+      url: `/kg/onto/getAttListByObjName?name=`+name,
+      method: 'get',
+    })
+  },
+
 }

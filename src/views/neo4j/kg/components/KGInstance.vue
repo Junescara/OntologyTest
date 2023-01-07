@@ -257,7 +257,7 @@
             :label="domain.name"
             :key="domain.key"
             :prop="domain.key">
-            <el-input v-model="domain.value"></el-input>
+            <el-input v-model="domain.value" ></el-input>
           </el-form-item>
         </el-form>
 
@@ -831,42 +831,36 @@ export default {
           value: ""
         });
       }
-      else if(types[1]==="行政区划"){
-        this.InstanceForm.attributes.push({
-          key: "jurisdiction_num",
-          name: "行政区划编码",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "jurisdiction",
-          name: "行政区划名称（带乡镇）",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "jurisdiction_s",
-          name: "行政区划名名称",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "lgtd",
-          name: "经度",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "lttd",
-          name: "纬度",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "class",
-          name: "类别",
-          value: ""
-        });
-      }
       else{
-        console.log("没有写");
-      }
+        ontologyApi.getAttListByObjName(types[1])
+          .then((response) => {
 
+            //对象标识信息
+            const objInfoList = response.data.data.objInfoList
+            //主要特征信息
+            const featureInfoList = response.data.data.featureInfoList
+
+            objInfoList.forEach((item) => {
+              this.InstanceForm.attributes.push({
+                key: item,
+                name: item,
+                value: ""
+              });
+            })
+
+            featureInfoList.forEach((item) => {
+              this.InstanceForm.attributes.push({
+                key: item,
+                name: item,
+                value: ""
+              });
+            })
+
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      }
     },
     //修改选定实例
     editObiect(){

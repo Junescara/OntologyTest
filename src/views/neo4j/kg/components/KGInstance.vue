@@ -224,7 +224,7 @@
         :visible.sync="editObjVisible"
         width="50%"
         center>
-        <el-form :label-position="labelPosition" :model="formLabelAlign">
+        <el-form :label-position="labelPosition">
           <el-form-item label-width="120px" v-for="(proVals,proNames) in editNodeInfo.editNodeAtts" :label="proNames">
             <el-input size="medium" :placeholder="proVals" v-model="editNodeInfo.editNodeAtts[proNames]"></el-input>
           </el-form-item>
@@ -313,6 +313,7 @@ export default {
   data() {
     return {
       tempAtt:null,
+      labelPosition: 'right',
       //增加实例的相关信息
       InstanceForm: {
         //实例的标签信息
@@ -777,11 +778,13 @@ export default {
         const ontoList = response.data.data.ontoList;
         //将实例类型列表添加入选项列表
         ontoList.forEach((item) => {
-          let tempChild = {
-            value:item,
-            label:item
+          if(item!=="水利对象"){
+            let tempChild = {
+              value:item,
+              label:item
+            }
+            this.addOptions[0].children.push(tempChild)
           }
-          this.addOptions[0].children.push(tempChild)
         })
       })
       .catch((error) => {
@@ -794,11 +797,13 @@ export default {
           const ontoRelList = response.data.data.ontoRelList;
           //将关系类型列表添加入选项列表
           ontoRelList.forEach((item) => {
-            let tempChild = {
-              value:item,
-              label:item
+            if(item!=="子类"){
+              let tempChild = {
+                value:item,
+                label:item
+              }
+              this.addOptions[1].children.push(tempChild)
             }
-            this.addOptions[1].children.push(tempChild)
           })
         })
         .catch((error) => {

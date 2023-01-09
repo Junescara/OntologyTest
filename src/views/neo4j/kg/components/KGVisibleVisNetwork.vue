@@ -7,7 +7,13 @@
  -->
 <template>
   <div>
-    <div id="KGNetwork" ref="KGNetwork"></div>
+    <div v-loading="loading"
+         element-loading-text="拼命加载中"
+         element-loading-spinner="el-icon-loading"
+         element-loading-background="rgba(0, 0, 0, 0.8)">
+      <div id="KGNetwork" ref="KGNetwork" ></div>
+    </div>
+
   </div>
 </template>
 
@@ -29,8 +35,10 @@ export default {
       currentNodeId:3667,
       settings:{
         visibleTypeFlag: 0,
-        length:2
-      }
+        length:2,
+        relType:'',
+      },
+      loading:true,
     }
   },
   props: {
@@ -73,6 +81,7 @@ export default {
   },
   methods: {
     initKG() {
+      this.loading = true
       let rels = []
       let nodes = []
       let _this = this
@@ -85,7 +94,7 @@ export default {
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
-
+          _this.setLoading()
         })
       }else if (this.settings.visibleTypeFlag == 1){
           relationApi.getKGVisiblesInData(this.currentNodeId).then(({data}) => {
@@ -94,6 +103,7 @@ export default {
             const container = this.$refs.KGNetwork;
             _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
             _this.network = new Vis.Network(container, datas, _this.options);
+            _this.setLoading()
           })
       }else if (this.settings.visibleTypeFlag == 2){
         relationApi.getKGVisiblesData([this.currentNodeId]).then(({data}) => {
@@ -105,7 +115,7 @@ export default {
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
-
+          _this.setLoading()
         })
       }else if (this.settings.visibleTypeFlag == 3){
         //可视化整个关系链
@@ -118,13 +128,14 @@ export default {
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
         })
       }else if (this.settings.visibleTypeFlag == 4){
         //显示流域概化图，暂且设定为显示断面的关系
         const params = {
           nodeId:this.currentNodeId,
           length: 15,
-          relType:'上游',
+          relType:this.settings.relType,
           relDir:0
         }
         relationApi.getLinkedRels(params).then(({data}) => {
@@ -132,8 +143,16 @@ export default {
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
         })
       }
+    },
+    setLoading(){
+      const _this = this
+      this.network.once('afterDrawing',() => {
+        console.log("图像加载完成")
+        _this.loading = false
+      })
     }
   },
   watch:{
@@ -151,6 +170,7 @@ export default {
       handler(newValue,oldValue) {
         this.settings.visibleTypeFlag = newValue.visibleTypeFlag
         this.settings.length = newValue.length
+        this.settings.relType = newValue.relType
         console.log("settings=====",this.settings)
         this.initKG()
       },
@@ -163,7 +183,7 @@ export default {
 <style scoped>
 #KGNetwork{
   width: 800px;
-  height: 800px;
+  height: 500px;
 }
 </style>
 

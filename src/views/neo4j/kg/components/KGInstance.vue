@@ -40,7 +40,7 @@
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span>知识库管理</span>
-          <el-button @click="addObjVisible = true" style="float: right; padding-top: 1px" type="text">增加</el-button>
+          <el-button @click="initAddCard" style="float: right; padding-top: 1px" type="text">增加</el-button>
 
         </div>
         <div>
@@ -122,6 +122,17 @@
             {{currentVisibleType}}
           </el-tag>
           <el-button style="float: right; padding: 3px 0" type="text" @click="visibles.settingsVisible = true">显示设置</el-button>
+          <br>
+          <el-divider content-position="left">图例</el-divider>
+          <div>
+            <el-tag size="mini" color="#0ce3ca" effect="dark">河流</el-tag>
+            <el-tag size="mini" color="#094b2d" effect="dark">流域</el-tag>
+            <el-tag size="mini" color="#f3022e" effect="dark">行政区划</el-tag>
+            <el-tag size="mini" color="#af36d7" effect="dark">测站</el-tag>
+            <el-tag size="mini" color="#f1a94b" effect="dark">断面</el-tag>
+            <el-tag size="mini" color="#7e8ead" effect="dark">水库</el-tag>
+            <el-tag size="mini" color="#00ff00" effect="dark">水闸</el-tag>
+          </div>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
@@ -184,8 +195,19 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="关系链长度" v-show="flags.visibleTypeFlag == 3">
+          <el-form-item label="关系链长度：" v-show="flags.visibleTypeFlag == 3">
             <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
+          </el-form-item>
+          <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 4">
+            <el-select clearable v-model="flags.relTypeFlag" placeholder="请选择关系类型" @click="chooseRelType"
+                       style="margin-top: 20px">
+              <el-option
+                v-for="(item,index) in relLabels"
+                :key=index
+                :label=item
+                :value=item
+              />
+            </el-select>
           </el-form-item>
         </el-form>
 
@@ -202,8 +224,8 @@
         :visible.sync="editObjVisible"
         width="50%"
         center>
-        <el-form :label-position="labelPosition" :model="formLabelAlign">
-          <el-form-item label-width="120px" v-for="(proVals,proNames) in editNodeInfo.editNodeAtts" :key="proNames" :label="proNames">
+        <el-form :label-position="labelPosition">
+          <el-form-item label-width="120px" v-for="(proVals,proNames) in editNodeInfo.editNodeAtts" :label="proNames">
             <el-input size="medium" :placeholder="proVals" v-model="editNodeInfo.editNodeAtts[proNames]"></el-input>
           </el-form-item>
         </el-form>
@@ -235,7 +257,7 @@
             :label="domain.name"
             :key="domain.key"
             :prop="domain.key">
-            <el-input v-model="domain.value"></el-input>
+            <el-input v-model="domain.value" ></el-input>
           </el-form-item>
         </el-form>
 
@@ -278,6 +300,7 @@ import WaterShedApi from "../../../../api/neo4j/WaterShedApi";
 import RiverApi from "../../../../api/neo4j/RiverApi";
 import riverApi from "../../../../api/neo4j/RiverApi";
 import waterShedApi from "../../../../api/neo4j/WaterShedApi";
+import ontologyApi from "../../../../api/neo4j/ontology";
 export default {
   name: 'KGInstance',
   components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile},
@@ -290,6 +313,7 @@ export default {
   data() {
     return {
       tempAtt:null,
+      labelPosition: 'right',
       //增加实例的相关信息
       InstanceForm: {
         //实例的标签信息
@@ -309,29 +333,12 @@ export default {
       addOptions:[{
         value: '实体',
         label: '实体',
-        children: [{
-          value: '行政区划',
-          label: '行政区划',
+        children: []
         },
-          {
-            value: '测站',
-            label: '测站',
-          },
-          {
-            value: '断面',
-            label: '断面',
-          }]
-      }, {
+        {
           value: '关系',
           label: '关系',
-          children: [{
-            value: '关联',
-            label: '关联',
-          },
-            {
-              value: '下级行政区划',
-              label: '下级行政区划',
-            }]
+          children: []
         }],
       fits: ['fill', 'contain', 'cover', 'none', 'scale-down'],
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
@@ -346,6 +353,7 @@ export default {
         loadingFlag:false,
         visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
         lengthFlag:2,
+        relTypeFlag:'',
       },
       //查询关键字
       key:{
@@ -380,7 +388,8 @@ export default {
       //显示设置
       visibleSettings:{
         length:2, //关系链长度，默认为2
-        visibleTypeFlag:1
+        visibleTypeFlag:1,
+        relType:'',
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -755,6 +764,55 @@ export default {
           console.log(error);
         });
     },
+
+    //增加功能 —— 初始化增加功能模态框
+    initAddCard(){
+
+      //清空增加选项列表
+      this.addOptions[0].children=[];
+      this.addOptions[1].children=[];
+
+      //根据本体库获取可增加的实例类型列表
+      ontologyApi.getOntoList(0)
+      .then((response) => {
+        const ontoList = response.data.data.ontoList;
+        //将实例类型列表添加入选项列表
+        ontoList.forEach((item) => {
+          if(item!=="水利对象"){
+            let tempChild = {
+              value:item,
+              label:item
+            }
+            this.addOptions[0].children.push(tempChild)
+          }
+        })
+      })
+      .catch((error) => {
+        console.log(error);
+        });
+
+    //根据本体库获取可增加的关系类型列表
+      ontologyApi.getOntoRelList(0)
+        .then((response) => {
+          const ontoRelList = response.data.data.ontoRelList;
+          //将关系类型列表添加入选项列表
+          ontoRelList.forEach((item) => {
+            if(item!=="子类"){
+              let tempChild = {
+                value:item,
+                label:item
+              }
+              this.addOptions[1].children.push(tempChild)
+            }
+          })
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      //打开增加模态框
+      this.addObjVisible = true;
+    },
     //增加功能 —— 根据标签选择对应实体或关系的属性
     chooseAddAtts(types){
 
@@ -773,42 +831,36 @@ export default {
           value: ""
         });
       }
-      else if(types[1]==="行政区划"){
-        this.InstanceForm.attributes.push({
-          key: "jurisdiction_num",
-          name: "行政区划编码",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "jurisdiction",
-          name: "行政区划名称（带乡镇）",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "jurisdiction_s",
-          name: "行政区划名名称",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "lgtd",
-          name: "经度",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "lttd",
-          name: "纬度",
-          value: ""
-        });
-        this.InstanceForm.attributes.push({
-          key: "class",
-          name: "类别",
-          value: ""
-        });
-      }
       else{
-        console.log("没有写");
-      }
+        ontologyApi.getAttListByObjName(types[1])
+          .then((response) => {
 
+            //对象标识信息
+            const objInfoList = response.data.data.objInfoList
+            //主要特征信息
+            const featureInfoList = response.data.data.featureInfoList
+
+            objInfoList.forEach((item) => {
+              this.InstanceForm.attributes.push({
+                key: item,
+                name: item,
+                value: ""
+              });
+            })
+
+            featureInfoList.forEach((item) => {
+              this.InstanceForm.attributes.push({
+                key: item,
+                name: item,
+                value: ""
+              });
+            })
+
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      }
     },
     //修改选定实例
     editObiect(){
@@ -1130,6 +1182,7 @@ export default {
     handleSettings(){
       this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag
       this.visibleSettings.length = this.flags.lengthFlag
+      this.visibleSettings.relType = this.flags.relTypeFlag
       this.visibles.settingsVisible = false
     },
     getCurrentVisibleType(){
@@ -1144,6 +1197,9 @@ export default {
       }else if (this.flags.visibleTypeFlag == 4){
         return '流域概化图'
       }
+    },
+    chooseRelType(){
+      this.visibleSettings.relType = this.flags.relTypeFlag
     }
   },
   computed:{
@@ -1199,7 +1255,7 @@ export default {
 
 .box-card-2 {
   width: 750px;
-  height: 500px;
+  height: 550px;
   margin-top: 20px;
   margin-left: 20px;
 }

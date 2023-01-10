@@ -4,6 +4,7 @@
 
 <script>
 import {mapMutations} from "vuex";
+import {str2listForRain} from "../../../../api/pattern/dataUtils";
 
 export default {
   name: "BrushResultChart",
@@ -87,20 +88,48 @@ export default {
         chart.resize()
       })
       observer.observe(el)
+    },
+    sortData(a,b){
+      return a.sliceNo-b.sliceNo
     }
   },
   mounted() {
     this.initChart()
   },
   watch:{
-    '$store.state.brush.girdValues'(newValue,oldValue){
+    '$store.state.brush.completeFlag'(newValue,oldValue){
+      if(newValue==false){return;}
       let _this = this;
-      let size = newValue.length;
-      let originData = this.$store.state.brush.originalGridValues
-      let matchData = this.$store.state.brush.girdValues
-      this.matchIdValues = this.$store.state.brush.matchedIDValues
-      this.sliderLength = this.$store.state.brush.matchLength
-      // console.log(originData,matchData,"okoko")
+
+      // let originData = this.$store.state.brush.originalGridValues
+      // let matchData = this.$store.state.brush.girdValues
+      //所有的数据
+      let data = this.$store.state.brush.girdValues
+      _this.sliderLength = Number(this.$store.state.brush.matchLength)
+      //data:{"brushResult":brushResult;"sliceNo":sliceNo}
+      //先进行排血
+      data.sort(this.sortData)
+      console.log("排序后的data：",data)
+
+      let size = data.length;
+      // console.log(str2listForRain(data[0]["brushResult"]["x1Shapelet"]),"okoko")
+      let timeStamp = _this.$store.state.brush.currentTimeStamp
+      let times=[]//建立每一个片段的时间数组
+      for (let i = 0; i < size; i++) {
+        let tmp = {}
+        let startIndex = i * _this.sliderLength;
+        let endIndex = (i+1) * _this.sliderLength -1;
+
+        if(endIndex>timeStamp.length){
+          endIndex = timeStamp.length-1;
+          startIndex = endIndex - _this.sliderLength;
+        }
+        tmp['startTime'] = timeStamp[startIndex];
+        tmp['endTime'] = timeStamp[endIndex];
+
+        times.push(tmp);
+      }
+
       let rowNumber = 3;
       let grids =[]
       let xAxis = []
@@ -113,7 +142,6 @@ export default {
           borderWidth: 0,
           shadowColor: 'rgba(0, 0, 0, 0.3)',
           shadowBlur: 2,
-
         })
         xAxis.push({
           type: 'category',
@@ -131,21 +159,21 @@ export default {
           type: 'line',
           xAxisIndex: i,
           yAxisIndex: i,
-          data: originData[i],
+          data: str2listForRain(data[i]["brushResult"]["x1Shapelet"]),
         });
         series.push({
           name:"匹配数据",
           type: 'line',
           xAxisIndex: i,
           yAxisIndex: i,
-          data: matchData[i],
+          data: str2listForRain(data[i]["brushResult"]["x2Shapelet"]),
           lineStyle:{
             type:'dashed'
           },
         });
         titles.push({
           textAlign: 'center',
-          text: "选中场次ID: "+this.$store.state.brush.currentID+" 匹配场次ID: "+this.matchIdValues[i],
+          text: "选中场次ID: "+data[i]["brushResult"]['id']+"("+times[i]['startTime']+"-"+times[i]['endTime']+")"+" 相似场次ID: "+data[i]["brushResult"]['idResult'],
           textStyle: {
             fontSize: 12,
             fontWeight: 'normal'
@@ -175,15 +203,30 @@ export default {
           let seriesID = params[0].seriesIndex / 2;//获得当前是第几个图表
           // console.log(params)
           let html = "";
-          html+="匹配ID:&nbsp"+_this.matchIdValues[seriesID]+'</br>';
+          html+="相似场次ID:&nbsp"+data[seriesID]['brushResult']['idResult']+'</br>';
+          html+="相似场次范围:&nbsp["+data[seriesID]['brushResult']['startIndex']+","+data[seriesID]['brushResult']['endIndex']+"]</br>";
           for (let i = 0; i < params.length; i++) {
             html+=params[i].marker+params[i].seriesName+':'+params[i].value+'&nbsp';
           }
           return html;
         }
       }
-      // console.log("this is series",this.chart.getOption())
+      console.log("this is series",this.options)
       this.chart.setOption(this.options)
+    },
+    '$store.state.brush.girdValues'(newValue,oldValue){
+      if (newValue.length==0){//新点击匹配清除信息
+        this.chart.clear()
+      }
+    },
+    '$store.state.brush.sliderLoading'(newValue,oldValue){
+      //控制匹配时加载圈圈
+      if (newValue==true){
+        this.loading = true
+      }else{
+        this.loading = false
+      }
+
     }
 
   }

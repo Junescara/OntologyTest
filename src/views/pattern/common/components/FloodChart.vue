@@ -10,7 +10,22 @@
         inactive-text="手动选择"
       >
       </el-switch>
-      <el-input type="text"  v-model="sliderLength" oninput="value=value.replace(/\D|^0/g, '')">
+      <el-select
+        v-model="value2"
+        multiple
+        collapse-tags
+        style="margin-left: 20px;"
+        placeholder="特征选择"
+        :disabled="true">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+          <span style="float: left">{{ item.label }}</span>
+        </el-option>
+      </el-select>
+      <el-input :disabled="forbiddenInput" type="text"  v-model="sliderLength" oninput="value=value.replace(/\D|^0/g, '')">
         <template slot="append">小时</template>
       </el-input>
       <el-button type="success" round mini @click="startMatch">开始匹配</el-button>
@@ -48,13 +63,32 @@ export default {
       rightSide:30,
       sliderLength:30,
       endFlag:0,
+      forbiddenInput:false,
+      options: [{
+        value: '1',
+        label: '降雨量序列'
+      }, {
+        value: '2',
+        label: '降雨趋势'
+      }, {
+        value: '3',
+        label: '面降雨总量'
+      }, {
+        value: '4',
+        label: '降雨量级'
+      }, {
+        value: '5',
+        label: '蓄水流量'
+      }],
+      value2: ['2','1',],
+      testInput:1,
     }
   },
   methods:{
     ...mapState(['selectedFlood']),
     ...mapMutations(['selectedFloodChanged','changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood',
       'addGridValues','addOriginalGridValues','clearGrid','addMatchedIDValues','changeOriginStart','changeOriginEnd','changeMatchEnd','changeMatchStart','changeAllDataLoading',
-      'setMatchLength']),
+      'setMatchLength','setCompleteFlag','changeCurrentTimeStamp','setSliderLoading']),
     initChart(){
       let el = document.getElementById("rainChart")
       let myChart = this.$echarts.init(el);
@@ -150,70 +184,46 @@ export default {
     },
     startMatch(){
       if(this.manual==true){
-        //清除当前vuex中缓存的匹配数据,因为存放的时候是采用数组push的方式。
-        this.clearGrid()
+        Message({
+          message:"当前是自动匹配模式",
+          center:true,
+          type:"success"
+        })
+        //切换场次后的数据初始化
+        this.exchangeFloodInit()
+        //把监听取消掉。
+        this.chart.off("brushselected");
 
         let _this = this
-        //取消监听
-        this.chart.off('brushselected');
-        //自动滑动
-        //更新到最初的位置
-        // console.log(this.sliderLength)
-        this.sliderLength = Number(this.sliderLength)
-        this.rightSide = Number(this.sliderLength)
-        //把长度保存到vuex
-        this.setMatchLength(Number(this.sliderLength))
-        this.flashChart()
-        //监听滑块的变化
-        this.chart.on('brushSelected',function (params){//给出的是数据下标
-          let r = params
-          console.log("我是滑块，我华东了",r)
-          if(_this.endFlag==1){//停止滑动了
-            _this.endFlag = 0//首先要把flag置0，为了下次可以用
-            _this.chart.off('brushSelected')//第二要把监听取消掉，否则第二次匹配的时候，存在两个监听，存在错误。
-            return
-          }
-          if (_this.rightSide + _this.sliderLength > _this.currentChartParam.flow.length){//判断滑块是否到最后
-            console.log(_this.rightSide,_this.sliderLength,_this.currentChartParam.flow.length)
-            _this.endFlag = 1
-            _this.rightSide = _this.currentChartParam.flow.length-1
-          }
-          let startValue = _this.rightSide - _this.sliderLength;
-          let endValue = _this.rightSide;
-          let data={}
-          data['id'] = _this.$store.state.pattern.selectedFlood;
+        //这里用监听来做是不是不太好呢？
+        //尝试用一种更不易出错的方式，加入编号，然后用异步的方式请求
+        let startValue = 0;
+        let sliceNo = 0;//用一个编号来标记当前匹配的段落，也就是说，滑动窗口从左到右，每次匹配都配一个编号。因为是异步请求，在获得结果时这个编号用于排序。
+        let matchLength=Number(this.sliderLength);//获取单次匹配步长
+        //Vuex通知BrushResult.vue单步匹配步长，绘制结果图的时候会用到
+        this.setMatchLength(matchLength)
+        if(matchLength>this.currentChartParam.flow.length){
+          Message("输入长度超出当前场次的时间维度！")
+          return;
+        }
+        while(startValue + matchLength<this.currentChartParam.flow.length){
+          //如果右端点小于flow的长度的话
+          //匹配
+          //1、获得匹配需要的数据
+          let data = {}//json格式的data
+          let matchId = _this.$store.state.pattern.selectedFlood;//当前匹配的id
+          data['id'] = matchId
           data['startValue'] = startValue
-          data['endValue'] = endValue
-          postRequestJson("/brush",JSON.stringify(data))
-            .then((res)=>{
-              console.log(res)
-              let data = res.data.data;
-              _this.changeMatchID(data.idResult);
-              let originSelect = data.x1Shapelet;
-              let matchSelect = data.x2Shapelet;
-              let originFlood = data.x1Line;
-              let matchedFlood = data.x2Line;
+          data['endValue'] = startValue + matchLength//结束节点
+          data['sliceNo'] = sliceNo//当前是第几段，因为是异步任务，所以排序要用到
+          // console.log("当前匹配信息",data)
+          //2、匹配，这里采用异步匹配
+          this.matchCode(data)
+          //3、窗口的滑动
+          startValue = startValue+matchLength
+          sliceNo+=1
+        }
 
-              _this.changeOriginData(str2listForRain(originSelect));
-              _this.changeMatchedData(str2listForRain(matchSelect));
-              // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
-              _this.changeMatchedFlood(str2listForRain(matchedFlood));
-              _this.changeOriginFlood(str2listForRain(originFlood));
-              _this.addGridValues(str2listForRain(matchSelect));
-              _this.addOriginalGridValues(str2listForRain(originSelect));
-              _this.addMatchedIDValues(data.idResult)
-
-              //重新设置rightside
-              if (_this.endFlag==0){
-                _this.rightSide = _this.sliderLength + _this.rightSide
-              }
-              //刷新窗口
-              _this.flashChart()
-            })
-            .catch((err)=>{
-              Message("SliderChart错误:",err)
-            })
-        })
       }else{
         let _this = this
         this.initBrush()
@@ -222,19 +232,20 @@ export default {
           let startValue = params.batch[0].selected[1].dataIndex[0]
           let l = params.batch[0].selected[1].dataIndex.length
           let endValue = params.batch[0].selected[1].dataIndex[l-1];
-          console.log(startValue,endValue)
           if (startValue == endValue){
             //说明是返回的情况
             // loading.value = false
             return
           }
           _this.changeAllDataLoading(true)
-
-
           console.log(startValue,endValue)
+          //修改显示数值
+          _this.sliderLength = Number(endValue)-Number(startValue);
+          //同时将输入框设置为不可输入状态
+          _this.forbiddenInput = true;
+
+
           // console.log("现在选取的：",_this.currentChartParam.flow.slice(startValue,endValue))
-
-
           let data={}
           data['id'] = _this.$store.state.pattern.selectedFlood;
           data['startValue'] = startValue
@@ -242,7 +253,7 @@ export default {
           postRequestJson("/brush",JSON.stringify(data))
             .then((res)=>{
               console.log(res)
-              let data = res.data.data;
+              let data = res.data.data.brushResult;
               _this.changeMatchID(data.idResult);
               let originSelect = data.x1Shapelet;
               let matchSelect = data.x2Shapelet;
@@ -291,7 +302,14 @@ export default {
       // console.log(this.rightSide,this.sliderLength)
       let left = Number(this.rightSide - this.sliderLength);
       let right = Number(this.rightSide);
-      // console.log("flashChart",left,right)
+      console.log("flashChart",left,right)
+      if (right>=this.currentChartParam.flow.length){
+        right = this.currentChartParam.flow.length
+        left = right - Number(this.sliderLength);
+        Message("匹配完成！")
+        this.setCompleteFlag(true)
+        this.setSliderLoading(false)
+      }
       let _this = this
       this.chart.dispatchAction({
         type:'brush',
@@ -307,6 +325,39 @@ export default {
         type: 'brush',
         areas:[]
       })
+    },
+    matchCode(data){
+      //匹配的代码
+      let _this = this
+      postRequestJson("/brush",JSON.stringify(data))
+        .then((res)=>{
+          console.log(res)
+          let data = res.data.data;
+          _this.addGridValues(data)
+          //重新设置rightside
+          _this.rightSide = Number(_this.sliderLength) + Number(_this.rightSide)
+          //刷新窗口
+          _this.flashChart()
+        })
+        .catch((err)=>{
+          Message("SliderChart错误:",err)
+        })
+    },
+    exchangeFloodInit(){
+      //点击切换场次后的初始化数据，用于自动滑动匹配
+      //不初始化的话，会出现奇奇怪怪的错误捏
+      //1、首先是点击开始匹配需要立刻选择一段长度
+      this.initBrush();
+      //2、将vuex中上次匹配的数据给清除掉，因为存储的数据是数组的形式，每次添加采用append，清除的话数据会一直累加
+      this.clearGrid()
+      //3、同样是vuex中的数据，设置完成匹配flag=false，当真正完成匹配时，会将改标记改为true
+      //因为是异步匹配，所有的数据都匹配完成，才会通知BrushReuslt.vue中的结果图表初始化
+      this.setCompleteFlag(false)
+      //4、右边界重置，这个右边界是用来画窗口用的，如果不重置，窗口早就画成贵物了。
+      this.rightSide = 0+Number(this.sliderLength);
+      //5、开始加载loading
+      this.setSliderLoading(true);
+
     }
 
   },
@@ -318,6 +369,7 @@ export default {
     '$store.state.pattern.selectedFlood'(newKey,oldKey) {
       let _this = this
       console.log("我现在监听到了捏",newKey)
+
       postRequest("/floodInfo",{"floodID":newKey})
         .then((res)=>{
           // console.log(res)
@@ -328,6 +380,9 @@ export default {
           _this.currentChartParam.rain = rvArr;
           let timeArr = str2listForTimeStamp(res.data.data.duration)
           _this.currentChartParam.timestamp =timeArr
+          //将时间矩阵存到vuex中，方便后续显示
+          _this.changeCurrentTimeStamp(timeArr)
+
           // console.log(timeArr,"ookokoko")
           _this.initChart()
         })
@@ -337,6 +392,12 @@ export default {
     isCollapse(val){
       console.log("侧边栏有变化",val)
     },
+    manual(val){
+      if (val==true){
+        this.forbiddenInput = false
+        this.chart.off("brushselected")
+      }
+    }
   }
 }
 </script>

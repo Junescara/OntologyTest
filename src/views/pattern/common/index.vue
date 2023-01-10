@@ -78,7 +78,7 @@ export default {
 .rightTop-chart{
   width: 50%;
   height: 100%;
-  background-color: #abc;
+  /*background-color: #abc;*/
 }
 .bottom-chart{
   height: 100%;

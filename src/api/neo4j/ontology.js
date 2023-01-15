@@ -33,5 +33,27 @@ export default {
       url: `/kg/onto/showOntologyTable`,
       method: 'get',
     })
-  }
+  },
+
+  getOntoList(type){
+    return request({
+      url: `/kg/onto/getOntoList?type=`+type,
+      method: 'get',
+    })
+  },
+
+  getOntoRelList(type){
+    return request({
+      url: `/kg/onto/getOntoRelList?type=`+type,
+      method: 'get',
+    })
+  },
+
+  getAttListByObjName(name){
+    return request({
+      url: `/kg/onto/getAttListByObjName?name=`+name,
+      method: 'get',
+    })
+  },
+
 }

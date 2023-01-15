@@ -30,7 +30,7 @@
             <el-button slot="append" icon="el-icon-search"/>
           </el-input>
         </div>
-        <el-table style="width: 100%" :data="ontoData" v-infinite-scroll="load" height="550">
+        <el-table style="width: 100%" :data="ontoData" v-infinite-scroll="load" height="500">
           <el-table-column
             prop="_id"
             label="id"

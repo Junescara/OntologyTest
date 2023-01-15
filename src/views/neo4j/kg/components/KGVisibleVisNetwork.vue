@@ -39,6 +39,7 @@ export default {
         relType:'',
       },
       loading:true,
+      currentNodeType:[],//当前的结点类型，用作图例显示
     }
   },
   props: {
@@ -82,15 +83,14 @@ export default {
   methods: {
     initKG() {
       this.loading = true
-      let rels = []
-      let nodes = []
       let _this = this
       //老版本的处理逻辑
       if (this.settings.visibleTypeFlag == 0){
         relationApi.getKGVisiblesOutData(this.currentNodeId).then(({data}) => {
 
           const datas = VisUtils.handleOutVisibles(data)
-
+          //过滤一下data中的数据
+          _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
@@ -99,7 +99,7 @@ export default {
       }else if (this.settings.visibleTypeFlag == 1){
           relationApi.getKGVisiblesInData(this.currentNodeId).then(({data}) => {
             const datas = VisUtils.handleInVisibles(data)
-
+            _this.getCurrentNodeType(data.data)
             const container = this.$refs.KGNetwork;
             _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
             _this.network = new Vis.Network(container, datas, _this.options);
@@ -107,11 +107,9 @@ export default {
           })
       }else if (this.settings.visibleTypeFlag == 2){
         relationApi.getKGVisiblesData([this.currentNodeId]).then(({data}) => {
-
-
           //这里获取的是生成的全面数据
           const datas = VisUtils.handleWholeVisibles(data)
-
+          _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
@@ -125,6 +123,7 @@ export default {
         }
         relationApi.getLinkedRels(params).then(({data}) => {
           const datas = VisUtils.handleRelLinkVisibles(data)
+          _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
@@ -140,6 +139,7 @@ export default {
         }
         relationApi.getLinkedRels(params).then(({data}) => {
           const datas = VisUtils.handleRelLinkVisibles(data)
+          _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
@@ -153,6 +153,75 @@ export default {
         console.log("图像加载完成")
         _this.loading = false
       })
+    },
+    getCurrentNodeType(data){
+      let set = new Set();
+      console.log("数据：",data)
+      if (data.startNode !== undefined){
+        for (let item of data.startNode.nodeType){
+          set.add(item)
+        }
+      }
+
+      if (data.endNodes !== undefined){
+        for (let item of data.endNodes.nodeList){
+          for (let i of item.nodeType){
+            set.add(i)
+          }
+        }
+      }
+
+      if (data.endNode !== undefined){
+        for (let item of data.endNode.nodeType){
+          set.add(item)
+        }
+      }
+
+      if (data.startNodes !== undefined){
+        for (let item of data.startNodes.nodeList){
+          for (let i of item.nodeType){
+            set.add(i)
+          }
+        }
+      }
+
+      if (data.kgVisibleInVoList !== undefined){
+        const node = data.kgVisibleInVoList[0]
+        for (let item of node.endNode.nodeType){
+          set.add(item)
+        }
+
+        for (let item of node.startNodes.nodeList){
+          for (let i of item.nodeType){
+            set.add(i)
+          }
+        }
+      }
+
+      if (data.kgVisibleOutVoList !== undefined){
+        const node = data.kgVisibleOutVoList[0]
+        for (let item of node.startNode.nodeType){
+          set.add(item)
+        }
+
+        for (let item of node.endNodes.nodeList){
+          for (let i of item.nodeType){
+            set.add(i)
+          }
+        }
+      }
+
+      if (data.finalNodeVos !== undefined){
+        for (let item of data.finalNodeVos){
+          for (let i of item.nodeType){
+            set.add(i)
+            console.log("i======",i)
+          }
+        }
+      }
+
+      this.currentNodeType = Array.from(set);
+      console.log('当前类型包括：',this.currentNodeType)
     }
   },
   watch:{
@@ -173,6 +242,12 @@ export default {
         this.settings.relType = newValue.relType
         console.log("settings=====",this.settings)
         this.initKG()
+      },
+      deep:true
+    },
+    currentNodeType:{
+      handler(newValue,oldValue) {
+        this.$emit("legend",this.currentNodeType)
       },
       deep:true
     }

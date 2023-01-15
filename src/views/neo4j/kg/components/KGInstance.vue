@@ -125,19 +125,19 @@
           <br>
           <el-divider content-position="left">图例</el-divider>
           <div>
-            <el-tag size="mini" color="#0ce3ca" effect="dark">河流</el-tag>
-            <el-tag size="mini" color="#094b2d" effect="dark">流域</el-tag>
-            <el-tag size="mini" color="#f3022e" effect="dark">行政区划</el-tag>
-            <el-tag size="mini" color="#af36d7" effect="dark">测站</el-tag>
-            <el-tag size="mini" color="#f1a94b" effect="dark">断面</el-tag>
-            <el-tag size="mini" color="#7e8ead" effect="dark">水库</el-tag>
-            <el-tag size="mini" color="#00ff00" effect="dark">水闸</el-tag>
+            <el-tag size="mini" color="#0ce3ca" effect="dark" v-show="legend.indexOf('河流') != -1">河流</el-tag>
+            <el-tag size="mini" color="#094b2d" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>
+            <el-tag size="mini" color="#f3022e" effect="dark" v-show="legend.indexOf('行政区划') != -1">行政区划</el-tag>
+            <el-tag size="mini" color="#af36d7" effect="dark" v-show="legend.indexOf('测站') != -1">测站</el-tag>
+            <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>
+            <el-tag size="mini" color="#7e8ead" effect="dark" v-show="legend.indexOf('水库') != -1">水库</el-tag>
+            <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>
           </div>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
 <!--        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>-->
-        <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings"></KGVisibleVisNetwork>
+        <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleVisNetwork>
       </el-card>
       <el-card class="box-card" style="width: 400px">
         <div slot="header" class="clearfix">
@@ -147,7 +147,7 @@
         </div>
         <el-descriptions :column="1">
           <el-descriptions-item label="实体所属类型">
-            <el-tag size="small">水库</el-tag>
+            <el-tag size="small">{{ currentType }}</el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="更新时间">2022.11.2</el-descriptions-item>
         </el-descriptions>
@@ -423,7 +423,8 @@ export default {
       editNodeInfo:{
         editNodeId:null,
         editNodeAtts:null
-      }
+      },
+      legend:[] //需要显示的图例类型
     }
   },
   mounted() {
@@ -1200,6 +1201,9 @@ export default {
     },
     chooseRelType(){
       this.visibleSettings.relType = this.flags.relTypeFlag
+    },
+    getLegend(data){
+      this.legend = data
     }
   },
   computed:{

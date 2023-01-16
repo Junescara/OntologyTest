@@ -1,55 +1,97 @@
 <template>
   <div class="flood-table-main">
-    <el-table
-      :data="tableData"
-      style="width: 100%"
-      @row-dblclick="dbClick2ChangeTableData"
-    >
-      <el-table-column prop="floodId" label="洪水场次" width="80"></el-table-column>
-      <el-table-column prop="floodStartTime" label="起涨时间" width="110" :formatter="tableTimeFormatter"></el-table-column>
-      <el-table-column prop="floodEndTime" label="退水时间" width="110" :formatter="tableTimeFormatter"></el-table-column>
-      <el-table-column prop="peakPattern" label="洪峰型态"></el-table-column>
-      <el-table-column prop="floodDurationTime" label="持续时间"></el-table-column>
-      <el-table-column prop="peakFlow" label="洪峰流量"></el-table-column>
-      <el-table-column prop="peakStage" label="洪峰水位"></el-table-column>
-      <el-table-column prop="totalFloodVolume" label="洪水总量" width="110"></el-table-column>
-      <el-table-column fixed="right" label="操作">
-        <template slot-scope="scope">
-          <el-button
-            @click="matchFlood(scope.$index,scope.row)"
-            type="danger"
-            size="small">
-            匹配
-          </el-button>
+    <div class="flood-table-up">
+      <el-select v-model="selectBasin" clearable placeholder="选择流域数据">
+        <el-option
+          v-for="item in basinName"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
+    </div>
+    <div class="flood-table-below">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        @row-dblclick="dbClick2ChangeTableData"
+        highlight-current-row
+      >
+        <el-table-column prop="floodId" label="洪水场次" width="80"></el-table-column>
+        <el-table-column prop="floodStartTime" label="起涨时间" width="110" :formatter="tableTimeFormatter"></el-table-column>
+        <el-table-column prop="floodEndTime" label="退水时间" width="110" :formatter="tableTimeFormatter"></el-table-column>
+        <el-table-column prop="peakPattern" label="洪峰型态"></el-table-column>
+        <el-table-column prop="floodDurationTime" label="持续时间"></el-table-column>
+        <el-table-column prop="peakFlow" label="洪峰流量"></el-table-column>
+        <el-table-column prop="peakStage" label="洪峰水位"></el-table-column>
+        <el-table-column prop="totalFloodVolume" label="洪水总量" width="110"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="170">
+          <template slot-scope="scope">
+            <el-button
+              @click="matchFlood(scope.$index,scope.row)"
+              type="danger"
+              size="small">
+              匹配
+            </el-button>
+            <el-button
+              @click="showFloodMsg(scope.$index,scope.row)"
+              type="primary"
+              size="small">
+              信息
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!--   分页器-->
+      <el-pagination small background layout="total,prev,pager,next" :total=31 :current-page.sync="currentPage" :page-size.sync="pageSize"
+                     @current-change="changePage"
+      ></el-pagination>
+      <!--   模态框-->
+      <!--   <match-dialog v-model:match-dialog-visible="matchDialogVisible" @close="close"></match-dialog>-->
+      <el-dialog class="match-dialog" :visible.sync = 'matchDialogVisible' title="特征选取"  width="40%"
+                 @close="matchDialogCancel">
+        <template #default>
+          <!--带slider的对话框-->
+          <div class="slider-demo-block" v-for="fea in Features">
+            <span class="demonstration">{{fea.name}}</span>
+            <el-slider v-model="fea.value" :max="1"  :step="0.1" show-input size="small"/>
+          </div>
+
+          <!--进度条,应该嵌在模态框中-->
+          <el-dialog :visible.sync="matchInnerDialogVisible" title="历史模式库匹配" append-to-body destroy-on-close @closed="matchDialogVisible = false">
+            <el-progress :percentage="percentage" :show-text="false" :key="reRenderNum"></el-progress>
+          </el-dialog>
         </template>
-      </el-table-column>
-    </el-table>
-
-    <!--   分页器-->
-    <el-pagination small background layout="total,prev,pager,next" :total="31" v-model:current-page="currentPage" v-model:page-size="pageSize"
-                   @current-change="changePage"
-    ></el-pagination>
-    <!--   模态框-->
-    <!--   <match-dialog v-model:match-dialog-visible="matchDialogVisible" @close="close"></match-dialog>-->
-    <el-dialog class="match-dialog" :visible.sync = 'matchDialogVisible' title="特征选取"  width="40%"
-               @close="matchDialogCancel">
-      <template #default>
-        <!--带slider的对话框-->
-        <div class="slider-demo-block" v-for="fea in Features">
-          <span class="demonstration">{{fea.name}}</span>
-          <el-slider v-model="fea.value" :max="1"  :step="0.1" show-input size="small"/>
-        </div>
-
-        <!--进度条,应该嵌在模态框中-->
-        <el-dialog :visible.sync="matchInnerDialogVisible" title="历史模式库匹配" append-to-body destroy-on-close @closed="matchDialogVisible = false">
-          <el-progress :percentage="percentage" :show-text="false" :key="reRenderNum"></el-progress>
-        </el-dialog>
-      </template>
-      <template #footer>
-        <el-button @click="matchDialogCancel">取消</el-button>
-        <el-button @click="innerDialogVisibleControl(matchInnerDialogVisible = true)" type="primary">匹配</el-button>
-      </template>
-    </el-dialog>
+        <template #footer>
+          <el-button @click="matchDialogCancel">取消</el-button>
+          <el-button @click="innerDialogVisibleControl(matchInnerDialogVisible = true)" type="primary">匹配</el-button>
+        </template>
+      </el-dialog>
+        <!--详细信息模态框-->
+      <el-dialog :visible.sync="detailVisible" title="场次详情信息">
+        <el-descriptions :column="3" size="mini" border>
+          <el-descriptions-item label="所属流域">
+            <el-tag size="small">{{detailDialogMsg.basin}}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="场次编号">
+            {{detailDialogMsg.floodId}}
+          </el-descriptions-item>
+          <el-descriptions-item label="起涨时间">
+            {{detailDialogMsg.floodStartTime}}
+          </el-descriptions-item>
+          <el-descriptions-item label="洪峰形态">
+            {{detailDialogMsg.peakPattern}}
+          </el-descriptions-item>
+          <el-descriptions-item label="持续时间">
+            {{detailDialogMsg.floodDuration}}
+          </el-descriptions-item>
+          <el-descriptions-item label="退水时间">
+            {{detailDialogMsg.floodEndTime}}
+          </el-descriptions-item>
+        </el-descriptions>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -94,7 +136,26 @@ export default {
       matchInnerDialogVisible:false,
       Features:[{'name':'降雨量序列','value':1},{'name':'降雨趋势','value':1},{'name':'面降雨总量','value':1},{'name':'MaxIndex','value':1}
         ,{'name':'降雨量级','value':1},{'name':'格点最大小时雨量','value':1},{'name':'最大格点累计雨量','value':1},{'name':'蓄水流量','value':1}],
-
+      basinName:[{
+        value:"1",
+        label:"屯溪"
+      },{
+        value:"2",
+        label:"椒江"
+      },{
+        value:"3",
+        label:"湟水河"
+      }],
+      selectBasin:"",
+      detailVisible:false,//详情dialog是否可见
+      detailDialogMsg:{//详情dialog中的内容
+        basin:"屯溪",
+        floodId:1,
+        floodStartTime:"2020-01-22 08:00:00",
+        floodEndTime:"2020-02-03 15:00:00",
+        peakPattern:"双峰",
+        floodDuration:"295h",
+      }
     }
   },
   methods:{
@@ -250,6 +311,15 @@ export default {
         message: '匹配完成',
         type: 'success'
       })
+    },
+    showFloodMsg(index,row){
+      // console.log(index,row)
+      this.detailVisible = true
+      this.detailDialogMsg.floodId = row.floodId
+      this.detailDialogMsg.floodStartTime = row.floodStartTime
+      this.detailDialogMsg.floodEndTime = row.floodEndTime
+      this.detailDialogMsg.peakPattern = row.peakPattern
+      this.detailDialogMsg.floodDuration = row.floodDurationTime
     }
 
   },
@@ -291,5 +361,11 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+.flood-table-up{
+  display: flex;
+  flex-direction: row;
+  /*靠右显示*/
+  /*justify-content: flex-end;*/
 }
 </style>

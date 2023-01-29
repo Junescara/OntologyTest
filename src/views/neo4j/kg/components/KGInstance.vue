@@ -327,7 +327,9 @@ export default {
         //实例的标签信息
         types:[],
         //实例的属性列表，记录要添加的属性
-        attributes:[]
+        attributes:[],
+        //当前所在知识图谱
+        database:""
       },
       //“增加实体或关系”标签选择
       addOptions:[{
@@ -415,6 +417,7 @@ export default {
       currentType: null,
       currentRelType:null,
       currentId:null,
+      currentDbName:null,
       currentRelId:null,
       //修改对话框是否开启
       editObjVisible: false,
@@ -437,6 +440,8 @@ export default {
     }
   },
   created() {
+    this.currentDbName = this.$route.params.name
+    console.log(this.currentDbName)
     this.getAllNodeCounts()
     this.getAllNodeLabels()
     this.getAllRelLabels()
@@ -736,7 +741,7 @@ export default {
     },
     //获得所有节点的数量和节点类型的数量
     getAllNodeCounts() {
-      aggregateApi.getNodeCounts()
+      aggregateApi.getNodeCounts(this.currentDbName)
         .then((response) => {
           this.nodeCounts = response.data.data.nodeCounts
           this.nodeTypeCounts = response.data.data.nodeTypeCounts
@@ -747,7 +752,7 @@ export default {
     },
     //获得所有节点的标签
     getAllNodeLabels() {
-      aggregateApi.getNodeLabels()
+      aggregateApi.getNodeLabels(this.currentDbName)
         .then((response) => {
           this.nodeLabels = response.data.data.nodeLabels
         })
@@ -757,7 +762,7 @@ export default {
     },
     //获得所有关系的标签
     getAllRelLabels() {
-      aggregateApi.getRelLabels()
+      aggregateApi.getRelLabels(this.currentDbName)
         .then((response) => {
           this.relLabels = response.data.data.relLabels
         })
@@ -833,7 +838,7 @@ export default {
         });
       }
       else{
-        ontologyApi.getAttListByObjName(types[1])
+        ontologyApi.getAttNameListByObjName(types[1])
           .then((response) => {
 
             //对象标识信息
@@ -880,6 +885,7 @@ export default {
           });
         }
       });
+      this.submitInstance.database = this.currentDbName
       aggregateApi.editNode(JSON.stringify(this.submitInstance))
         .then(
           (response) => {
@@ -951,6 +957,7 @@ export default {
         this.addObjVisible = false
       }
       else if(this.InstanceForm.types[0]==="实体"){
+        this.submitInstance.database = this.currentDbName
         console.log(JSON.stringify(this.submitInstance))
         aggregateApi.addNode(JSON.stringify(this.submitInstance))
         .then(
@@ -1030,7 +1037,7 @@ export default {
     },
     //删除选定实体及关联关系
     delNodeAndRels(){
-      aggregateApi.delNodeAndRelsById(this.nodeByName[0]._id)
+      aggregateApi.delNodeAndRelsById(this.nodeByName[0]._id,this.currentDbName)
         .then((response) => {
           if(response.data.data==1){
             //删除成功
@@ -1055,9 +1062,9 @@ export default {
     },
     //删除选定实体
     delNode(){
-      aggregateApi.delNodeById(this.nodeByName[0]._id)
+      aggregateApi.delNodeById(this.nodeByName[0]._id,this.currentDbName)
       .then((response) => {
-        if(response==0){
+        if(response.data.data===0){
           //删除成功
           this.$message({
             type: 'success',

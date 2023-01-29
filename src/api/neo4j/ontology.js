@@ -49,11 +49,22 @@ export default {
     })
   },
 
-  getAttListByObjName(name){
+  getAttNameListByObjName(name){
     return request({
-      url: `/kg/onto/getAttListByObjName?name=`+name,
+      url: `/kg/onto/getAttNameListByObjName?name=`+name,
       method: 'get',
     })
+  },
+
+  getAttInfoListByObjName(name){
+    return request({
+      url: `/kg/onto/getAttInfoListByObjName?name=`+name,
+      method: 'get',
+    })
+  },
+
+  isPrimaryKeyValue(primaryKeyValue) {
+    return request.post(`/kg/onto/isPrimaryKeyValue`, primaryKeyValue,{headers:{'Content-Type': 'application/json'}})
   },
 
 }

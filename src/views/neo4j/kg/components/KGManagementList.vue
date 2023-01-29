@@ -34,7 +34,7 @@
               <div class="bottom clearfix">
                 <p class="time">{{item.dbNote}}</p>
                 <el-button type="warning" plain class="button" @click="handleUpdate(item.dbId)" size="mini">编辑详情</el-button>
-                <el-button type="success" plain class="button" @click="childClick(item.dbId)" size="mini">查看图谱</el-button>
+                <el-button type="success" plain class="button" @click="childClick(item.dbId,item.dbCName)" size="mini">查看图谱</el-button>
                 <el-button type="warning" plain class="button" @click="handleDelete(item.dbId)" size="mini">删除</el-button>
               </div>
             </div>
@@ -51,7 +51,7 @@
               <div class="bottom clearfix">
                 <p class="time">{{item.dbNote}}</p>
                 <el-button type="warning" plain class="button" @click="handleUpdate(item.dbId)" size="mini">编辑详情</el-button>
-                <el-button type="success" plain class="button" @click="childClick(item.dbId)" size="mini">查看图谱</el-button>
+                <el-button type="success" plain class="button" @click="childClick(item.dbId,item.dbCName)" size="mini">查看图谱</el-button>
                 <el-button type="warning" plain class="button" @click="handleDelete(item.dbId)" size="mini">删除</el-button>
               </div>
             </div>
@@ -162,10 +162,10 @@ export default {
     }
   },
   methods: {
-    childClick(instanceId) {
+    childClick(instanceId,instanceName) {
       const data = 1
       // this.$emit('toDetails',data)
-      this.$router.push({name:'KGInstance',params:{id:instanceId}})
+      this.$router.push({name:'KGInstance',params:{id:instanceId,name:instanceName}})
     },
     init(){
       return this.listConnectors()

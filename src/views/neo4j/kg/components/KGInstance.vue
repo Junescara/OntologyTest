@@ -533,7 +533,7 @@ export default {
       switch (value) {
         case '下级行政区划':
           this.currentRelType = '下级行政区划'
-          relationApi.getRelsByName(this.currentRelType).then(({data}) => {
+          relationApi.getRelsByName(this.currentRelType,this.currentDbName).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
               let relNameAndId = {
@@ -551,7 +551,7 @@ export default {
           break;
         case '关联':
           this.currentRelType = '关联'
-          relationApi.getRelsByName(this.currentRelType).then(({data}) => {
+          relationApi.getRelsByName(this.currentRelType,this.currentDbName).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
               let relNameAndId = {
@@ -919,6 +919,7 @@ export default {
         }
       });
       if(this.InstanceForm.types[0]==="关系"){
+        this.submitInstance.database = this.currentDbName
         console.log(JSON.stringify(this.submitInstance))
         relationApi.addRel(JSON.stringify(this.submitInstance))
         .then(
@@ -947,6 +948,7 @@ export default {
               this.getAllNodeCounts()
               this.getAllNodeLabels()
               this.getAllRelLabels()
+              this.addObjVisible = false
             }
           })
         .catch(
@@ -954,7 +956,6 @@ export default {
             console.log(error);
           }
         );
-        this.addObjVisible = false
       }
       else if(this.InstanceForm.types[0]==="实体"){
         this.submitInstance.database = this.currentDbName
@@ -1012,7 +1013,7 @@ export default {
     },
     //删除选定关系
     delRel(){
-      relationApi.delRelById(this.currentRelId)
+      relationApi.delRelById(this.currentRelId,this.currentDbName)
       .then((response) => {
         if(response.data.data==1){
           //删除成功

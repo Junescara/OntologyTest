@@ -133,7 +133,8 @@ export default {
         //本体的标签信息
         types:[],
         //本体的属性列表，记录要添加的属性
-        attributes:[]
+        attributes:[],
+        database:""
       },
       //“增加本体或关系”标签选择
       addOptions:[{
@@ -192,6 +193,7 @@ export default {
         this.submitOntology.types.pop();
         this.submitOntology.types.push(this.submitOntology.attributes[0].value)
         this.submitOntology.attributes.splice(0,1)
+        this.submitOntology.database="水利对象本体库"
         console.log(JSON.stringify(this.submitOntology))
         relationApi.addRel(JSON.stringify(this.submitOntology))
           .then(
@@ -213,6 +215,7 @@ export default {
                   type: 'success',
                   message: mes
                 });
+                this.addObjVisible = false
               }
             })
           .catch(
@@ -220,7 +223,6 @@ export default {
               console.log(error);
             }
           );
-        this.addObjVisible = false
       }
       else{
         console.log(JSON.stringify(this.submitOntology))

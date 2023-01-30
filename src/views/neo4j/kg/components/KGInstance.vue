@@ -417,7 +417,7 @@ export default {
       currentType: null,
       currentRelType:null,
       currentId:null,
-      currentDbName:null,
+      currentDbName:"椒江流域知识图谱",
       currentRelId:null,
       //修改对话框是否开启
       editObjVisible: false,
@@ -440,7 +440,7 @@ export default {
     }
   },
   created() {
-    this.currentDbName = this.$route.params.name
+    // this.currentDbName = this.$route.params.name
     console.log(this.currentDbName)
     this.getAllNodeCounts()
     this.getAllNodeLabels()

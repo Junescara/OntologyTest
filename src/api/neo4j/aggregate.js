@@ -2,40 +2,43 @@ import request from '@/utils/request'
 //聚合信息接口提供
 export default {
   //查询所有节点的数量、节点类型的数量
-  getNodeCounts() {
+  getNodeCounts(database) {
     return request({
       url: `/kg/instance/aggregate/nodeCounts`,
-      method: 'get'
+      method: 'get',
+      params: {database:database}
     })
   },
   //查询所有节点的标签
-  getNodeLabels() {
+  getNodeLabels(database) {
     return request({
       url: `/kg/instance/aggregate/nodeLabels`,
-      method: 'get'
+      method: 'get',
+      params: {database:database}
     })
   },
   //查询所有关系的标签
-  getRelLabels() {
+  getRelLabels(database) {
     return request({
       url: `/kg/instance/aggregate/relLabels`,
-      method: 'get'
+      method: 'get',
+      params: {database:database}
     })
   },
   //按id删除节点
-  delNodeById(id) {
+  delNodeById(id,database) {
     return request({
       url: `/kg/instance/aggregate/delNodeById/`,
       method: 'post',
-      params: {id:id}
+      params: {id:id,database:database}
     })
   },
   //按id删除实体及关联关系
-  delNodeAndRelsById(id) {
+  delNodeAndRelsById(id,database) {
     return request({
       url: `/kg/instance/aggregate/delNodeAndRelsById/`,
       method: 'post',
-      params: {id:id}
+      params: {id:id,database:database}
     })
   },
   //添加实体

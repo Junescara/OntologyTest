@@ -17,11 +17,12 @@ export default {
   /**
    * 通过id查询结点信息
    * @param id
+   * @param database
    * @returns {*}
    */
-  getNodeById(id){
+  getNodeById(id,database){
     return request({
-      url: `/kg/instance/relation/getNodeById/`+id,
+      url: `/kg/instance/relation/getNodeById/`+id +'/'+database,
       method: 'get'
     })
   },
@@ -45,7 +46,7 @@ export default {
     }
     return nodes
   },*/
-  getNodesByIds(ids){
+  getNodesByIds(ids,database){
     // return request({
     //   url: `/relation/getNodesByIds/`,
     //   method: 'post',
@@ -53,7 +54,8 @@ export default {
     // })
     return request.get(`/kg/instance/relation/getNodesByIds/`, {
       params:{
-        ids
+        ids,
+        database
       },
       paramsSerializer: function (params) {
         return JSON.stringify(params, { arrayFormat: "repeat" });
@@ -71,20 +73,20 @@ export default {
       method: 'get'
     })
   },
-  getRelsByName(name){
+  getRelsByName(name,database){
     return request({
       url: `/kg/instance/relation/getRelsByName`,
       method: 'get',
-      params: {name}
+      params: {name,database}
     })
   },
 
   //按id删除关系
-  delRelById(id) {
+  delRelById(id,database) {
     return request({
       url: `/kg/instance/relation/delRelById`,
       method: 'post',
-      params: {id:id}
+      params: {id:id,database:database}
     })
   },
 

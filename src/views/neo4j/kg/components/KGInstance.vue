@@ -1238,6 +1238,51 @@ export default {
         }
       },
       deep: true
+    },
+    flags:{
+      handler(newValue, oldValue){
+        if (newValue.relTypeFlag.indexOf('上游') >= 0 && newValue.relTypeFlag.indexOf('下游') >= 0){
+          this.$message.error('上下游不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('上游')
+          let i2 = this.flags.relTypeFlag.indexOf('下游')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('位于') >= 0 && newValue.relTypeFlag.indexOf('监测') >= 0){
+          this.$message.error('位于监测不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('位于')
+          let i2 = this.flags.relTypeFlag.indexOf('监测')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('含有') >= 0 && newValue.relTypeFlag.indexOf('属于') >= 0){
+          this.$message.error('含有属于不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('含有')
+          let i2 = this.flags.relTypeFlag.indexOf('属于')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('上级') >= 0 && newValue.relTypeFlag.indexOf('下级') >= 0){
+          this.$message.error('上下级不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('上级')
+          let i2 = this.flags.relTypeFlag.indexOf('下级')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('支流') >= 0 && newValue.relTypeFlag.indexOf('干流') >= 0){
+          this.$message.error('干支流不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('支流')
+          let i2 = this.flags.relTypeFlag.indexOf('干流')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+      },
+      deep: true
     }
   }
 }

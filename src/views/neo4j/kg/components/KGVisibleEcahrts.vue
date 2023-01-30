@@ -69,7 +69,7 @@ export default {
         nodes = data.data.nodeList
         //发起第三次异步请求，查询起点结点的信息
         console.log("nodes======",nodes)
-        return relationApi.getNodeById(this.currentNodeId)
+        return relationApi.getNodeById(this.currentNodeId,"椒江流域知识图谱“)
       }).then(({data}) => {
         nodes.push(data.data)
         let dataList = {

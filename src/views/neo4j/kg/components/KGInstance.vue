@@ -199,7 +199,7 @@
             <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
           </el-form-item>
           <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 4">
-            <el-select clearable v-model="flags.relTypeFlag" placeholder="请选择关系类型" @click="chooseRelType"
+            <el-select clearable v-model="flags.relTypeFlag" multiple placeholder="请选择关系类型" @click="chooseRelType"
                        style="margin-top: 20px">
               <el-option
                 v-for="(item,index) in relLabels"
@@ -355,7 +355,7 @@ export default {
         loadingFlag:false,
         visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
         lengthFlag:2,
-        relTypeFlag:'',
+        relTypeFlag:[],
       },
       //查询关键字
       key:{
@@ -391,7 +391,7 @@ export default {
       visibleSettings:{
         length:2, //关系链长度，默认为2
         visibleTypeFlag:1,
-        relType:'',
+        relType:[],
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -1235,6 +1235,51 @@ export default {
           this.relNamesLazy = []
           this.flags.relLazyCountFlag = 0
           this.load()
+        }
+      },
+      deep: true
+    },
+    flags:{
+      handler(newValue, oldValue){
+        if (newValue.relTypeFlag.indexOf('上游') >= 0 && newValue.relTypeFlag.indexOf('下游') >= 0){
+          this.$message.error('上下游不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('上游')
+          let i2 = this.flags.relTypeFlag.indexOf('下游')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('位于') >= 0 && newValue.relTypeFlag.indexOf('监测') >= 0){
+          this.$message.error('位于监测不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('位于')
+          let i2 = this.flags.relTypeFlag.indexOf('监测')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('含有') >= 0 && newValue.relTypeFlag.indexOf('属于') >= 0){
+          this.$message.error('含有属于不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('含有')
+          let i2 = this.flags.relTypeFlag.indexOf('属于')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('上级') >= 0 && newValue.relTypeFlag.indexOf('下级') >= 0){
+          this.$message.error('上下级不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('上级')
+          let i2 = this.flags.relTypeFlag.indexOf('下级')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('支流') >= 0 && newValue.relTypeFlag.indexOf('干流') >= 0){
+          this.$message.error('干支流不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('支流')
+          let i2 = this.flags.relTypeFlag.indexOf('干流')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
         }
       },
       deep: true

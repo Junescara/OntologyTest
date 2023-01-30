@@ -36,7 +36,7 @@ export default {
       settings:{
         visibleTypeFlag: 0,
         length:2,
-        relType:'',
+        relType:[],
       },
       loading:true,
       currentNodeType:[],//当前的结点类型，用作图例显示
@@ -134,9 +134,13 @@ export default {
         const params = {
           nodeId:this.currentNodeId,
           length: 15,
-          relType:this.settings.relType,
+          relType:this.settings.relType[0],
           relDir:0
         }
+        for (let i = 1; i < this.settings.relType.length; i++){
+          params.relType = params.relType + '，' + this.settings.relType[i]
+        }
+        console.log("类型=====",params.relType)
         relationApi.getLinkedRels(params).then(({data}) => {
           const datas = VisUtils.handleRelLinkVisibles(data)
           _this.getCurrentNodeType(data.data)
@@ -240,7 +244,7 @@ export default {
         this.settings.visibleTypeFlag = newValue.visibleTypeFlag
         this.settings.length = newValue.length
         this.settings.relType = newValue.relType
-        console.log("settings=====",this.settings)
+        console.log("newValue=====",this.settings.relType)
         this.initKG()
       },
       deep:true

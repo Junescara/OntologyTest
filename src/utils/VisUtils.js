@@ -794,7 +794,7 @@ export default {
           // label: '哈哈哈',
           width: 2,
           length: 150,
-          physics: false,
+          physics: true,
           font: {
             //字体配置
             size: 25
@@ -803,7 +803,7 @@ export default {
           smooth: {
             enabled: true,
             type: 'dynamic', // 平滑曲线的类型
-            forceDirection: 'none' // 用于分层布局的配置项,可选值有: ['horizontal', 'vertical', 'none']
+            forceDirection: 'horizontal' // 用于分层布局的配置项,可选值有: ['horizontal', 'vertical', 'none']
           },
           arrows: {to: true} //箭头指向to
           // arrows: {  // 这里可以用来自定义箭头，type为image类型即可

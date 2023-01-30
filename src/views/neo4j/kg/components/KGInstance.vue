@@ -199,7 +199,7 @@
             <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
           </el-form-item>
           <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 4">
-            <el-select clearable v-model="flags.relTypeFlag" placeholder="请选择关系类型" @click="chooseRelType"
+            <el-select clearable v-model="flags.relTypeFlag" multiple placeholder="请选择关系类型" @click="chooseRelType"
                        style="margin-top: 20px">
               <el-option
                 v-for="(item,index) in relLabels"
@@ -353,7 +353,7 @@ export default {
         loadingFlag:false,
         visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
         lengthFlag:2,
-        relTypeFlag:'',
+        relTypeFlag:[],
       },
       //查询关键字
       key:{
@@ -389,7 +389,7 @@ export default {
       visibleSettings:{
         length:2, //关系链长度，默认为2
         visibleTypeFlag:1,
-        relType:'',
+        relType:[],
       },
       //记录节点的数量
       nodeCounts: 0,

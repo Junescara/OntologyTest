@@ -8,30 +8,6 @@ import { Message } from 'element-ui';
 
 // 域名地址
 axios.defaults.baseURL = 'http://localhost:8083';
-//请求列表
-let reqList=[]
-//阻止重复的请求
-const stopRepeatRequest = function (reqList,url,cancel,errorMessage){
-    const errorMsg = errorMessage || ''
-    for (let i = 0; i < reqList.length; i++) {
-        if (reqList[i]===url){
-            cancel(errorMsg)
-            return
-        }
-    }
-    reqList.push(url)
-}
-/**
- *
- */
-const allowRequest = function (reqList,url){
-    for (let i = 0; i < reqList.length; i++) {
-        if (reqList[i]===url){
-            reqList.splice(i,1)
-            break
-        }
-    }
-}
 
 //  RESPONSE 响应异常拦截
 axios.interceptors.response.use(result => {
@@ -42,7 +18,6 @@ axios.interceptors.response.use(result => {
         // window.location.href = '/';
         return;
     };
-    reqList = []//请求成功后清空数据
     return result;
 }, err => {
 
@@ -60,20 +35,9 @@ axios.interceptors.response.use(result => {
     } else {
         err.message = '连接服务器失败!'
     }
-    reqList = []//请求失败后清空数据
     Message.error({ message: err.message })
     return Promise.resolve(err);
 })
-
-axios.interceptors.request.use(config=>{
-    let cancel
-    config.cancelToken = new axios.CancelToken(function(c){
-        cancel = c;
-    })
-    stopRepeatRequest(reqList,config.url,cancel,'${config.url} 请求终端')
-    return config
-}, err=>Promise.reject(err)
-)
 
 // 接口域名
 export const url = axios.defaults.baseURL;

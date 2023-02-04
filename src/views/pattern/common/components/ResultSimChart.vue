@@ -82,8 +82,9 @@ export default {
             name:'原数据',
             type:'line',
             lineStyle:{
-              width:1,
-              color:'#000'
+              width:2,
+              color:'#000',
+
             },
             emphasis:{
               focus:'series',
@@ -95,7 +96,8 @@ export default {
             type:'line',
             lineStyle:{
               width:1,
-              color:'#0f0'
+              color:'#0f0',
+              type:'dashed'
             },
             emphasis:{
               focus:'series',
@@ -107,7 +109,8 @@ export default {
             type:'line',
             lineStyle:{
               width:1,
-              color:'#f00'
+              color:'#f00',
+              type:'dashed'
             },
             emphasis:{
               focus:'series',
@@ -119,7 +122,8 @@ export default {
             type:'line',
             lineStyle:{
               width:1,
-              color:'#00f'
+              color:'#00f',
+              type:'dashed'
             },
             emphasis:{
               focus:'series',

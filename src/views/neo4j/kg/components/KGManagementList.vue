@@ -81,8 +81,9 @@
       :visible.sync="visibles.addOrUpdateVisible"
       width="50%">
       <el-form ref="form" :model="dataInfo" label-width="80px">
-        <el-form-item label="图谱库id" label-width="150px" v-show="flags.updateFlag == false">
-          <el-input v-model="dataInfo.dbId"></el-input>
+        <el-form-item label="图谱库id" label-width="150px">
+          <el-input disabled placeholder="系统随机生成" v-if="!flags.updateFlag"></el-input>
+          <el-input v-model="dataInfo.dbId" disabled placeholder="系统随机生成" v-if="flags.updateFlag"></el-input>
         </el-form-item>
         <el-form-item label="图谱库名称" label-width="150px">
           <el-input v-model="dataInfo.dbName"></el-input>
@@ -148,7 +149,6 @@ export default {
         },
       },
       dataInfo:{
-        dbId:0,
         dbName:'',
         dbCName:'',
         dbNote:'',
@@ -165,6 +165,9 @@ export default {
     childClick(instanceId,instanceName) {
       const data = 1
       // this.$emit('toDetails',data)
+      //将选中的图谱信息储存刀localStorage
+      localStorage.setItem("instanceId",instanceId)
+      localStorage.setItem("instanceName",instanceName)
       this.$router.push({name:'KGInstance',params:{id:instanceId,name:instanceName}})
     },
     init(){
@@ -178,7 +181,6 @@ export default {
       }
       return KGConnectApi.getConnects(params).then(({data}) => {
         this.list.connectList = data.data.list
-        console.log("this.list.connectList=======",this.list.connectList)
         this.pageInfo.total = data.data.total
         this.pageInfo.pageSize = data.data.pageSize;
         this.pageInfo.currentPage = data.data.currentPage;

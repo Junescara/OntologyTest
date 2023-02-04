@@ -2,25 +2,26 @@
 import request from '@/utils/request'
 export default {
   //获取行政区划节点的名称
-  getRegionalismNames() {
+  getRegionalismNames(db) {
     return request({
       url: `/kg/instance/regionalism/regionalismName`,
-      method: 'get'
+      method: 'get',
+      params:{database:db}
     })
   },
   //根据名称查询行政区划节点
-  getRegionalismByName(regionalismName) {
+  getRegionalismByName(regionalismName,db) {
     return request({
       url: `/kg/instance/regionalism/regionalismByName`,
       method: 'get',
-      params:{regionalismName}
+      params:{regionalismName,database:db}
     })
   },
-  getRegionalismContainsName(key){
+  getRegionalismContainsName(key,db){
     return request({
       url: `/kg/instance/regionalism/regionalismContansName`,
       method: 'get',
-      params:{regionalismNameKey:key}
+      params:{regionalismNameKey:key,database:db}
     })
   }
 }

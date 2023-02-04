@@ -23,7 +23,7 @@ export default {
   },
   getConnectionById(id){
     return request({
-      url: `/kg/instance/connect/getInstInfoById?dbId=`+id,
+      url: `/kg/instance/connect/getInstInfoById?id=`+id,
       method: 'get',
     })
   },

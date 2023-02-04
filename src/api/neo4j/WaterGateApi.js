@@ -9,26 +9,26 @@
 import request from "../../utils/request";
 
 export default {
-  //获取行政区划节点的名称
-  getWaterGateNames() {
+  //获取水闸节点的名称
+  getWaterGateNames(db) {
     return request({
-      url: `/kg/instance/waterGate/waterGateName`,
-      method: 'get'
+      url: `/kg/instance/waterGate/waterGateName?database=`+db,
+      method: 'get',
     })
   },
-  //根据名称查询行政区划节点
-  getWaterGateByName(waterGateName) {
+  //根据名称查询水闸节点
+  getWaterGateByName(waterGateName,db) {
     return request({
       url: `/kg/instance/waterGate/waterGateByName`,
       method: 'get',
-      params:{waterGateName}
+      params:{waterGateName,database:db}
     })
   },
-  getWaterGateContainsName(key) {
+  getWaterGateContainsName(key,db) {
     return request({
       url: `/kg/instance/waterGate/waterGateContainsName`,
       method: 'get',
-      params: {waterGateNameKey: key}
+      params: {waterGateNameKey: key,database:db}
     })
   }
 }

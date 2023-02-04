@@ -108,9 +108,9 @@ export default {
    * @param id
    * @returns {*}
    */
-  getKGVisiblesOutData(id){
+  getKGVisiblesOutData(id,db){
     return request({
-      url: `/kg/instance/relation/getVisibleChartsByNodeId/`+id,
+      url: `/kg/instance/relation/getVisibleChartsByNodeId/`+id+`/`+db,
       method: 'get',
     })
   },
@@ -119,9 +119,9 @@ export default {
    * @param id
    * @returns {*}
    */
-  getKGVisiblesInData(id){
+  getKGVisiblesInData(id,db){
     return request({
-      url: `/kg/instance/relation/getVisibleChartsInByNodeId/`+id,
+      url: `/kg/instance/relation/getVisibleChartsInByNodeId/`+id+`/`+db,
       method: 'get',
     })
   },
@@ -132,7 +132,7 @@ export default {
     })
   },
 
-  getKGVisiblesData(ids){
+  getKGVisiblesData(ids,db){
     let url = `/kg/instance/relation/getWholeVisibleChartsByNodeIds/`
     let temp = '?ids=' + ids[0]
     for (let i = 1; i < ids.length; i++){
@@ -141,6 +141,7 @@ export default {
     return request(({
       url: url + temp,
       method: 'get',
+      params:{database:db}
     }))
   },
   getLinkedRels(params){

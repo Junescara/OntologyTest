@@ -40,6 +40,8 @@ export default {
       },
       loading:true,
       currentNodeType:[],//当前的结点类型，用作图例显示
+      currentDbId:null,
+      currentDbName:null
     }
   },
   props: {
@@ -82,11 +84,14 @@ export default {
   },
   methods: {
     initKG() {
+      this.currentDbId = localStorage.getItem('instanceId')
+      this.currentDbName = localStorage.getItem('instanceName')
+
       this.loading = true
       let _this = this
       //老版本的处理逻辑
       if (this.settings.visibleTypeFlag == 0){
-        relationApi.getKGVisiblesOutData(this.currentNodeId).then(({data}) => {
+        relationApi.getKGVisiblesOutData(this.currentNodeId,this.currentDbId).then(({data}) => {
 
           const datas = VisUtils.handleOutVisibles(data)
           //过滤一下data中的数据
@@ -97,7 +102,7 @@ export default {
           _this.setLoading()
         })
       }else if (this.settings.visibleTypeFlag == 1){
-          relationApi.getKGVisiblesInData(this.currentNodeId).then(({data}) => {
+          relationApi.getKGVisiblesInData(this.currentNodeId,this.currentDbId).then(({data}) => {
             const datas = VisUtils.handleInVisibles(data)
             _this.getCurrentNodeType(data.data)
             const container = this.$refs.KGNetwork;
@@ -106,7 +111,7 @@ export default {
             _this.setLoading()
           })
       }else if (this.settings.visibleTypeFlag == 2){
-        relationApi.getKGVisiblesData([this.currentNodeId]).then(({data}) => {
+        relationApi.getKGVisiblesData([this.currentNodeId],this.currentDbId).then(({data}) => {
           //这里获取的是生成的全面数据
           const datas = VisUtils.handleWholeVisibles(data)
           _this.getCurrentNodeType(data.data)
@@ -119,7 +124,8 @@ export default {
         //可视化整个关系链
         const params = {
           nodeId:this.currentNodeId,
-          length: this.settings.length
+          length: this.settings.length,
+          database:this.currentDbId
         }
         relationApi.getLinkedRels(params).then(({data}) => {
           const datas = VisUtils.handleRelLinkVisibles(data)
@@ -135,7 +141,8 @@ export default {
           nodeId:this.currentNodeId,
           length: 15,
           relType:this.settings.relType[0],
-          relDir:0
+          relDir:0,
+          database:this.currentDbId
         }
         for (let i = 1; i < this.settings.relType.length; i++){
           params.relType = params.relType + '，' + this.settings.relType[i]

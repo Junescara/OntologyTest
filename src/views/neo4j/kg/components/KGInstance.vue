@@ -18,10 +18,10 @@
         <el-col :span="6">
           <el-descriptions :column="2" title="图谱信息">
             <el-descriptions-item label="数据库名称">
-              <el-tag size="small">{{ kgInfo.dbName }}</el-tag>
+              <el-tag size="small">{{ currentDbName }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="数据库id">
-              <el-tag size="small">{{ kgInfo.dbId }}</el-tag>
+              <el-tag size="small">{{ currentId }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="实体数量/个">
               <el-tag size="small">{{ nodeCounts }}</el-tag>
@@ -416,7 +416,7 @@ export default {
       relByName:null,
       currentType: null,
       currentRelType:null,
-      currentId:null,
+      currentId:null, //当前图谱id
       currentDbName:"椒江流域知识图谱",
       currentRelId:null,
       //修改对话框是否开启
@@ -431,13 +431,7 @@ export default {
     }
   },
   mounted() {
-    this.currentId = this.$route.params.id
-    console.log('id=======',this.currentId)
-    if (this.currentId !== undefined){
-      KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
-        this.kgInfo = data.data
-      })
-    }
+    this.initDbInfo()
   },
   created() {
     // this.currentDbName = this.$route.params.name
@@ -456,7 +450,7 @@ export default {
       switch (value) {
         case '行政区划':
           this.currentType = '行政区划'
-          regionalismApi.getRegionalismNames()
+          regionalismApi.getRegionalismNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.regionalismNames
               console.log(this.nodeByName)
@@ -497,7 +491,7 @@ export default {
           break;
         case '水闸':
           this.currentType = '水闸'
-          WaterGateApi.getWaterGateNames()
+          WaterGateApi.getWaterGateNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.waterGateNames
             })
@@ -507,7 +501,7 @@ export default {
           break;
         case '河流':
           this.currentType = '河流'
-          RiverApi.getRiverNames()
+          RiverApi.getRiverNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.riverNames
             })
@@ -517,7 +511,7 @@ export default {
           break;
         case '流域':
           this.currentType = '流域'
-          WaterShedApi.getWaterShedNames()
+          WaterShedApi.getWaterShedNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.watershedNames
             })
@@ -533,7 +527,7 @@ export default {
       switch (value) {
         case '下级行政区划':
           this.currentRelType = '下级行政区划'
-          relationApi.getRelsByName(this.currentRelType,this.currentDbName).then(({data}) => {
+          relationApi.getRelsByName(this.currentRelType,this.currentId).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
               let relNameAndId = {
@@ -551,7 +545,7 @@ export default {
           break;
         case '关联':
           this.currentRelType = '关联'
-          relationApi.getRelsByName(this.currentRelType,this.currentDbName).then(({data}) => {
+          relationApi.getRelsByName(this.currentRelType,this.currentId).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
               let relNameAndId = {
@@ -625,7 +619,7 @@ export default {
     },
     //根据名称查询行政规划节点
     getRegionalismNodeByName(regionalismName) {
-      regionalismApi.getRegionalismByName(regionalismName)
+      regionalismApi.getRegionalismByName(regionalismName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -675,7 +669,7 @@ export default {
      * @param stationName
      */
     getRiverNodeByName(riverName) {
-      riverApi.getRiverByName(riverName)
+      riverApi.getRiverByName(riverName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -693,7 +687,7 @@ export default {
      * @param watershedName
      */
     getWaterShedNodeByName(watershedName) {
-      waterShedApi.getWaterShedByName(watershedName)
+      waterShedApi.getWaterShedByName(watershedName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -711,7 +705,7 @@ export default {
      * @param waterGateName
      */
     getWaterGateNodeByName(waterGateName) {
-      WaterGateApi.getWaterGateByName(waterGateName)
+      WaterGateApi.getWaterGateByName(waterGateName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -1120,7 +1114,7 @@ export default {
     },
     getNodeContainsName(){
       if (this.currentType === '行政区划'){
-        regionalismApi.getRegionalismContainsName(this.key.nodeKey).then(({data}) => {
+        regionalismApi.getRegionalismContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1144,7 +1138,7 @@ export default {
           }
         })
       }else if (this.currentType == '河流'){
-        riverApi.getRiverContainsName(this.key.nodeKey).then(({data}) => {
+        riverApi.getRiverContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1160,7 +1154,7 @@ export default {
           }
         })
       }else if (this.currentType == '水闸'){
-        WaterGateApi.getWaterGateContainsName(this.key.nodeKey).then(({data}) => {
+        WaterGateApi.getWaterGateContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1168,7 +1162,7 @@ export default {
           }
         })
       }else if (this.currentType == '流域'){
-        WaterShedApi.getWaterShedContainsName(this.key.nodeKey).then(({data}) => {
+        WaterShedApi.getWaterShedContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1212,7 +1206,18 @@ export default {
     },
     getLegend(data){
       this.legend = data
-    }
+    },
+    initDbInfo(){
+      this.currentDbName = localStorage.getItem("instanceName")
+      // this.currentId = this.$route.params.id
+      this.currentId = localStorage.getItem("instanceId")
+      console.log('id=======',this.currentId)
+      if (this.currentId !== undefined){
+        KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
+          this.kgInfo = data.data
+        })
+      }
+    },
   },
   computed:{
     disabled (){
@@ -1225,7 +1230,7 @@ export default {
     },
     currentVisibleType(){
       return this.getCurrentVisibleType()
-    }
+    },
   },
   watch:{
     relNames:{

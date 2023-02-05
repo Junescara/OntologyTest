@@ -33,6 +33,7 @@
         </el-col>
         <el-col :span="6">
           <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible = true">导入文件</el-button>
+          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible2 = true">备份文件</el-button>
         </el-col>
       </el-row>
     </el-card>
@@ -269,7 +270,7 @@
       </el-dialog>
 
     </div>
-
+<!--    上传文件卡片-->
     <el-dialog
       title="上传文件"
       :visible.sync="visibles.dialogVisible"
@@ -280,7 +281,18 @@
         <el-button type="primary" @click="visibles.dialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+    <!--  备份文件卡片-->
+    <el-dialog
+      title="备份文件"
+      :visible.sync="visibles.dialogVisible2"
+      width="50%">
+      <KGBackup></KGBackup>
+    <span slot="footer" class="dialog-footer">
+        <el-button @click="visibles.dialogVisible2 = false">关闭</el-button>
+    </span>
+    </el-dialog>
   </div>
+
 </template>
 
 <script>
@@ -292,6 +304,7 @@ import stationApi from '@/api/neo4j/station';
 import KGVisibleEcahrts from "./KGVisibleEcahrts";
 import relationApi from "../../../../api/neo4j/relationApi";
 import KGUploadFile from "./KGUploadFile";
+import KGBackup from "./KGBackup";
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 import KGVisibleVisNetwork from "./KGVisibleVisNetwork";
 import ReservoirApi from "../../../../api/neo4j/ReservoirApi";
@@ -303,7 +316,7 @@ import waterShedApi from "../../../../api/neo4j/WaterShedApi";
 import ontologyApi from "../../../../api/neo4j/ontology";
 export default {
   name: 'KGInstance',
-  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile},
+  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup},
   props:{
     kgConnectInfo:{
       type:Object,
@@ -346,8 +359,10 @@ export default {
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       visibles:{
         dialogVisible:false,
+        dialogVisible2:false,
         settingsVisible:false
       },
+
       //标记类
       flags:{
         relLazyCountFlag:0,

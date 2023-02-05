@@ -19,7 +19,7 @@
           </el-descriptions>
         </el-card>
       </el-col>
-      <el-col :span="8">
+<!--      <el-col :span="8">
         <el-card class="box-card" style="width: 100%">
           <el-descriptions column="1" title="滑动窗口">
             <template slot="extra">
@@ -29,7 +29,7 @@
             <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
           </el-descriptions>
         </el-card>
-      </el-col>
+      </el-col>-->
       <el-col :span="8">
         <el-card class="box-card" style="width: 100%">
           <el-descriptions column="1" title="流域拓扑">

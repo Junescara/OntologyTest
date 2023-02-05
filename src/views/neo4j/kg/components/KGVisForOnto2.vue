@@ -32,7 +32,7 @@ export default {
       edges: null,
       options: null,
       network: null,
-      currentNodeId:7,
+      currentNodeId:4328,
       detailOfNode: {},
     }
   },

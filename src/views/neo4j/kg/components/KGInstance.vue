@@ -16,7 +16,7 @@
             style="width: 200px; height: 150px"/>
         </el-col>
         <el-col :span="6">
-          <el-descriptions :column="2" title="图谱信息">
+          <el-descriptions :column="1" title="图谱信息">
             <el-descriptions-item label="数据库名称">
               <el-tag size="small">{{ currentDbName }}</el-tag>
             </el-descriptions-item>
@@ -461,7 +461,7 @@ export default {
           break;
         case '测站':
           this.currentType = '测站'
-          stationApi.getStationNames()
+          stationApi.getStationNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.stationNames
             })
@@ -471,7 +471,7 @@ export default {
           break;
         case '断面':
           this.currentType = '断面'
-          sectionApi.getSectionNames()
+          sectionApi.getSectionNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.sectionNames
             })
@@ -481,7 +481,7 @@ export default {
           break;
         case '水库':
           this.currentType = '水库'
-          ReservoirApi.getReservoirNames()
+          ReservoirApi.getReservoirNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.reservoirNames
             })
@@ -636,7 +636,7 @@ export default {
     },
     //根据名称查询断面节点
     getSectionNodeByName(sectionName) {
-      sectionApi.getSectionByName(sectionName)
+      sectionApi.getSectionByName(sectionName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -651,7 +651,7 @@ export default {
     },
     //根据名称查询测站节点
     getStationNodeByName(stationName) {
-      stationApi.getStationByName(stationName)
+      stationApi.getStationByName(stationName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -720,7 +720,7 @@ export default {
     },
 
     getReservoirNodeByName(reservoirName) {
-      ReservoirApi.getReservoirByName(reservoirName)
+      ReservoirApi.getReservoirByName(reservoirName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -1122,7 +1122,7 @@ export default {
           }
         })
       }else if (this.currentType == '测站'){
-        stationApi.getStationContainsName(this.key.nodeKey).then(({data}) => {
+        stationApi.getStationContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1130,7 +1130,7 @@ export default {
           }
         })
       }else if (this.currentType == '断面'){
-        sectionApi.getSectionContainsName(this.key.nodeKey).then(({data}) => {
+        sectionApi.getSectionContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1146,7 +1146,7 @@ export default {
           }
         })
       }else if (this.currentType == '水库'){
-        ReservoirApi.getReservoirContainsName(this.key.nodeKey).then(({data}) => {
+        ReservoirApi.getReservoirContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.result
           this.nodeNames = []
           for (let item of list){

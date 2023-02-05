@@ -9,25 +9,26 @@
 import request from '@/utils/request'
 export default {
   //获取行政区划节点的名称
-  getReservoirNames() {
+  getReservoirNames(db) {
     return request({
       url: `/kg/instance/reservoir/reservoirName`,
-      method: 'get'
+      method: 'get',
+      params:{database:db}
     })
   },
   //根据名称查询行政区划节点
-  getReservoirByName(reservoirName) {
+  getReservoirByName(reservoirName,db) {
     return request({
       url: `/kg/instance/reservoir/reservoirByName`,
       method: 'get',
-      params:{reservoirName}
+      params:{reservoirName,database:db}
     })
   },
-  getReservoirContainsName(key) {
+  getReservoirContainsName(key,db) {
     return request({
       url: `/kg/instance/reservoir/reservoirByNameKey`,
       method: 'get',
-      params: {reservoirNameKey: key}
+      params: {reservoirNameKey: key,database:db}
     })
   }
 }

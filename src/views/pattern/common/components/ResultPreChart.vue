@@ -74,7 +74,7 @@ export default {
             name:'原数据',
             type:'line',
             lineStyle:{
-              width:1,
+              width:2,
               color:'#000'
             },
             emphasis:{
@@ -86,8 +86,9 @@ export default {
             name: 'pre',
             type: 'line',
             lineStyle: {
-              width: 1,
-              color: '#0f0'
+              width: 2,
+              color: '#0f0',
+              type:'dashed'
             },
             emphasis: {
               focus: 'series',

@@ -10,25 +10,26 @@ import request from "../../utils/request";
 
 export default {
   //获取河流节点的名称
-  getRiverNames() {
+  getRiverNames(db) {
     return request({
       url: `/kg/instance/river/riverName`,
-      method: 'get'
+      method: 'get',
+      params:{database:db}
     })
   },
   //根据名称查询河流节点
-  getRiverByName(riverName) {
+  getRiverByName(riverName,db) {
     return request({
       url: `/kg/instance/river/riverByName`,
       method: 'get',
-      params:{riverName}
+      params:{riverName,database:db}
     })
   },
-  getRiverContainsName(key) {
+  getRiverContainsName(key,db) {
     return request({
       url: `/kg/instance/river/riverContansName`,
       method: 'get',
-      params: {riverNameKey: key}
+      params: {riverNameKey: key,database:db}
     })
   }
 }

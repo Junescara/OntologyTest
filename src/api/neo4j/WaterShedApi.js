@@ -10,25 +10,26 @@ import request from "../../utils/request";
 
 export default {
   //获取行政区划节点的名称
-  getWaterShedNames() {
+  getWaterShedNames(db) {
     return request({
       url: `/kg/instance/watershed/watershedName`,
-      method: 'get'
+      method: 'get',
+      params:{database:db}
     })
   },
   //根据名称查询行政区划节点
-  getWaterShedByName(watershedName) {
+  getWaterShedByName(watershedName,db) {
     return request({
       url: `/kg/instance/watershed/watershedByName`,
       method: 'get',
-      params:{watershedName}
+      params:{watershedName,database:db}
     })
   },
-  getWaterShedContainsName(key) {
+  getWaterShedContainsName(key,db) {
     return request({
       url: `/kg/instance/watershed/watershedContansName`,
       method: 'get',
-      params: {watershedNameKey: key}
+      params: {watershedNameKey: key,database:db}
     })
   }
 }

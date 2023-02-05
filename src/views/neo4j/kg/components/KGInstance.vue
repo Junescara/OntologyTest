@@ -16,12 +16,12 @@
             style="width: 200px; height: 150px"/>
         </el-col>
         <el-col :span="6">
-          <el-descriptions :column="2" title="图谱信息">
+          <el-descriptions :column="1" title="图谱信息">
             <el-descriptions-item label="数据库名称">
-              <el-tag size="small">{{ kgInfo.dbName }}</el-tag>
+              <el-tag size="small">{{ currentDbName }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="数据库id">
-              <el-tag size="small">{{ kgInfo.dbId }}</el-tag>
+              <el-tag size="small">{{ currentId }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="实体数量/个">
               <el-tag size="small">{{ nodeCounts }}</el-tag>
@@ -33,6 +33,7 @@
         </el-col>
         <el-col :span="6">
           <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible = true">导入文件</el-button>
+          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible2 = true">备份文件</el-button>
         </el-col>
       </el-row>
     </el-card>
@@ -199,7 +200,7 @@
             <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
           </el-form-item>
           <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 4">
-            <el-select clearable v-model="flags.relTypeFlag" placeholder="请选择关系类型" @click="chooseRelType"
+            <el-select clearable v-model="flags.relTypeFlag" multiple placeholder="请选择关系类型" @click="chooseRelType"
                        style="margin-top: 20px">
               <el-option
                 v-for="(item,index) in relLabels"
@@ -269,7 +270,7 @@
       </el-dialog>
 
     </div>
-
+<!--    上传文件卡片-->
     <el-dialog
       title="上传文件"
       :visible.sync="visibles.dialogVisible"
@@ -280,7 +281,18 @@
         <el-button type="primary" @click="visibles.dialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+    <!--  备份文件卡片-->
+    <el-dialog
+      title="备份文件"
+      :visible.sync="visibles.dialogVisible2"
+      width="50%">
+      <KGBackup></KGBackup>
+    <span slot="footer" class="dialog-footer">
+        <el-button @click="visibles.dialogVisible2 = false">关闭</el-button>
+    </span>
+    </el-dialog>
   </div>
+
 </template>
 
 <script>
@@ -292,6 +304,7 @@ import stationApi from '@/api/neo4j/station';
 import KGVisibleEcahrts from "./KGVisibleEcahrts";
 import relationApi from "../../../../api/neo4j/relationApi";
 import KGUploadFile from "./KGUploadFile";
+import KGBackup from "./KGBackup";
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 import KGVisibleVisNetwork from "./KGVisibleVisNetwork";
 import ReservoirApi from "../../../../api/neo4j/ReservoirApi";
@@ -303,7 +316,7 @@ import waterShedApi from "../../../../api/neo4j/WaterShedApi";
 import ontologyApi from "../../../../api/neo4j/ontology";
 export default {
   name: 'KGInstance',
-  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile},
+  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup},
   props:{
     kgConnectInfo:{
       type:Object,
@@ -346,8 +359,10 @@ export default {
       url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       visibles:{
         dialogVisible:false,
+        dialogVisible2:false,
         settingsVisible:false
       },
+
       //标记类
       flags:{
         relLazyCountFlag:0,
@@ -355,7 +370,7 @@ export default {
         loadingFlag:false,
         visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
         lengthFlag:2,
-        relTypeFlag:'',
+        relTypeFlag:[],
       },
       //查询关键字
       key:{
@@ -391,7 +406,7 @@ export default {
       visibleSettings:{
         length:2, //关系链长度，默认为2
         visibleTypeFlag:1,
-        relType:'',
+        relType:[],
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -416,7 +431,7 @@ export default {
       relByName:null,
       currentType: null,
       currentRelType:null,
-      currentId:null,
+      currentId:null, //当前图谱id
       currentDbName:"椒江流域知识图谱",
       currentRelId:null,
       //修改对话框是否开启
@@ -431,13 +446,7 @@ export default {
     }
   },
   mounted() {
-    this.currentId = this.$route.params.id
-    console.log('id=======',this.currentId)
-    if (this.currentId !== undefined){
-      KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
-        this.kgInfo = data.data
-      })
-    }
+    this.initDbInfo()
   },
   created() {
     // this.currentDbName = this.$route.params.name
@@ -456,7 +465,7 @@ export default {
       switch (value) {
         case '行政区划':
           this.currentType = '行政区划'
-          regionalismApi.getRegionalismNames()
+          regionalismApi.getRegionalismNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.regionalismNames
               console.log(this.nodeByName)
@@ -467,7 +476,7 @@ export default {
           break;
         case '测站':
           this.currentType = '测站'
-          stationApi.getStationNames()
+          stationApi.getStationNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.stationNames
             })
@@ -477,7 +486,7 @@ export default {
           break;
         case '断面':
           this.currentType = '断面'
-          sectionApi.getSectionNames()
+          sectionApi.getSectionNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.sectionNames
             })
@@ -487,7 +496,7 @@ export default {
           break;
         case '水库':
           this.currentType = '水库'
-          ReservoirApi.getReservoirNames()
+          ReservoirApi.getReservoirNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.reservoirNames
             })
@@ -497,7 +506,7 @@ export default {
           break;
         case '水闸':
           this.currentType = '水闸'
-          WaterGateApi.getWaterGateNames()
+          WaterGateApi.getWaterGateNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.waterGateNames
             })
@@ -507,7 +516,7 @@ export default {
           break;
         case '河流':
           this.currentType = '河流'
-          RiverApi.getRiverNames()
+          RiverApi.getRiverNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.riverNames
             })
@@ -517,7 +526,7 @@ export default {
           break;
         case '流域':
           this.currentType = '流域'
-          WaterShedApi.getWaterShedNames()
+          WaterShedApi.getWaterShedNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.watershedNames
             })
@@ -533,7 +542,7 @@ export default {
       switch (value) {
         case '下级行政区划':
           this.currentRelType = '下级行政区划'
-          relationApi.getRelsByName(this.currentRelType,this.currentDbName).then(({data}) => {
+          relationApi.getRelsByName(this.currentRelType,this.currentId).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
               let relNameAndId = {
@@ -551,7 +560,7 @@ export default {
           break;
         case '关联':
           this.currentRelType = '关联'
-          relationApi.getRelsByName(this.currentRelType,this.currentDbName).then(({data}) => {
+          relationApi.getRelsByName(this.currentRelType,this.currentId).then(({data}) => {
             for (let item of data.data.relationList){
               this.relNames.push(item.pathName);
               let relNameAndId = {
@@ -625,7 +634,7 @@ export default {
     },
     //根据名称查询行政规划节点
     getRegionalismNodeByName(regionalismName) {
-      regionalismApi.getRegionalismByName(regionalismName)
+      regionalismApi.getRegionalismByName(regionalismName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -642,7 +651,7 @@ export default {
     },
     //根据名称查询断面节点
     getSectionNodeByName(sectionName) {
-      sectionApi.getSectionByName(sectionName)
+      sectionApi.getSectionByName(sectionName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -657,7 +666,7 @@ export default {
     },
     //根据名称查询测站节点
     getStationNodeByName(stationName) {
-      stationApi.getStationByName(stationName)
+      stationApi.getStationByName(stationName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -675,7 +684,7 @@ export default {
      * @param stationName
      */
     getRiverNodeByName(riverName) {
-      riverApi.getRiverByName(riverName)
+      riverApi.getRiverByName(riverName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -693,7 +702,7 @@ export default {
      * @param watershedName
      */
     getWaterShedNodeByName(watershedName) {
-      waterShedApi.getWaterShedByName(watershedName)
+      waterShedApi.getWaterShedByName(watershedName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -711,7 +720,7 @@ export default {
      * @param waterGateName
      */
     getWaterGateNodeByName(waterGateName) {
-      WaterGateApi.getWaterGateByName(waterGateName)
+      WaterGateApi.getWaterGateByName(waterGateName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -726,7 +735,7 @@ export default {
     },
 
     getReservoirNodeByName(reservoirName) {
-      ReservoirApi.getReservoirByName(reservoirName)
+      ReservoirApi.getReservoirByName(reservoirName,this.currentId)
         .then((response) => {
           this.nodeByName = response.data.data.result
           let tmp = JSON.stringify(this.nodeByName[0]);
@@ -1120,7 +1129,7 @@ export default {
     },
     getNodeContainsName(){
       if (this.currentType === '行政区划'){
-        regionalismApi.getRegionalismContainsName(this.key.nodeKey).then(({data}) => {
+        regionalismApi.getRegionalismContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1128,7 +1137,7 @@ export default {
           }
         })
       }else if (this.currentType == '测站'){
-        stationApi.getStationContainsName(this.key.nodeKey).then(({data}) => {
+        stationApi.getStationContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1136,7 +1145,7 @@ export default {
           }
         })
       }else if (this.currentType == '断面'){
-        sectionApi.getSectionContainsName(this.key.nodeKey).then(({data}) => {
+        sectionApi.getSectionContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1144,7 +1153,7 @@ export default {
           }
         })
       }else if (this.currentType == '河流'){
-        riverApi.getRiverContainsName(this.key.nodeKey).then(({data}) => {
+        riverApi.getRiverContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1152,7 +1161,7 @@ export default {
           }
         })
       }else if (this.currentType == '水库'){
-        ReservoirApi.getReservoirContainsName(this.key.nodeKey).then(({data}) => {
+        ReservoirApi.getReservoirContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.result
           this.nodeNames = []
           for (let item of list){
@@ -1160,7 +1169,7 @@ export default {
           }
         })
       }else if (this.currentType == '水闸'){
-        WaterGateApi.getWaterGateContainsName(this.key.nodeKey).then(({data}) => {
+        WaterGateApi.getWaterGateContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1168,7 +1177,7 @@ export default {
           }
         })
       }else if (this.currentType == '流域'){
-        WaterShedApi.getWaterShedContainsName(this.key.nodeKey).then(({data}) => {
+        WaterShedApi.getWaterShedContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){
@@ -1212,7 +1221,18 @@ export default {
     },
     getLegend(data){
       this.legend = data
-    }
+    },
+    initDbInfo(){
+      this.currentDbName = localStorage.getItem("instanceName")
+      // this.currentId = this.$route.params.id
+      this.currentId = localStorage.getItem("instanceId")
+      console.log('id=======',this.currentId)
+      if (this.currentId !== undefined){
+        KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
+          this.kgInfo = data.data
+        })
+      }
+    },
   },
   computed:{
     disabled (){
@@ -1225,7 +1245,7 @@ export default {
     },
     currentVisibleType(){
       return this.getCurrentVisibleType()
-    }
+    },
   },
   watch:{
     relNames:{
@@ -1235,6 +1255,51 @@ export default {
           this.relNamesLazy = []
           this.flags.relLazyCountFlag = 0
           this.load()
+        }
+      },
+      deep: true
+    },
+    flags:{
+      handler(newValue, oldValue){
+        if (newValue.relTypeFlag.indexOf('上游') >= 0 && newValue.relTypeFlag.indexOf('下游') >= 0){
+          this.$message.error('上下游不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('上游')
+          let i2 = this.flags.relTypeFlag.indexOf('下游')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('位于') >= 0 && newValue.relTypeFlag.indexOf('监测') >= 0){
+          this.$message.error('位于监测不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('位于')
+          let i2 = this.flags.relTypeFlag.indexOf('监测')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('含有') >= 0 && newValue.relTypeFlag.indexOf('属于') >= 0){
+          this.$message.error('含有属于不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('含有')
+          let i2 = this.flags.relTypeFlag.indexOf('属于')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('上级') >= 0 && newValue.relTypeFlag.indexOf('下级') >= 0){
+          this.$message.error('上下级不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('上级')
+          let i2 = this.flags.relTypeFlag.indexOf('下级')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
+        }
+        if (newValue.relTypeFlag.indexOf('支流') >= 0 && newValue.relTypeFlag.indexOf('干流') >= 0){
+          this.$message.error('干支流不能同时被选中！')
+          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
+          let i1 = this.flags.relTypeFlag.indexOf('支流')
+          let i2 = this.flags.relTypeFlag.indexOf('干流')
+          delete this.flags.relTypeFlag[i1]
+          delete this.flags.relTypeFlag[i2]
         }
       },
       deep: true

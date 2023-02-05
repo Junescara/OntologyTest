@@ -448,14 +448,14 @@ export default {
 }
 
 .box-card {
-  width: 300px;
+  width: 600px;
   height: 790px;
   margin-top: 20px;
   margin-left: 20px;
 }
 
 .box-card-2 {
-  width: 1500px;
+  width: 1200px;
   height: 800px;
   margin-top: 10px;
   margin-left: 10px;

@@ -250,6 +250,7 @@ export default {
           data['id'] = _this.$store.state.pattern.selectedFlood;
           data['startValue'] = startValue
           data['endValue'] = endValue
+          data['sliceNo']=-1
           postRequestJson("/brush",JSON.stringify(data))
             .then((res)=>{
               console.log(res)

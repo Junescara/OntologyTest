@@ -72,4 +72,5 @@ export default {
     return request.post(`/kg/onto/isPrimaryKeyValue`, primaryKeyValue,{headers:{'Content-Type': 'application/json'}})
   },
 
+
 }

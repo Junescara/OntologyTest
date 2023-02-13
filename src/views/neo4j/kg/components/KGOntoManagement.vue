@@ -172,7 +172,6 @@ export default {
       this.currentDbName = localStorage.getItem("instanceName")
 
       //临时存入一个本体库id用于本地测试
-      localStorage.setItem("ontoId",`0F248F3292A642F884109016B27274A8`)
       this.currentOntoId = localStorage.getItem('ontoId')
       this.submitOntology.database = this.currentOntoId
     },

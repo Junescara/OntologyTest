@@ -34,6 +34,9 @@ export default {
       network: null,
       currentNodeId:4328,
       detailOfNode: {},
+      currentDbId:null,
+      currentDbName:null,
+      currentOntoId:null
     }
   },
   props: {
@@ -68,14 +71,20 @@ export default {
     ]);
   },
   mounted() {
+    this.init()
     this.initKG();
   },
   methods: {
+    init(){
+      this.currentDbId = localStorage.getItem("instanceId")
+      this.currentDbName = localStorage.getItem("instanceName")
+      this.currentOntoId = localStorage.getItem('ontoId')
+    },
     initKG() {
       let rels = []
       let nodes = []
       let _this = this
-      relationApi.getKGVisiblesDataOfOnto(this.currentNodeId).then(({data}) => {
+      relationApi.getKGVisiblesDataOfOnto(this.currentNodeId,this.currentOntoId).then(({data}) => {
         rels = data.data.relationShips.relationList
         nodes = data.data.endNodes.nodeList
         let startNode = data.data.startNode

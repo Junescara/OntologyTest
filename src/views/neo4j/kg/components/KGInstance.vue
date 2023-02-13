@@ -433,6 +433,7 @@ export default {
       currentRelType:null,
       currentId:null, //当前图谱id
       currentDbName:"椒江流域知识图谱",
+      currentOntoId:null,
       currentRelId:null,
       //修改对话框是否开启
       editObjVisible: false,
@@ -788,7 +789,7 @@ export default {
       this.addOptions[1].children=[];
 
       //根据本体库获取可增加的实例类型列表
-      ontologyApi.getOntoList(0)
+      ontologyApi.getOntoList(0,this.currentOntoId)
       .then((response) => {
         const ontoList = response.data.data.ontoList;
         //将实例类型列表添加入选项列表
@@ -807,7 +808,7 @@ export default {
         });
 
     //根据本体库获取可增加的关系类型列表
-      ontologyApi.getOntoRelList(0)
+      ontologyApi.getOntoRelList(0,this.currentOntoId)
         .then((response) => {
           const ontoRelList = response.data.data.ontoRelList;
           //将关系类型列表添加入选项列表
@@ -847,7 +848,7 @@ export default {
         });
       }
       else{
-        ontologyApi.getAttNameListByObjName(types[1])
+        ontologyApi.getAttNameListByObjName(types[1],this.currentOntoId)
           .then((response) => {
 
             //对象标识信息
@@ -1226,6 +1227,8 @@ export default {
       this.currentDbName = localStorage.getItem("instanceName")
       // this.currentId = this.$route.params.id
       this.currentId = localStorage.getItem("instanceId")
+      this.currentOntoId = localStorage.getItem('ontoId')
+      this.submitInstance.database = this.currentOntoId
       console.log('id=======',this.currentId)
       if (this.currentId !== undefined){
         KGConnectApi.getConnectionById(this.currentId).then(({data}) => {

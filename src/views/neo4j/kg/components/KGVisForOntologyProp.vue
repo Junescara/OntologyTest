@@ -27,6 +27,9 @@ export default {
       options: null,
       network: null,
       currentNodeId:64,
+      currentDbId:null,
+      currentDbName:null,
+      currentOntoId:null
     }
   },
   props: {
@@ -61,14 +64,20 @@ export default {
     ]);
   },
   mounted() {
+    this.init()
     this.initKG()
   },
   methods: {
+    init(){
+      this.currentDbId = localStorage.getItem("instanceId")
+      this.currentDbName = localStorage.getItem("instanceName")
+      this.currentOntoId = localStorage.getItem('ontoId')
+    },
     initKG() {
       let rels = []
       let nodes = []
       let _this = this
-      relationApi.getKGVisiblesDataForOntologyProp().then(({data}) => {
+      relationApi.getKGVisiblesDataForOntologyProp(this.currentOntoId).then(({data}) => {
         nodes = data.data.ontologyProps
         const datas = {
           nodes:VisUtils.createNodesForOntologyProp(nodes),

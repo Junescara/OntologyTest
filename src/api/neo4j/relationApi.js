@@ -124,9 +124,9 @@ export default {
       method: 'get',
     })
   },
-  getKGVisiblesDataOfOnto(id){
+  getKGVisiblesDataOfOnto(id,db){
     return request({
-      url: `/kg/onto/showOntologySep/`+id,
+      url: `/kg/onto/showOntologySep/`+id+`/`+db,
       method: 'get',
     })
   },
@@ -154,20 +154,22 @@ export default {
    * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据
    * @returns {*}
    */
-  getKGVisiblesDataForOntology(){
+  getKGVisiblesDataForOntology(db){
     return request({
       url: `/kg/onto/showOntology`,
       method: 'get',
+      params:{database:db}
     })
   },
   /**
    * 查询生成可视化知识图谱所需的内容，一次性返回所有需要的数据-属性
    * @returns {*}
    */
-  getKGVisiblesDataForOntologyProp(){
+  getKGVisiblesDataForOntologyProp(db){
     return request({
       url: `/kg/onto/showOntologyProp`,
       method: 'get',
+      params:{database:db}
     })
   },
 }

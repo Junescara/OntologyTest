@@ -160,10 +160,21 @@ export default {
         "水闸",
         "河流",
       ],
-      ontoData:[]
+      ontoData:[],
+      currentDbId:null,
+      currentDbName:null,
+      currentOntoId:null
     }
   },
   methods:{
+    init(){
+      this.currentDbId = localStorage.getItem("instanceId")
+      this.currentDbName = localStorage.getItem("instanceName")
+
+      //临时存入一个本体库id用于本地测试
+      this.currentOntoId = localStorage.getItem('ontoId')
+      this.submitOntology.database = this.currentOntoId
+    },
     change(index) {
       this.visStyle = index;
       this.number = index;
@@ -247,7 +258,7 @@ export default {
     objChange(value) {
       switch (value) {
         case '水利对象':
-          ontology.getOntoIDbyName("水利对象")
+          ontology.getOntoIDbyName("水利对象",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -257,7 +268,7 @@ export default {
             });
           break;
         case '湖泊':
-          ontology.getOntoIDbyName("湖泊")
+          ontology.getOntoIDbyName("湖泊",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -267,7 +278,7 @@ export default {
             });
           break;
         case '水库':
-          ontology.getOntoIDbyName("水库")
+          ontology.getOntoIDbyName("水库",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -277,7 +288,7 @@ export default {
             });
           break;
         case '流域':
-          ontology.getOntoIDbyName("流域")
+          ontology.getOntoIDbyName("流域",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -287,7 +298,7 @@ export default {
             });
           break;
         case '测站':
-          ontology.getOntoIDbyName("测站")
+          ontology.getOntoIDbyName("测站",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -297,7 +308,7 @@ export default {
             });
           break;
         case '河流':
-          ontology.getOntoIDbyName("河流")
+          ontology.getOntoIDbyName("河流",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -307,7 +318,7 @@ export default {
             });
           break;
         case '河段':
-          ontology.getOntoIDbyName("河段")
+          ontology.getOntoIDbyName("河段",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -317,7 +328,7 @@ export default {
             });
           break;
         case '水闸':
-          ontology.getOntoIDbyName("水闸")
+          ontology.getOntoIDbyName("水闸",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -327,7 +338,7 @@ export default {
             });
           break;
         case '断面':
-          ontology.getOntoIDbyName("断面")
+          ontology.getOntoIDbyName("断面",this.currentOntoId)
             .then((response) => {
               this.visStyle = 1
               this.currentOnto = response.data.data
@@ -419,7 +430,7 @@ export default {
 
     },
     getOntoTableList() {
-      ontologyApi.getOntoTableList().then(({data}) => {
+      ontologyApi.getOntoTableList(this.currentOntoId).then(({data}) => {
         this.ontoData = data.data.ontologyTableList
         console.log("ontoData++++++",this.ontoData)
       })
@@ -429,6 +440,7 @@ export default {
     }
   },
   mounted() {
+    this.init()
     this.getOntoTableList()
   }
 }

@@ -34,6 +34,7 @@
         <el-col :span="6">
           <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible = true">导入文件</el-button>
           <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible2 = true">备份文件</el-button>
+          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible3 = true">下载文件</el-button>
         </el-col>
       </el-row>
     </el-card>
@@ -291,6 +292,16 @@
         <el-button @click="visibles.dialogVisible2 = false">关闭</el-button>
     </span>
     </el-dialog>
+    <el-dialog
+      title="恢复文件"
+      :visible.sync="visibles.dialogVisible3"
+      width="50%">
+      <KGDownloadFile></KGDownloadFile>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="visibles.dialogVisible3 = false">关闭</el-button>
+    </span>
+    </el-dialog>
+
   </div>
 
 </template>
@@ -314,9 +325,11 @@ import RiverApi from "../../../../api/neo4j/RiverApi";
 import riverApi from "../../../../api/neo4j/RiverApi";
 import waterShedApi from "../../../../api/neo4j/WaterShedApi";
 import ontologyApi from "../../../../api/neo4j/ontology";
+import KGDownloadFile from "./KGDownloadFile";
+import downloadFileApi from "../../../../api/neo4j/downloadFileApi";
 export default {
   name: 'KGInstance',
-  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup},
+  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
   props:{
     kgConnectInfo:{
       type:Object,
@@ -360,7 +373,8 @@ export default {
       visibles:{
         dialogVisible:false,
         dialogVisible2:false,
-        settingsVisible:false
+        settingsVisible:false,
+        dialogVisible3:false,
       },
 
       //标记类

@@ -12,7 +12,7 @@
 <!--        <el-input v-model="backupInfo.label" placeholder="输入label，如 对象本体"></el-input>-->
 <!--      </el-form-item>-->
       <el-form-item label="选择需要备份的数据库">
-        <el-select clearable @clear="clear"  v-model="LabelOfDataBase.index" placeholder="请选择要备份的数据库"
+        <el-select clearable @clear="clear" @change="changeDatabase" v-model="LabelOfDataBase.index" placeholder="请选择要备份的数据库"
                    style="margin-top: 0px">
           <el-option
             v-for="(item,index) in LabelOfDataBase"
@@ -24,7 +24,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="选择需要备份的标签">
-      <el-select clearable @clear="clear"  v-model="LabelOfOntoObj.index" placeholder="请选择要备份的标签"
+      <el-select clearable @clear="clear" @change="changeLabel" v-model="LabelOfOntoObj.index" placeholder="请选择要备份的标签"
                  style="margin-top: 0px">
         <el-option
           v-for="(item,index) in LabelOfOntoObj"
@@ -52,6 +52,7 @@
 <script>
 import fileApi from "../../../../api/neo4j/fileApi";
 import backupApi from "../../../../api/neo4j/backupApi";
+import ontology from "../../../../api/neo4j/ontology";
 
 export default {
   name: "KGBackup",
@@ -63,7 +64,8 @@ export default {
       },
       LabelOfOntoObj:[
         "全部",
-        "水利对象",
+        "对象本体",
+        "属性本体",
         "水库",
         "流域",
         "测站",
@@ -99,6 +101,28 @@ export default {
         }
       })
     },
+    changeLabel(value){
+      if(value != "全部"){
+        this.backupInfo.label = value
+      }
+      else{
+        this.backupInfo.label = ""
+      }
+
+    },
+    changeDatabase(value){
+      switch (value) {
+        case '椒江流域知识图谱':
+          this.backupInfo.database ="A387BE524D344370A13F1DFF76C40493"
+          break;
+        case '屯溪流域知识图谱':
+          this.backupInfo.database ="A387BE524D344370A13F1DFF76C40493"
+          break;
+        case '水利对象本体库':
+          this.backupInfo.database ="水利对象本体库"
+          break;
+      }
+    }
 
   }
 }

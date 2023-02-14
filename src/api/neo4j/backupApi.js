@@ -8,5 +8,12 @@ export default {
       method: 'post',
       data:qs.stringify(params)
     })
+  },
+  recoverNeo4(params) {
+    return request({
+      url: `/kg/readBackup`,
+      method: 'post',
+      data:qs.stringify(params)
+    })
   }
 }

@@ -177,8 +177,8 @@ export default {
       sim3 = sim3.split("]")[0]
       sim3 = sim3.split(",")
       sim3Arr.push(sim3[0])
-      sim3Arr.push(sim3[1].split(" ")[1])
-      sim3Arr.push(sim3[2].split(" ")[1])
+      sim3Arr.push(sim3[1])
+      sim3Arr.push(sim3[2])
       console.log("sim3",sim3Arr)
       _this.currentChartParam.currentLegend = sim3Arr
       postRequestJson('/floodInfo/match',sim3Arr)

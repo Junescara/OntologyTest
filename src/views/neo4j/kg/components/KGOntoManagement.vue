@@ -6,8 +6,35 @@
         <el-button @click="addObjVisible = true" style="float: right; padding-top: 1px" type="text">增加</el-button>
       </div>
       <div>
-        <el-button @click="change(0)">对象本体</el-button>
-        <el-button @click="change(2)">属性本体</el-button>
+        <el-row>
+          <el-button @click="change(0)">对象本体</el-button>
+          <el-button @click="change(2)">属性本体</el-button>
+        </el-row>
+        <el-divider></el-divider>
+        <el-row>
+          <div>
+            <el-button type="success" plain v-if="!ontoInfoVisible" @click="ontoInfoVisible = true">查看本体概况</el-button>
+            <el-descriptions class="margin-top" :title="visStyle == 0 ? `对象本体` : `属性本体`" :column="2"  border v-if="ontoInfoVisible">
+              <template slot="extra">
+                <el-button type="text" size="small" @click="ontoInfoVisible = false">收起</el-button>
+              </template>
+              <el-descriptions-item>
+                <template slot="label">
+                  <i class="el-icon-user"></i>
+                  本体数量
+                </template>
+                {{entityNum}}
+              </el-descriptions-item>
+              <el-descriptions-item>
+                <template slot="label">
+                  <i class="el-icon-mobile-phone"></i>
+                  本体概述
+                </template>
+                …………
+              </el-descriptions-item>
+            </el-descriptions>
+          </div>
+        </el-row>
         <div v-show="0===number">
           <el-select v-show="0===number" clearable @clear="clear" @change="objChange" v-model="LabelOfOntoObj.index" placeholder="请选择类型"
                      style="margin-top: 20px">
@@ -30,7 +57,7 @@
             <el-button slot="append" icon="el-icon-search"/>
           </el-input>
         </div>
-        <el-table style="width: 100%" :data="ontoData" v-infinite-scroll="load" height="500">
+        <el-table style="width: 100%" :data="ontoData" v-infinite-scroll="load" height="500" v-if="visStyle == 0">
           <el-table-column
             prop="_id"
             label="id"
@@ -47,11 +74,29 @@
             width="200">
           </el-table-column>
         </el-table>
+
+        <el-table style="width: 100%" :data="ontoPropData" v-infinite-scroll="load" height="500" v-if="visStyle == 2">
+          <el-table-column
+            prop="_id"
+            label="id"
+            width="75">
+          </el-table-column>
+          <el-table-column
+            prop="propName"
+            label="名称"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="propName"
+            label="属性"
+            width="200">
+          </el-table-column>
+        </el-table>
       </div>
     </el-card>
     <el-card class="box-card-2">
       <KGVisForOntology v-show="0===visStyle"></KGVisForOntology>
-      <KGVisForOntologyProp v-show="2===visStyle"></KGVisForOntologyProp>
+      <KGVisForOntologyProp v-show="2===visStyle" @ontoProp="getOntoPropTableList"></KGVisForOntologyProp>
       <KGVisForOnto2 v-show="1===visStyle" :current-node="currentOnto"></KGVisForOnto2>
     </el-card>
 
@@ -120,6 +165,7 @@ export default {
       propName:null,
       //增加对话框是否开启
       addObjVisible: false,
+      ontoInfoVisible:true,
       //增加本体的相关信息
       OntologyForm: {
         //本体的标签信息
@@ -161,9 +207,11 @@ export default {
         "河流",
       ],
       ontoData:[],
+      ontoPropData:[],
       currentDbId:null,
       currentDbName:null,
-      currentOntoId:null
+      currentOntoId:null,
+      entityNum:0
     }
   },
   methods:{
@@ -432,8 +480,11 @@ export default {
     getOntoTableList() {
       ontologyApi.getOntoTableList(this.currentOntoId).then(({data}) => {
         this.ontoData = data.data.ontologyTableList
-        console.log("ontoData++++++",this.ontoData)
+        this.entityNum = this.ontoData.length
       })
+    },
+    getOntoPropTableList(data){
+      this.ontoPropData = data
     },
     load(){
 
@@ -442,6 +493,17 @@ export default {
   mounted() {
     this.init()
     this.getOntoTableList()
+  },
+  watch:{
+    visStyle:{
+      handler(newValue,oldValue) {
+        if (newValue == 0){
+          this.entityNum = this.ontoData.length
+        }else {
+          this.entityNum = this.ontoPropData.length
+        }
+      }
+    }
   }
 }
 </script>

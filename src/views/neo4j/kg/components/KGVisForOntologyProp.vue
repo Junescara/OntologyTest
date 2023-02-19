@@ -218,6 +218,8 @@ export default {
             improvedLayout: true,
           },
         }
+
+        this.$emit("ontoProp",nodes)
         _this.network = new Vis.Network(container, datas, _this.options);
 
       })
@@ -236,7 +238,13 @@ export default {
       // 因为option是个对象，而我们对于echarts的配置项，要更改的数据往往不在一级属性里面
       // 所以这里设置了deep:true，vue文档有说明
       deep: true
-    }
+    },
+    // nodes:{
+    //   handler(newValue,oldValue) {
+    //     this.$emit("ontoProp",this.nodes)
+    //   },
+    //   deep:true
+    // }
   }
 }
 </script>

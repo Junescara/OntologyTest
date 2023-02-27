@@ -39,8 +39,8 @@
 <!--        <el-input v-model="backupInfo.database" placeholder="输入database的label 如 水利对象本体库"></el-input>-->
 <!--      </el-form-item>-->
 
-      <el-form-item label="文件路径">
-        <el-input v-model="backupInfo.path" placeholder="输入路径和文件名，如C:/N4jBackup/relbackupdemo.txt"></el-input>
+      <el-form-item label="备份文件名称">
+        <el-input v-model="backupInfo.name" placeholder="请输入备份文件名称（不用加格式后缀）"></el-input>
       </el-form-item>
     </el-form>
     <br>
@@ -87,18 +87,41 @@ export default {
         path:"C:/N4jBackup/relbackupdemo.txt",
         label:"对象本体",
         database:"需要备份内容所在库",
+        name:""
       }
     }
   },
   methods:{
     createBackup(){
-      backupApi.createBackup(this.backupInfo).then(({data}) => {
-        if (data.code == 200){
-          this.$message.success(data.data)
-          this.reset()
-        }else {
-          this.$message.error(data.data)
+      backupApi.createBackup(this.backupInfo).then((res)=>{
+        console.log('文件下载成功');
+        const blob = new Blob([res.data]);
+        const fileName = this.backupInfo.name
+
+        //对于<a>标签，只有 Firefox 和 Chrome（内核） 支持 download 属性
+        //IE10以上支持blob，但是依然不支持download
+        if ('download' in document.createElement('a')) {
+          //支持a标签download的浏览器
+          const link = document.createElement('a');//创建a标签
+          link.download = fileName;//a标签添加属性
+          link.style.display = 'none';
+          link.href = URL.createObjectURL(blob);
+          document.body.appendChild(link);
+          link.click();//执行下载
+          URL.revokeObjectURL(link.href); //释放url
+          document.body.removeChild(link);//释放标签
+        } else {
+          navigator.msSaveBlob(blob, fileName);
         }
+        /*        console.log(res);
+                const data = res;
+                let url = window.URL.createObjectURL(new Blob([data]));
+                let link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = url;
+                link.setAttribute('download', this.fileName);
+                document.body.appendChild(link);
+                link.click();*/
       })
     },
     changeLabel(value){

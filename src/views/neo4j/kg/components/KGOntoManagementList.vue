@@ -8,7 +8,7 @@
 <template>
   <div>
 
-    <div style="padding: 50px 50px">
+    <div style="padding: 30px 30px">
       <el-row style="margin-bottom: 20px;margin-left: 10px">
         <el-col v-for="(item, index) in list.connectShowList.firstLine" :span="4" :key="index" :offset="index > 0 ? 2 : 0">
           <el-card class="box-card">
@@ -56,23 +56,29 @@
           </el-card>
         </el-col>
       </el-row>
-      <el-row>
-        <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px;float:right;" @click="handleAdd">新增图谱</el-button>
+
+      <el-row style="margin-bottom: 20px;margin-left: 10px" v-if="list.connectShowList.secondLine.length == 0">
+          <div style="height: 250px;width: 100%">
+
+          </div>
       </el-row>
-      <el-row style="display: flex;float: right">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="pageInfo.total"
-          :current-page="pageInfo.currentPage"
-          :page-size="pageInfo.pageSize"
-          @current-change="handleChangePage"
-          @next-click="handleNextPage"
-          @prev-click="handlePrevPage"
-          >
-        </el-pagination>
+
+      <el-row>
+        <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px;float:left;" @click="handleAdd">新增本体库</el-button>
       </el-row>
     </div>
+
+    <el-pagination style="display: flex;float: left"
+      background
+      layout="prev, pager, next"
+      :total="pageInfo.total"
+      :current-page="pageInfo.currentPage"
+      :page-size="pageInfo.pageSize"
+      @current-change="handleChangePage"
+      @next-click="handleNextPage"
+      @prev-click="handlePrevPage"
+    >
+    </el-pagination>
 
     <el-dialog
       :title="flags.updateFlag ? '编辑' : '新增'"

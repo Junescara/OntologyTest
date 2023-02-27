@@ -8,21 +8,37 @@
 <template>
   <div>
     <br>
-    <el-form ref="form" :model="recoverInfo" label-width="160px">
-      <el-form-item label="文件路径">
-        <el-input v-model="backupInfo.path" placeholder="输入路径和文件名，如C:/N4jBackup/relbackupdemo.txt"></el-input>
-      </el-form-item>
-      <el-form-item>
+<!--    <el-form ref="form" :model="recoverInfo" label-width="160px">-->
+<!--      <el-form-item label="文件路径">-->
+<!--        <el-input v-model="backupInfo.path" placeholder="输入路径和文件名，如C:/N4jBackup/relbackupdemo.txt"></el-input>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item>-->
 
-        <el-button type="primary" @click="recoverNeo4" plain>对库进行恢复</el-button>
-      </el-form-item>
-      <el-form-item label="选择下载文件名称">
-      <el-input v-model="fileName" placeholder="输入文件名，如relbackupdemo.txt"></el-input>
-    </el-form-item>
-      <el-form-item >
-        <el-button type="primary" @click="downloadFile" plain>下载文件</el-button>
-      </el-form-item>
-    </el-form>
+<!--        <el-button type="primary" @click="recoverNeo4" plain>对库进行恢复</el-button>-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="选择下载文件名称">-->
+<!--      <el-input v-model="fileName" placeholder="输入文件名，如relbackupdemo.txt"></el-input>-->
+<!--    </el-form-item>-->
+<!--      <el-form-item >-->
+<!--        <el-button type="primary" @click="downloadFile" plain>下载文件</el-button>-->
+<!--      </el-form-item>-->
+      <el-upload
+              class="upload-demo"
+              drag
+              action="String"
+              ref="upload"
+              multiple
+              :auto-upload="false"
+              :limit="1"
+              :on-exceed="handleExceed"
+              :http-request="uploadFile">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将备份文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">待上传的文件：</div>
+      </el-upload>
+    <br>
+    <el-button type="primary" @click="submitUpload" plain>还原</el-button>
+<!--    </el-form>-->
 
 
 <!--    <el-button style="margin-left: 10px;" type="success" @click="uploadFile">导入</el-button>-->
@@ -56,15 +72,25 @@ export default {
     }
   },
   methods:{
-    createBackup(){
-      backupApi.createBackup(this.backupInfo).then(({data}) => {
-        if (data.code == 200){
-          this.$message.success(data.data)
-          this.reset()
-        }else {
-          this.$message.error(data.data)
-        }
-      })
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
+    uploadFile(params,type){
+      console.log("开始恢复",params)
+      fileApi.recoverFromUploadFile(params.file).then(({data}) => {
+        console.log("测试结果data===========",data);
+        this.$message({
+          message: '还原完成！',
+          type: 'success'
+        });
+      },(error) => {
+        console.log("/测试结果error=======",error);
+        this.$message.error('还原失败');
+      });
+
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`限制选择1个文件`);
     },
     downloadFile(){
       downloadFileApi.downloadFile(this.fileName).then((res)=>{

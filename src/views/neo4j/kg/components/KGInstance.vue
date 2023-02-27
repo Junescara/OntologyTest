@@ -33,8 +33,8 @@
         </el-col>
         <el-col :span="6">
           <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible = true">导入文件</el-button>
-          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible2 = true">备份文件</el-button>
-          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible3 = true">下载文件</el-button>
+          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible2 = true">图谱备份</el-button>
+          <el-button type="primary" plain style="margin-bottom: 20px;margin-left: 10px" @click="visibles.dialogVisible3 = true">图谱还原</el-button>
         </el-col>
       </el-row>
     </el-card>

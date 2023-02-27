@@ -37,5 +37,14 @@ export default {
     return request.post("/kg/instance/importEntities",
       formData,
       {'Content-Type': 'multipart/form-data'})
+  },
+  recoverFromUploadFile(upload){
+    const file = upload
+    console.log("upload为======",file)
+    let formData = new FormData()
+    formData.append('file', file)
+    return request.post("/kg/recoverFromUploadFile",
+      formData,
+      {'Content-Type': 'multipart/form-data'})
   }
 }

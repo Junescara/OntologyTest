@@ -55,6 +55,15 @@ export default {
     }
   },
   created() {
+    this.currentDbId = localStorage.getItem('instanceId')
+    this.currentDbName = localStorage.getItem('instanceName')
+
+    if (this.currentDbName == '椒江流域知识图谱'){
+      this.currentNodeId = 3667
+    }else if (this.currentDbName == '屯溪流域知识图谱'){
+      this.currentNodeId = 4480
+    }
+
     this.nodes = new Vis.DataSet([  // nodes是节点
       {id: 1, label: 'Node 1',level: 1},
       {id: 2, label: 'Node 2',level: 2},
@@ -84,9 +93,6 @@ export default {
   },
   methods: {
     initKG() {
-      this.currentDbId = localStorage.getItem('instanceId')
-      this.currentDbName = localStorage.getItem('instanceName')
-
       this.loading = true
       let _this = this
       //老版本的处理逻辑

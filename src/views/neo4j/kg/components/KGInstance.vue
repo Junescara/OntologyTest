@@ -134,6 +134,8 @@
             <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>
             <el-tag size="mini" color="#7e8ead" effect="dark" v-show="legend.indexOf('水库') != -1">水库</el-tag>
             <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>
+            <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>
+            <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
           </div>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
@@ -327,6 +329,8 @@ import waterShedApi from "../../../../api/neo4j/WaterShedApi";
 import ontologyApi from "../../../../api/neo4j/ontology";
 import KGDownloadFile from "./KGDownloadFile";
 import downloadFileApi from "../../../../api/neo4j/downloadFileApi";
+import RainfallStationApi from "../../../../api/neo4j/RainfallStationApi";
+import ReachApi from "../../../../api/neo4j/ReachApi";
 export default {
   name: 'KGInstance',
   components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
@@ -462,13 +466,14 @@ export default {
   },
   mounted() {
     this.initDbInfo()
+    this.getAllNodeCounts()
+    this.getAllNodeLabels()
+    this.getAllRelLabels()
   },
   created() {
     // this.currentDbName = this.$route.params.name
     console.log(this.currentDbName)
-    this.getAllNodeCounts()
-    this.getAllNodeLabels()
-    this.getAllRelLabels()
+
   },
   methods: {
     goBack() {
@@ -549,6 +554,26 @@ export default {
               console.log(error);
             });
           break;
+        case '流域雨量站':
+          this.currentType = '流域雨量站'
+          RainfallStationApi.getRainfallStationNames(this.currentId)
+            .then((response) => {
+              this.nodeNames = response.data.data.rainfallStationNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
+        case '河段':
+          this.currentType = '河段'
+          ReachApi.getReachNames(this.currentId)
+            .then((response) => {
+              this.nodeNames = response.data.data.reachNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
         default:
       }
     },
@@ -624,6 +649,12 @@ export default {
       }
       if (this.currentType == '水库') {
         this.getReservoirNodeByName(name)
+      }
+      if (this.currentType == '流域雨量站') {
+        this.getRainfallStationNodeByName(name)
+      }
+      if (this.currentType == '河段') {
+        this.getReachNodeByName(name)
       }
     },
     getRelByName(name) {
@@ -759,6 +790,32 @@ export default {
           delete this.editNodeInfo.editNodeAtts._id
           console.log(this.nodeByName)
         })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getRainfallStationNodeByName(rainfallStationName){
+      RainfallStationApi.getRainfallStationByName(rainfallStationName,this.currentId).then((response) => {
+        this.nodeByName = response.data.data.result
+        let tmp = JSON.stringify(this.nodeByName[0]);
+        this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+        this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+        delete this.editNodeInfo.editNodeAtts._id
+        console.log(this.nodeByName)
+      })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getReachNodeByName(reachName){
+      ReachApi.getReachByName(reachName,this.currentId).then((response) => {
+        this.nodeByName = response.data.data.result
+        let tmp = JSON.stringify(this.nodeByName[0]);
+        this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+        this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+        delete this.editNodeInfo.editNodeAtts._id
+        console.log(this.nodeByName)
+      })
         .catch((error) => {
           console.log(error);
         });

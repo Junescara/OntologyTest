@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 1000px">
     <el-row style="padding: 15px">
       <el-col v-for="(o, index) in 1" :span="4" :key="o" :offset="index > 0 ? 2 : 0">
 <!--        <el-card class="box-card">

@@ -259,6 +259,56 @@ export default {
     }
   },
   /**
+   * 将流域雨量站结点转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   * @returns {{level: number, id: *, label, group: string}}
+   */
+  createRainfallStationItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:1,
+        group: 'rainfallStation'
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:2,
+        group: 'rainfallStation'
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 将河段结点转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   * @returns {{level: number, id: *, label, group: string}}
+   */
+  createReachItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:1,
+        group: 'reach'
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:2,
+        group: 'reach'
+      }
+      return nodeItem
+    }
+  },
+  /**
    * 将河流结点转换为存入datalist的对象元素
    * @param node
    * @param isStart
@@ -387,6 +437,10 @@ export default {
       return this.createOntologyObjItem(node,isStart)
     }else if (node.nodeType == '属性本体'){
       return this.createOntologyPropItem(node,isStart)
+    }else if (node.nodeType == '流域雨量站'){
+      return this.createRainfallStationItem(node,isStart)
+    }else if (node.nodeType == '河段'){
+      return this.createReachItem(node,isStart)
     }
   },
   /**
@@ -461,7 +515,7 @@ export default {
     nodes = data.data.endNodes.nodeList
     let startNode = data.data.startNode
     nodes.push(startNode)
-    // console.log("此时的startNode",startNode)
+    console.log("此时的startNode",startNode)
 
     const datas = {
       nodes:this.createNodes(nodes,CommonUtils.getNodeByType(startNode)._id),
@@ -618,6 +672,12 @@ export default {
           },
           river:{
             color:'#0ce3ca'
+          },
+          rainfallStation:{
+            color:'#abd78e'
+          },
+          reach:{
+            color:'#058df1'
           }
         },
         // 边模块
@@ -747,6 +807,12 @@ export default {
           },
           river:{
             color:'#0ce3ca'
+          },
+          rainfallStation:{
+            color:'#abd78e'
+          },
+          reach:{
+            color:'#058df1'
           }
         },
         // 节点模块

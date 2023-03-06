@@ -21,6 +21,8 @@ export default {
     formData.append('coFrom',params.coFrom)
     formData.append('coTo',params.coTo)
     formData.append('skip',params.skip)
+    formData.append('FromProp',params.FromProp)
+    formData.append('ToProp',params.ToProp)
     console.log("formdata======",formData.get('file'))
     return request.post("/kg/instance/importRelation",
                         formData,
@@ -33,6 +35,7 @@ export default {
     formData.append('file', file)
     formData.append('label',params.label)
     formData.append('co',params.co)
+    formData.append('database',params.database)
     console.log("formdata======",formData.get('file'))
     return request.post("/kg/instance/importEntities",
       formData,

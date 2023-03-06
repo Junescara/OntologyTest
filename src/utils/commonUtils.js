@@ -61,6 +61,14 @@ export default {
       nodeItem = node.ontologyProp
       nodeItem['nodeType'] = '属性本体'
       return nodeItem
+    }else if (node.nodeType.indexOf('流域雨量站') >= 0){
+      nodeItem = node.rainfallStation
+      nodeItem['nodeType'] = '流域雨量站'
+      return nodeItem
+    }else if (node.nodeType.indexOf('河段') >= 0){
+      nodeItem = node.reach
+      nodeItem['nodeType'] = '河段'
+      return nodeItem
     }
   }
 }

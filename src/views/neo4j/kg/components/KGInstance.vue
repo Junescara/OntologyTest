@@ -128,7 +128,7 @@
           <el-divider content-position="left">图例</el-divider>
           <div>
             <el-tag size="mini" color="#0ce3ca" effect="dark" v-show="legend.indexOf('河流') != -1">河流</el-tag>
-            <el-tag size="mini" color="#094b2d" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>
+            <el-tag size="mini" color="#ccccff" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>
             <el-tag size="mini" color="#f3022e" effect="dark" v-show="legend.indexOf('行政区划') != -1">行政区划</el-tag>
             <el-tag size="mini" color="#af36d7" effect="dark" v-show="legend.indexOf('测站') != -1">测站</el-tag>
             <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>
@@ -417,7 +417,7 @@ export default {
         },
         {
           value: 4,
-          label: '流域概化图（开发中）',
+          label: '流域概化图',
         },
       ],
       //显示设置

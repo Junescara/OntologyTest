@@ -668,7 +668,7 @@ export default {
             color:'#f3022e'
           },
           waterShed:{
-            color:'#094b2d'
+            color:'#ccccff'
           },
           river:{
             color:'#0ce3ca'
@@ -803,7 +803,7 @@ export default {
             color:'#f3022e'
           },
           waterShed:{
-            color:'#094b2d'
+            color:'#ccccff'
           },
           river:{
             color:'#0ce3ca'

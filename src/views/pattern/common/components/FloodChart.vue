@@ -88,7 +88,7 @@ export default {
     ...mapState(['selectedFlood']),
     ...mapMutations(['selectedFloodChanged','changeLoadingFlag','changeCurrentID','changeMatchID','changeOriginData','changeMatchedData','changeOriginFlood','changeMatchedFlood',
       'addGridValues','addOriginalGridValues','clearGrid','addMatchedIDValues','changeOriginStart','changeOriginEnd','changeMatchEnd','changeMatchStart','changeAllDataLoading',
-      'setMatchLength','setCompleteFlag','changeCurrentTimeStamp','setSliderLoading']),
+      'setMatchLength','setCompleteFlag','changeCurrentTimeStamp','setSliderLoading','changeBrushMatchID']),
     initChart(){
       let el = document.getElementById("rainChart")
       let myChart = this.$echarts.init(el);
@@ -255,14 +255,11 @@ export default {
             .then((res)=>{
               console.log(res)
               let data = res.data.data.brushResult;
-              _this.changeMatchID(data.idResult);
               let originSelect = data.x1Shapelet;
               let matchSelect = data.x2Shapelet;
               let originFlood = data.x1Line;
               let matchedFlood = data.x2Line;
 
-              _this.changeOriginData(str2listForRain(originSelect));
-              _this.changeMatchedData(str2listForRain(matchSelect));
               // console.log(_this.matchID,_this.matchSelect,_this.originSelect)
               _this.changeMatchedFlood(str2listForRain(matchedFlood));
               _this.changeOriginFlood(str2listForRain(originFlood));
@@ -275,6 +272,7 @@ export default {
               _this.changeMatchEnd(matchEnd);
               _this.changeOriginStart(startValue)
               _this.changeOriginEnd(endValue)
+              _this.changeBrushMatchID(data.idResult)
 
 
 

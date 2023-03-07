@@ -45,6 +45,7 @@
     </el-form>
     <br>
     <el-button type="primary" @click="createBackup" plain>备份！</el-button>
+<!--    <el-button type="primary" @click="downloadFile" plain>下载文件！</el-button>-->
 <!--    <el-button style="margin-left: 10px;" type="success" @click="uploadFile">导入</el-button>-->
   </div>
 </template>
@@ -53,6 +54,7 @@
 import fileApi from "../../../../api/neo4j/fileApi";
 import backupApi from "../../../../api/neo4j/backupApi";
 import ontology from "../../../../api/neo4j/ontology";
+import downloadFileApi from "../../../../api/neo4j/downloadFileApi";
 
 export default {
   name: "KGBackup",
@@ -92,6 +94,38 @@ export default {
     }
   },
   methods:{
+    downloadFile(){
+      downloadFileApi.downloadFile(this.backupInfo.name).then((res)=>{
+        console.log('文件下载成功');
+        const blob = new Blob([res.data]);
+        const fileName = this.fileName;
+
+        //对于<a>标签，只有 Firefox 和 Chrome（内核） 支持 download 属性
+        //IE10以上支持blob，但是依然不支持download
+        if ('download' in document.createElement('a')) {
+          //支持a标签download的浏览器
+          const link = document.createElement('a');//创建a标签
+          link.download = fileName;//a标签添加属性
+          link.style.display = 'none';
+          link.href = URL.createObjectURL(blob);
+          document.body.appendChild(link);
+          link.click();//执行下载
+          URL.revokeObjectURL(link.href); //释放url
+          document.body.removeChild(link);//释放标签
+        } else {
+          navigator.msSaveBlob(blob, fileName);
+        }
+        /*        console.log(res);
+                const data = res;
+                let url = window.URL.createObjectURL(new Blob([data]));
+                let link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = url;
+                link.setAttribute('download', this.fileName);
+                document.body.appendChild(link);
+                link.click();*/
+      })
+    },
     createBackup(){
       backupApi.createBackup(this.backupInfo).then((res)=>{
         console.log('文件下载成功');

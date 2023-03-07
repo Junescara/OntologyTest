@@ -62,6 +62,8 @@ export default {
       this.currentNodeId = 3667
     }else if (this.currentDbName == '屯溪流域知识图谱'){
       this.currentNodeId = 4480
+    }else if (this.currentDbName == '钱塘江流域知识图谱'){
+      this.currentNodeId = 4615
     }
 
     this.nodes = new Vis.DataSet([  // nodes是节点

@@ -35,7 +35,7 @@ const brush = {
     changeCurrentID:(state,id)=>{
       state.currentID = id
     },
-    changeMatchID:(state,id)=>{
+    changeBrushMatchID:(state,id)=>{
       state.matchID = id
     },
     changeOriginData:(state,data)=>{

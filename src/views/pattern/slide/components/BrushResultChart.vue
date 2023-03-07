@@ -41,7 +41,8 @@ export default {
       let options ={
         legend: {
           data: ['源数据', '匹配数据'],
-          left: 10
+          left: -3,
+          top:-3
         },
         grid:{
 

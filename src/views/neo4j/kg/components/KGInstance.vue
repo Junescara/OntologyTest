@@ -822,7 +822,7 @@ export default {
     },
     //获得所有节点的数量和节点类型的数量
     getAllNodeCounts() {
-      aggregateApi.getNodeCounts(this.currentDbName)
+      aggregateApi.getNodeCounts(this.currentId)
         .then((response) => {
           this.nodeCounts = response.data.data.nodeCounts
           this.nodeTypeCounts = response.data.data.nodeTypeCounts
@@ -833,7 +833,7 @@ export default {
     },
     //获得所有节点的标签
     getAllNodeLabels() {
-      aggregateApi.getNodeLabels(this.currentDbName)
+      aggregateApi.getNodeLabels(this.currentId)
         .then((response) => {
           this.nodeLabels = response.data.data.nodeLabels
         })
@@ -843,7 +843,7 @@ export default {
     },
     //获得所有关系的标签
     getAllRelLabels() {
-      aggregateApi.getRelLabels(this.currentDbName)
+      aggregateApi.getRelLabels(this.currentId)
         .then((response) => {
           this.relLabels = response.data.data.relLabels
         })

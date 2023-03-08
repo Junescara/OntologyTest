@@ -249,7 +249,7 @@ export default {
           let details = document.getElementById("divHoverNode");
           let x = e.event.offsetX + 15;
           let y = e.event.offsetY + 15;
-          relationApi.getNodeDetails(e.node).then(({data}) =>{
+          relationApi.getNodeDetails(e.node,"本体").then(({data}) =>{
             this.detailOfNode = data.data
             }
           );

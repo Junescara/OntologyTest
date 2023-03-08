@@ -172,4 +172,11 @@ export default {
       params:{database:db}
     })
   },
+  getNodeDetails(id,database){
+    return request({
+      url: `/kg/onto/getNodeDetail/`+id+`/`+database,
+      method: 'get',
+      }
+    )
+  }
 }

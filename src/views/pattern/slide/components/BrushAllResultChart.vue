@@ -3,6 +3,9 @@
 </template>
 
 <script>
+import { postRequest } from '../../../../api/pattern/api'
+import { str2listForTimeStamp } from '../../../../api/pattern/dataUtils'
+
 export default {
   name: "BrushAllResultChart",
   data(){
@@ -31,7 +34,9 @@ export default {
       matchStart:0,
       matchEnd:0,
       currentID:this.$store.state.brush.currentID,
-      matchID:this.$store.state.brush.matchID
+      matchID:this.$store.state.brush.matchID,
+      matchedTimeSpan:[],
+      originalTimeSpan:[]
 
 
     }
@@ -59,8 +64,10 @@ export default {
             // console.log(para)
             let res = '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">信息</div>';
             if(para.length>1){
-              res += "源数据ID： "+ _this.currentID+'当前数值: '+para[0].data+'<br>';
-              res += "匹配数据ID： "+ _this.matchID+'当前数值: '+para[1].data+'<br>';
+              res += "源数据ID： "+ _this.currentID+'&nbsp当前数值: &nbsp'+para[0].data+'<br>';
+              res += "源数据日期：&nbsp"+_this.originalTimeSpan[para[0].dataIndex]+'<br>';
+              res += "匹配数据ID： "+ _this.matchID+'&nbsp当前数值:&nbsp '+para[1].data+'<br>';
+              res += "匹配数据日期：&nbsp"+_this.matchedTimeSpan[para[1].dataIndex];
             }
             return res
           }
@@ -80,7 +87,7 @@ export default {
               {
                 gt:0,
                 lte:_this.originStart,
-                color:'green'
+                color:'green',
               },
               {
                 gt:_this.originStart,
@@ -102,17 +109,17 @@ export default {
             pieces:[
               {
                 gt:0,
-                lte:_this.matchStart,
-                color:'blue'
+                lte:_this.originStart,
+                color:'blue',
               },
               {
-                gt:_this.matchStart,
-                lte:_this.matchEnd,
+                gt:_this.originStart,
+                lte:_this.originEnd,
                 color:'orange'
               },
               {
-                gt:_this.matchEnd,
-                color:'blue'
+                gt:_this.originEnd,
+                color:'blue',
               }
             ],
 
@@ -154,26 +161,9 @@ export default {
             data: this.matchedFlood
           }
         ]
-
       };
 
       chart.setOption(options);
-      //初始化区域
-      // chart.dispatchAction({
-      //   type:'brush',
-      //   areas:[{
-      //     brushType:'lineX',
-      //     range:[_this.rightSide.value-_this.sliderLength.value,_this.rightSide.value],
-      //     xAxisIndex: 0
-      //   }]
-      // })
-      //监听滑块的变化
-      // chart.on('brushSelected',function (params){//给出的是数据下标
-      //   let r = params.batch[0].selected[0].dataIndex.length
-      //   // console.log("我是滑块，我华东了")
-      //   _this.sliderLength.value = r //选取范围的总长度
-      //   _this.rightSide.value = params.batch[0].selected[0].dataIndex[r-1]//最右侧的数值
-      // })
       //添加窗口收缩的监听，重新绘制大小。
       window.addEventListener('resize',()=>{
         chart.resize()
@@ -192,18 +182,46 @@ export default {
   watch:{
     '$store.state.brush.allDataLoading'(newValue,oldValue){
       if (newValue == false){
-        this.originData = this.$store.state.brush.originData
-        this.matchedData = this.$store.state.brush.matchedData
         this.originFlood = this.$store.state.brush.originFlood
         this.matchedFlood = this.$store.state.brush.matchedFlood
         console.log(this.originFlood,this.matchedFlood)
         this.dataLength = this.originFlood.length
-        this.matchStart = this.$store.state.brush.matchStart
-        this.matchEnd = this.$store.state.brush.matchEnd
-        this.originStart = this.$store.state.brush.originStart
-        this.originEnd = this.$store.state.brush.originEnd
+        this.matchStart = this.$store.state.brush.matchStart  //匹配到数据的起始位置
+        this.matchEnd = this.$store.state.brush.matchEnd    //匹配到数据的结束位置
+        this.originStart = this.$store.state.brush.originStart  //原始数据的起始位置
+        this.originEnd = this.$store.state.brush.originEnd  //原始数据的结束位置
+        // new Array(this.dataLength).fill(' ').map((v, i) => ++i)
+        //请求一下时间数据
+        this.brushMatchID = this.$store.state.brush.matchID
+        postRequest("/floodInfo/timespan",{"floodID":this.brushMatchID})
+          .then((res)=>{
+            let timespan = str2listForTimeStamp(res.data.data)
+            // console.log(timespan)
+            console.log(timespan.length,"11111")
+            this.matchedTimeSpan = timespan
+            postRequest("/floodInfo/timespan",{"floodID":this.$store.state.pattern.selectedFlood})
+              .then((res)=>{
+                let timespan = str2listForTimeStamp(res.data.data)
 
-        this.initChart()
+                this.originalTimeSpan = timespan
+                let distance = this.matchStart  -  this.originStart;
+                if (distance<0){
+                  let tempArr = new Array(-distance).fill(0);
+                  this.matchedFlood = tempArr.concat(this.matchedFlood)
+                  this.matchedTimeSpan = tempArr.concat(this.matchedTimeSpan)
+                  console.log(this.matchedTimeSpan.length,"2222")
+                }else{
+                  let endIndex = this.matchedFlood.length
+                  let timespanLength = this.matchedTimeSpan.length
+                  this.matchedFlood = this.matchedFlood.slice(distance,endIndex)
+                  this.matchedTimeSpan = this.matchedTimeSpan.slice(distance,timespanLength)
+                }
+
+                this.initChart()
+              })
+          })
+
+
       }
       this.loading = newValue
     },

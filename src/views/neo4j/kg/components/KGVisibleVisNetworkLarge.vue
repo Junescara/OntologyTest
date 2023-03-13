@@ -11,7 +11,7 @@
          element-loading-text="拼命加载中"
          element-loading-spinner="el-icon-loading"
          element-loading-background="rgba(0, 0, 0, 0.8)">
-      <div id="KGNetwork" ref="KGNetwork" :style="{width:KGSize.width+ 'px',height:KGSize.height+ 'px'}"></div>
+      <div id="KGNetwork" ref="KGNetwork" :style="{width:1600+ 'px',height:1600+ 'px'}"></div>
     </div>
 
   </div>
@@ -25,7 +25,7 @@ import VisUtils from "../../../../utils/VisUtils";
 import CommonUtils from "../../../../utils/commonUtils";
 
 export default {
-  name: "KGVisibleVisNetwork",
+  name: "KGVisibleVisNetworkLarge",
   data() {
     return {
       nodes: null,
@@ -36,7 +36,7 @@ export default {
       settings:{
         visibleTypeFlag: 4,
         length:2,
-        relType:[],
+        relType:["位于","包含"],
       },
       loading:true,
       currentNodeType:[],//当前的结点类型，用作图例显示
@@ -57,10 +57,6 @@ export default {
       type:Object,
       default: () => {}
     },
-    currentVisibleSize:{
-      type:Number,
-      default:0 //默认小图
-    }
   },
   created() {
     this.currentDbId = localStorage.getItem('instanceId')
@@ -74,29 +70,9 @@ export default {
       this.currentNodeId = 4615
     }
 
-    this.nodes = new Vis.DataSet([  // nodes是节点
-      {id: 1, label: 'Node 1',level: 1},
-      {id: 2, label: 'Node 2',level: 2},
-      {id: 8, label: 'Node 8',level: 2},
-      {id: 9, label: 'Node 9',level: 2},
-      {id: 10, label: 'Node 10',level: 2},
-      {id: 3, label: 'Node 3',level: 2},
-      {id: 4, label: 'Node 4',level: 3},
-      {id: 5, label: 'Node 5',level: 3},
-      {id: 6, label: 'Node 6',level: 4},
-      {id: 7, label: 'Node 7',level: 5},
-    ]);
-    this.edges = new Vis.DataSet([  // edges是线
-      {from: 1, to: 2},  // 决定了节点从左往右的顺序
-      {from: 1, to: 3},
-      {from: 1, to: 8},
-      {from: 1, to: 9},
-      {from: 1, to: 10},
-      {from: 2, to: 4},
-      {from: 2, to: 5},
-      {from: 5, to: 6},
-      {from: 6, to: 7},
-    ]);
+    // this.settings.relType.push("位于")
+    // this.settings.relType.push("包含")
+
   },
   mounted() {
     this.initKG()
@@ -180,12 +156,12 @@ export default {
     setLoading(){
       const _this = this
       this.network.once('afterDrawing',() => {
-        console.log("图像加载完成")
         _this.loading = false
       })
     },
     getCurrentNodeType(data){
       let set = new Set();
+      console.log("数据：",data)
       if (data.startNode !== undefined){
         for (let item of data.startNode.nodeType){
           set.add(item)
@@ -249,7 +225,6 @@ export default {
       }
 
       this.currentNodeType = Array.from(set);
-      console.log('当前类型包括：',this.currentNodeType)
     }
   },
   watch:{
@@ -268,10 +243,12 @@ export default {
         this.settings.visibleTypeFlag = newValue.visibleTypeFlag
         this.settings.length = newValue.length
         this.settings.relType = newValue.relType
-        console.log("小图显示参数为：",this.settings)
+        console.log("newValue=====",this.settings.relType)
+        console.log("大图显示的参数为：",this.settings)
         this.initKG()
       },
-      deep:true
+      deep:true,
+      immediate:true
     },
     currentNodeType:{
       handler(newValue,oldValue) {
@@ -279,17 +256,6 @@ export default {
       },
       deep:true
     },
-    currentVisibleSize:{
-      handler(newValue,oldValue) {
-        if (newValue == 0){
-          this.KGSize.width = 800
-          this.KGSize.height = 500
-        }else if (newValue == 1){
-          this.KGSize.width = 1600
-          this.KGSize.height = 800
-        }
-      },
-    }
   }
 }
 </script>

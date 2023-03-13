@@ -24,7 +24,6 @@ export default {
    */
   getNodeByType(node){
     let nodeItem = {}
-    console.log("DDD此时的node为",node)
     if (node.nodeType.indexOf('行政区划') >= 0){
       nodeItem = node.regionalism
       nodeItem['nodeType'] = '行政区划'
@@ -68,6 +67,10 @@ export default {
     }else if (node.nodeType.indexOf('河段') >= 0){
       nodeItem = node.reach
       nodeItem['nodeType'] = '河段'
+      return nodeItem
+    }else if (node.nodeType.indexOf('汇流点') >= 0){
+      nodeItem = node.point
+      nodeItem['nodeType'] = '汇流点'
       return nodeItem
     }
   }

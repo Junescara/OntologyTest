@@ -18,7 +18,6 @@ export default {
    */
   createRelsEdges(rels) {
     let linkList = []
-    console.log("此时的rels为=============",rels)
     for (let item of rels) {
       //这里用结点的name属性来指定关系边的头尾
       let linkItem = {
@@ -51,7 +50,6 @@ export default {
   },
   createRelsEdgesV2(rels) {
     let linkList = []
-    console.log("此时的rels为=============",rels)
     for (let item of rels) {
       //这里用结点的name属性来指定关系边的头尾
       let linkItem = {
@@ -245,7 +243,16 @@ export default {
         id:node._id,
         label:node.name,
         level:1,
-        group: 'waterShed'
+        // group: 'waterShed'
+      }
+      if (node.watershedLevel == "\"1\""){
+        nodeItem['group'] = 'firstWaterShed'
+      }else if (node.watershedLevel == "\"2\""){
+        nodeItem['group'] = 'secondWaterShed'
+      }else if (node.watershedLevel == "\"3\""){
+        nodeItem['group'] = 'waterShed'
+      }else {
+        nodeItem['group'] = 'waterShed'
       }
       return nodeItem
     }else {
@@ -253,7 +260,16 @@ export default {
         id:node._id,
         label:node.name,
         level:2,
-        group: 'waterShed'
+        // group: 'waterShed'
+      }
+      if (node.watershedLevel == "\"1\""){
+        nodeItem['group'] = 'firstWaterShed'
+      }else if (node.watershedLevel == "\"2\""){
+        nodeItem['group'] = 'secondWaterShed'
+      }else if (node.watershedLevel == "\"3\""){
+        nodeItem['group'] = 'waterShed'
+      }else {
+        nodeItem['group'] = 'waterShed'
       }
       return nodeItem
     }
@@ -304,6 +320,31 @@ export default {
         label:node.name,
         level:2,
         group: 'reach'
+      }
+      return nodeItem
+    }
+  },
+  /**
+   * 将河段结点转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   * @returns {{level: number, id: *, label, group: string}}
+   */
+  createPointItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:1,
+        group: 'point'
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:2,
+        group: 'point'
       }
       return nodeItem
     }
@@ -441,6 +482,8 @@ export default {
       return this.createRainfallStationItem(node,isStart)
     }else if (node.nodeType == '河段'){
       return this.createReachItem(node,isStart)
+    }else if (node.nodeType == '汇流点'){
+      return this.createPointItem(node,isStart)
     }
   },
   /**
@@ -515,7 +558,6 @@ export default {
     nodes = data.data.endNodes.nodeList
     let startNode = data.data.startNode
     nodes.push(startNode)
-    console.log("此时的startNode",startNode)
 
     const datas = {
       nodes:this.createNodes(nodes,CommonUtils.getNodeByType(startNode)._id),
@@ -538,7 +580,6 @@ export default {
     nodes = data.data.startNodes.nodeList
     let endNode = data.data.endNode
     nodes.push(endNode)
-    // console.log("此时的startNode",startNode)
 
     const datas = {
       nodes:this.createNodes(nodes,CommonUtils.getNodeByType(endNode)._id),
@@ -678,7 +719,17 @@ export default {
           },
           reach:{
             color:'#058df1'
-          }
+          },
+          point:{
+            color:'#747f85'
+          },
+          firstWaterShed:{
+            color:'#d4de40'
+          },
+          secondWaterShed:{
+            //二级流域
+            color:'#d4de40'
+          },
         },
         // 边模块
         edges: {
@@ -788,7 +839,7 @@ export default {
         },
         groups:{
           waterGate:{
-            color:'#00ff00'
+            color:'#00ff00',
           },
           reservoir:{
             color:'#7e8ead'
@@ -806,14 +857,35 @@ export default {
             color:'#d4de40'
           },
           river:{
-            color:'#0ce3ca'
+            color:'#0ce3ca',
           },
           rainfallStation:{
             color:'#abd78e'
           },
           reach:{
             color:'#058df1'
-          }
+          },
+          point:{
+            color:'#747f85'
+          },
+          firstWaterShed:{
+            //一级流域
+            color:'#d4de40',
+            borderColor:'#d4de40',
+            borderWidth:50,
+            font:{
+              size:30
+            }
+          },
+          secondWaterShed:{
+            //二级流域
+            color:'#d4de40',
+            borderColor:'#d4de40',
+            borderWidth:30,
+            font:{
+              size:20
+            }
+          },
         },
         // 节点模块
         nodes: {
@@ -844,7 +916,7 @@ export default {
           //   unselected: '/static/images/icon_normal.svg',
           //   selected: '/static/images/icon_selected.svg',
           // },
-          size: 40, // 节点大小
+          // size: 40, // 节点大小
           physics: false, // 关闭物理引擎
           title: `
                   实时水位：1000m
@@ -885,6 +957,7 @@ export default {
           navigationButtons: true,
           selectConnectedEdges: false, // 选中节点时，与其连接的边不高亮
           multiselect: false, // true时长时间单击（或触摸）以及控件单击将添加到选择中
+          zoomView: true,
           tooltipDelay: 100,
         },
         // 可视化操作: 没起作用，不知道是不是版本的问题
@@ -905,13 +978,18 @@ export default {
         physics: {
           enabled: true,
           barnesHut: {
-            gravitationalConstant: -5000, //斥力
-            centralGravity: 0.3,
+            gravitationalConstant: -100000, //斥力
+            centralGravity: 0.2,
             springLength: 220, //弹簧长度
             springConstant: 0.04,
             damping: 0.09,
             avoidOverlap: 0
           },
+          // solver: "repulsion", // 使用排斥力布局算法
+          // repulsion: {
+          //   centralGravity: 0.2, // 设置中心引力为0.2
+          //   springLength: 500, // 设置弹簧长度为200
+          // },
           maxVelocity: 50,
           minVelocity: 1,
           stabilization: {
@@ -920,10 +998,11 @@ export default {
             // fit: true,
             fit: false,   // 值为false时，点击刷新后可回到刷新前的页面
           },
+          // stabilization: false,
         },
         // 布局
         layout: {
-          randomSeed: 0,
+          randomSeed: 1000,
           // hierarchical: {
           //   enabled: true,
           //   levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字

@@ -123,7 +123,8 @@
           <el-tag>
             {{currentVisibleType}}
           </el-tag>
-          <el-button style="float: right; padding: 3px 0" type="text" @click="visibles.settingsVisible = true">显示设置</el-button>
+          <el-button style="float: right; padding: 3px 0" @click="visibles.settingsVisible = true" type="text">显示设置</el-button>
+          <el-button style="float: right; padding: 3px 0; margin-right: 10px" @click="handleKGSize(1)" type="text">查看大图</el-button>
           <br>
           <el-divider content-position="left">图例</el-divider>
           <div>
@@ -304,6 +305,31 @@
     </span>
     </el-dialog>
 
+    <el-dialog
+      title="查看大图"
+      :fullscreen="true"
+      :visible.sync="visibles.largeKGVisible"
+      >
+      <div>
+        <el-tag size="mini" color="#0ce3ca" effect="dark" v-show="legend.indexOf('河流') != -1">河流</el-tag>
+        <el-tag size="mini" color="#d4de40" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>
+        <el-tag size="mini" color="#f3022e" effect="dark" v-show="legend.indexOf('行政区划') != -1">行政区划</el-tag>
+        <el-tag size="mini" color="#af36d7" effect="dark" v-show="legend.indexOf('测站') != -1">测站</el-tag>
+        <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>
+        <el-tag size="mini" color="#7e8ead" effect="dark" v-show="legend.indexOf('水库') != -1">水库</el-tag>
+        <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>
+        <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>
+        <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
+      </div>
+      <div style="display: flex">
+        <KGVisibleVisNetworkLarge :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleVisNetworkLarge>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleKGSize(0)">关闭</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 
 </template>
@@ -331,9 +357,13 @@ import KGDownloadFile from "./KGDownloadFile";
 import downloadFileApi from "../../../../api/neo4j/downloadFileApi";
 import RainfallStationApi from "../../../../api/neo4j/RainfallStationApi";
 import ReachApi from "../../../../api/neo4j/ReachApi";
+import KGVisibleVisNetworkLarge from "./KGVisibleVisNetworkLarge";
+import PointApi from "../../../../api/neo4j/PointApi";
 export default {
   name: 'KGInstance',
-  components: {KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
+  components: {
+    KGVisibleVisNetworkLarge,
+    KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
   props:{
     kgConnectInfo:{
       type:Object,
@@ -379,6 +409,7 @@ export default {
         dialogVisible2:false,
         settingsVisible:false,
         dialogVisible3:false,
+        largeKGVisible:false
       },
 
       //标记类
@@ -386,9 +417,9 @@ export default {
         relLazyCountFlag:0,
         relLoadingFlag:false,
         loadingFlag:false,
-        visibleTypeFlag:0,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
+        visibleTypeFlag:4,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
         lengthFlag:2,
-        relTypeFlag:[],
+        relTypeFlag:["位于","包含"],
       },
       //查询关键字
       key:{
@@ -423,7 +454,7 @@ export default {
       //显示设置
       visibleSettings:{
         length:2, //关系链长度，默认为2
-        visibleTypeFlag:1,
+        visibleTypeFlag:0,
         relType:[],
       },
       //记录节点的数量
@@ -453,6 +484,7 @@ export default {
       currentDbName:"椒江流域知识图谱",
       currentOntoId:null,
       currentRelId:null,
+      KGSize:0,
       //修改对话框是否开启
       editObjVisible: false,
       //增加对话框是否开启
@@ -465,6 +497,7 @@ export default {
     }
   },
   mounted() {
+    this.handleSettings()
     this.initDbInfo()
     this.getAllNodeCounts()
     this.getAllNodeLabels()
@@ -472,7 +505,7 @@ export default {
   },
   created() {
     // this.currentDbName = this.$route.params.name
-    console.log(this.currentDbName)
+    //临时显示概化图所需内容
 
   },
   methods: {
@@ -488,7 +521,6 @@ export default {
           regionalismApi.getRegionalismNames(this.currentId)
             .then((response) => {
               this.nodeNames = response.data.data.regionalismNames
-              console.log(this.nodeByName)
             })
             .catch((error) => {
               console.log(error);
@@ -574,6 +606,16 @@ export default {
               console.log(error);
             });
           break;
+        case '汇流点':
+          this.currentType = '汇流点'
+          PointApi.getPointNames(this.currentId)
+            .then((response) => {
+              this.nodeNames = response.data.data.pointNames
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          break;
         default:
       }
     },
@@ -594,9 +636,6 @@ export default {
             }
             this.load()
           })
-          console.log("relNamesAndIds++++++",this.relNamesAndIds)
-          console.log("relnames++++++",this.relNames)
-          console.log("relsNamesLazy=====",this.relNamesLazy)
           break;
         case '关联':
           this.currentRelType = '关联'
@@ -612,7 +651,6 @@ export default {
             }
             this.load()
           })
-          console.log("relnames++++++",this.relNames)
           break;
         default:
       }
@@ -656,6 +694,9 @@ export default {
       if (this.currentType == '河段') {
         this.getReachNodeByName(name)
       }
+      if (this.currentType == '汇流点'){
+        this.getPointNodeByName(name)
+      }
     },
     getRelByName(name) {
       if (this.currentRelType === '下级行政区划') {
@@ -669,8 +710,6 @@ export default {
 
         let nameArray = name.split("->")
         this.relByName = [nameArray]
-        console.log("relByName=====",this.relByName)
-        console.log("currentRelId=====",this.currentRelId)
       }
       if (this.currentRelType === '关联') {
 
@@ -688,8 +727,6 @@ export default {
           this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
           delete this.editNodeInfo.editNodeAtts._id
 
-          console.log("nodebyname=====",this.nodeByName)
-          console.log("editNodeInfo=====",this.editNodeInfo)
         })
         .catch((error) => {
           console.log(error);
@@ -704,7 +741,6 @@ export default {
           this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
           this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
           delete this.editNodeInfo.editNodeAtts._id
-          console.log(this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -719,7 +755,6 @@ export default {
           this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
           this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
           delete this.editNodeInfo.editNodeAtts._id
-          console.log(this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -737,7 +772,6 @@ export default {
           this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
           this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
           delete this.editNodeInfo.editNodeAtts._id
-          console.log(this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -755,7 +789,6 @@ export default {
           this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
           this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
           delete this.editNodeInfo.editNodeAtts._id
-          console.log(this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -773,7 +806,6 @@ export default {
           this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
           this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
           delete this.editNodeInfo.editNodeAtts._id
-          console.log(this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -788,7 +820,6 @@ export default {
           this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
           this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
           delete this.editNodeInfo.editNodeAtts._id
-          console.log(this.nodeByName)
         })
         .catch((error) => {
           console.log(error);
@@ -801,7 +832,6 @@ export default {
         this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
         this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
         delete this.editNodeInfo.editNodeAtts._id
-        console.log(this.nodeByName)
       })
         .catch((error) => {
           console.log(error);
@@ -814,11 +844,19 @@ export default {
         this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
         this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
         delete this.editNodeInfo.editNodeAtts._id
-        console.log(this.nodeByName)
       })
         .catch((error) => {
           console.log(error);
         });
+    },
+    getPointNodeByName(pointName){
+      PointApi.getPointByName(pointName,this.currentId).then((responce) => {
+        this.nodeByName = responce.data.data.result
+        let tmp = JSON.stringify(this.nodeByName[0]);
+        this.editNodeInfo.editNodeAtts = JSON.parse(tmp);
+        this.editNodeInfo.editNodeId = this.editNodeInfo.editNodeAtts._id
+        delete this.editNodeInfo.editNodeAtts._id
+      })
     },
     //获得所有节点的数量和节点类型的数量
     getAllNodeCounts() {
@@ -1001,7 +1039,6 @@ export default {
       });
       if(this.InstanceForm.types[0]==="关系"){
         this.submitInstance.database = this.currentDbName
-        console.log(JSON.stringify(this.submitInstance))
         relationApi.addRel(JSON.stringify(this.submitInstance))
         .then(
           (response) => {
@@ -1040,7 +1077,6 @@ export default {
       }
       else if(this.InstanceForm.types[0]==="实体"){
         this.submitInstance.database = this.currentDbName
-        console.log(JSON.stringify(this.submitInstance))
         aggregateApi.addNode(JSON.stringify(this.submitInstance))
         .then(
           (response) => {
@@ -1300,18 +1336,24 @@ export default {
       this.currentId = localStorage.getItem("instanceId")
       this.currentOntoId = localStorage.getItem('ontoId')
       this.submitInstance.database = this.currentOntoId
-      console.log('id=======',this.currentId)
       if (this.currentId !== undefined){
         KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
           this.kgInfo = data.data
         })
       }
     },
+    handleKGSize(value){
+      if (value == 1){
+        this.visibles.largeKGVisible = true
+      }else {
+        this.visibles.largeKGVisible = false
+      }
+
+      this.KGSize = value;
+    }
   },
   computed:{
     disabled (){
-      console.log("flag+++++",this.flags.relLoadingFlag)
-      console.log("nomore+++++",this.noMore)
       return this.flags.relLoadingFlag || this.noMore
     },
     noMore () {
@@ -1337,7 +1379,6 @@ export default {
       handler(newValue, oldValue){
         if (newValue.relTypeFlag.indexOf('上游') >= 0 && newValue.relTypeFlag.indexOf('下游') >= 0){
           this.$message.error('上下游不能同时被选中！')
-          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
           let i1 = this.flags.relTypeFlag.indexOf('上游')
           let i2 = this.flags.relTypeFlag.indexOf('下游')
           delete this.flags.relTypeFlag[i1]

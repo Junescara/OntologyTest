@@ -147,6 +147,13 @@ export const constantRouterMap = [
         meta: { title: '实例详情查询', icon: 'table' },
         hidden: true
       },
+      {
+        path: 'FloodRegulation',
+        name: 'FloodRegulation',
+        component: () => import('@/views/neo4j/kg/components/KGFloodRegulation'),
+        meta: { title: '调度方案查询', icon: 'table' },
+        hidden: true
+      },
       // {
       //   path: 'relation',
       //   name: '河流节点关系',

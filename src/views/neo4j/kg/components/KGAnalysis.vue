@@ -41,6 +41,18 @@
           </el-descriptions>
         </el-card>
       </el-col>
+      <!-- 调度方案卡片 -->
+      <el-col :span="8">
+        <el-card class="box-card" style="width: 100%">
+          <el-descriptions column="1" title="调度方案查询">
+            <template slot="extra">
+              <el-button type="primary" size="small" @click="toFloodRegulation">查看详情</el-button>
+            </template>
+            <el-descriptions-item label="所属分类">洪水调度</el-descriptions-item>
+            <el-descriptions-item label="用途">用于根据要素查询对应洪水调度方案</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
     </el-row>
 
   </div>
@@ -61,6 +73,9 @@ export default {
     },
     toKGRiverSectionTopo() {
       this.$router.push('KGRiverSectionTopo')
+    },
+    toFloodRegulation() {
+      this.$router.push('FloodRegulation')
     }
   }
 }

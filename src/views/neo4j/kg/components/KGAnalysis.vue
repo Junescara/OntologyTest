@@ -41,6 +41,18 @@
           </el-descriptions>
         </el-card>
       </el-col>
+      <!-- 应急预案卡片 -->
+      <el-col :span="8">
+        <el-card class="box-card" style="width: 100%">
+          <el-descriptions column="1" title="应急预案查询">
+            <template slot="extra">
+              <el-button type="primary" size="small" @click="toContingencyPlan">查看详情</el-button>
+            </template>
+            <el-descriptions-item label="所属分类">应急响应</el-descriptions-item>
+            <el-descriptions-item label="用途">用于根据要素查询对应应急响应预案</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
       <!-- 调度方案卡片 -->
       <el-col :span="8">
         <el-card class="box-card" style="width: 100%">
@@ -76,7 +88,10 @@ export default {
     },
     toFloodRegulation() {
       this.$router.push('FloodRegulation')
-    }
+    },
+    toContingencyPlan() {
+      this.$router.push('ContingencyPlan')
+    },
   }
 }
 </script>

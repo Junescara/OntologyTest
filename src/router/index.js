@@ -154,6 +154,13 @@ export const constantRouterMap = [
         meta: { title: '调度方案查询', icon: 'table' },
         hidden: true
       },
+      {
+        path: 'ContingencyPlan',
+        name: 'ContingencyPlan',
+        component: () => import('@/views/neo4j/kg/components/KGContingencyPlan'),
+        meta: { title: '应急预案查询', icon: 'table' },
+        hidden: true
+      },
       // {
       //   path: 'relation',
       //   name: '河流节点关系',

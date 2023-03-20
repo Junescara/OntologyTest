@@ -27,6 +27,12 @@ export default {
       method: 'get',
     })
   },
+  getInstNameList(){
+    return request({
+      url: `/kg/instance/connect/getInstNameList`,
+      method: 'get',
+    })
+  },
   addConnection(params){
     return request({
       url: `/kg/instance/connect/addInstInfo`,

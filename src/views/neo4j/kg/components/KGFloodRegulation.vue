@@ -118,11 +118,14 @@
         <div slot="header" class="clearfix">
           <span>调度方案一览</span>
         </div>
-        <el-descriptions v-for="(item,index) in this.regulation.plans" class="margin-top" title="调度方案" :key="index" :column="1" border>
+        <el-descriptions class="margin-top" :column="1" border>
           <el-descriptions-item label="方案名">方案内容</el-descriptions-item>
-          <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
-            {{proVals}}
-          </el-descriptions-item>
+          <template v-for="(item,index) in this.regulation.plans">
+            <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
+              {{proVals}}
+            </el-descriptions-item>
+          </template>
+
         </el-descriptions>
 
       </el-card>
@@ -131,9 +134,8 @@
         <div slot="header" class="clearfix">
           <span>知识图谱</span>
           <el-tag>
-            {{currentVisibleType}}
+            调度方案图
           </el-tag>
-          <el-button style="float: right; padding: 3px 0" @click="visibles.settingsVisible = true" type="text">显示设置</el-button>
           <el-button style="float: right; padding: 3px 0; margin-right: 10px" @click="handleKGSize(1)" type="text">查看大图</el-button>
           <br>
           <el-divider content-position="left">图例</el-divider>
@@ -152,7 +154,7 @@
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
 <!--        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>-->
-        <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleVisNetwork>
+        <KGVisibleRegulationNetwork :draw-flag="this.regulation.drawFlag" :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleRegulationNetwork>
       </el-card>
 
       <el-card class="box-card" style="width: 400px">
@@ -174,63 +176,7 @@
           </el-descriptions-item>
         </el-descriptions>
 
-        <!--以下为关系属性的表格-->
-        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="关系属性" :key="index" :column="1" border>
-          <el-descriptions-item label="属性名">属性值</el-descriptions-item>
-          <el-descriptions-item label="起点">
-            {{item[0]}}
-            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
-          </el-descriptions-item>
-          <el-descriptions-item label="关系">
-            {{item[1]}}
-          </el-descriptions-item>
-          <el-descriptions-item label="终点">
-            {{item[2]}}
-            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
-          </el-descriptions-item>
-        </el-descriptions>
       </el-card>
-
-      <!--以下为显示设置卡片-->
-      <el-dialog
-        title="显示设置"
-        :visible.sync="visibles.settingsVisible"
-        width="50%"
-        center>
-
-        <el-form>
-          <el-form-item label="视图类型：">
-            <el-select v-model="flags.visibleTypeFlag" placeholder="请选择">
-              <el-option
-                v-for="item in visibleTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="关系链长度：" v-show="flags.visibleTypeFlag == 3">
-            <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
-          </el-form-item>
-          <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 4">
-            <el-select clearable v-model="flags.relTypeFlag" multiple placeholder="请选择关系类型" @click="chooseRelType"
-                       style="margin-top: 20px">
-              <el-option
-                v-for="(item,index) in relLabels"
-                :key=index
-                :label=item
-                :value=item
-              />
-            </el-select>
-          </el-form-item>
-        </el-form>
-
-
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="visibles.settingsVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleSettings">确 定</el-button>
-        </span>
-      </el-dialog>
 
 
     </div>
@@ -252,7 +198,7 @@
         <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
       </div>
       <div style="display: flex">
-        <KGVisibleVisNetworkLarge :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleVisNetworkLarge>
+        <KGVisibleRegulationNetworkLarge :draw-flag="this.regulation.drawFlag" :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleRegulationNetworkLarge>
       </div>
 
       <span slot="footer" class="dialog-footer">
@@ -265,21 +211,25 @@
 </template>
 
 <script>
-import KGVisible from './KGVisible'
+import KGVisible from './KGVisible.vue'
 import aggregateApi from '@/api/neo4j/aggregate';
-import KGVisibleEcahrts from "./KGVisibleEcahrts";
+import KGVisibleEcahrts from "./KGVisibleEcahrts.vue";
 import relationApi from "../../../../api/neo4j/relationApi";
-import KGUploadFile from "./KGUploadFile";
-import KGBackup from "./KGBackup";
+import KGUploadFile from "./KGUploadFile.vue";
+import KGBackup from "./KGBackup.vue";
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
-import KGVisibleVisNetwork from "./KGVisibleVisNetwork";
-import KGDownloadFile from "./KGDownloadFile";
-import KGVisibleVisNetworkLarge from "./KGVisibleVisNetworkLarge";
+import KGVisibleVisNetwork from "./KGVisibleVisNetwork.vue";
+import KGDownloadFile from "./KGDownloadFile.vue";
+import KGVisibleVisNetworkLarge from "./KGVisibleVisNetworkLarge.vue";
 import regulationApi from "../../../../api/neo4j/regulationApi";
+import KGVisibleRegulationNetwork from "./KGVisibleRugulationNetwork.vue";
+import KGVisibleRegulationNetworkLarge from "./KGVisibleRugulationNetworkLarge.vue";
 
 export default {
   name: 'KGInstance',
   components: {
+    KGVisibleRegulationNetworkLarge,
+    KGVisibleRegulationNetwork,
     KGVisibleVisNetworkLarge,
     KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
   props:{
@@ -400,7 +350,9 @@ export default {
         nameSymbol: "rdfs__name",
         labelSymbol: "rdfs__label",
         //查询出来的调度方案
-        plans: null
+        plans: null,
+        //绘图标志
+        drawFlag: false
       }
     }
   },
@@ -517,10 +469,10 @@ export default {
           for(let item of list){
             let map = new Map(Object.entries(item.node))
             //console.log(map)
-            let properties = new Map(Object.entries(map.get("properties")))
-            this.nodeNames.push(properties.get(this.regulation.nameSymbol))
-            //console.log(this.nodeNames)
+            this.nodeNames.push(map.get(this.regulation.nameSymbol))
+            console.log("nodeNames: "+this.nodeNames)
           }
+
       })
       .catch((error) => {
         console.log(error);
@@ -531,14 +483,15 @@ export default {
       regulationApi.getNodesByName(this.currentType, name, this.currentId )
         .then(({data}) => {
           this.nodeByName = []
-          this.nodeByName.push(data.data.nodeList[0].node.properties);
+          this.nodeByName.push(data.data.nodeList[0].node);
           let properties = JSON.stringify(this.nodeByName[0]);
           this.editNodeInfo.editNodeAtts = JSON.parse(properties);
 
           this.editNodeInfo.editNodeId = data.data.nodeList[0].node._id;
-          this.editNodeInfo.editNodeLabels = data.data.nodeList[0].node.labels;
+          this.editNodeInfo.editNodeLabels = data.data.nodeList[0].nodeType;
           this.regulation.currentName = name;
           console.log("当前水利对象： " + this.regulation.currentName);
+          this.key.nodeKey = this.regulation.currentName;
       })
       .catch((error) => {
         console.log(error);
@@ -552,17 +505,12 @@ export default {
       regulationApi.getSchedulePlan(this.regulation.currentName, this.regulation.currentAtt, this.regulation.attValue, this.currentId)
         .then(({data}) => {
           let list = data.data.nodeList;
-          let planNum = 0
+          this.regulation.plans = []
           for(let node of list){
-            planNum += 1
-            let planStr = "plan" + planNum
             let map = new Map(Object.entries(node.node))
             //console.log(map)
-            let properties = new Map(Object.entries(map.get("properties")))
-
-            this.regulation.plans = []
             let planSet = {};
-            this.$set(planSet, map.get("planName"), properties.get(this.regulation.nameSymbol))
+            this.$set(planSet, map.get("planName"), map.get(this.regulation.nameSymbol))
             this.regulation.plans.push(planSet)
             console.log(this.regulation.plans)
           }
@@ -570,6 +518,7 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+      this.regulation.drawFlag = !this.regulation.drawFlag
       alert("搜索完毕！")
     },
 

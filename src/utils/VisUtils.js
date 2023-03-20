@@ -373,6 +373,30 @@ export default {
       return nodeItem
     }
   },
+  /**
+   * 将HashNode转换为存入datalist的对象元素
+   * @param node
+   * @param isStart
+   */
+  createHashNodeItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node.node._id,
+        label:node.node.rdfs__label,
+        level:1,
+        group: 'hashNode'
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node.node._id,
+        label:node.node.rdfs__label,
+        level:2,
+        group: 'hashNode'
+      }
+      return nodeItem
+    }
+  },
 
   /**
    * 将河对象本体转换为存入datalist的对象元素
@@ -484,6 +508,9 @@ export default {
       return this.createReachItem(node,isStart)
     }else if (node.nodeType == '汇流点'){
       return this.createPointItem(node,isStart)
+    }else{
+      //用于处理HashNode结点
+      return this.createHashNodeItem(node,isStart)
     }
   },
   /**
@@ -616,6 +643,44 @@ export default {
         //idset中不包含这个元素，添加进结点集
         idSet.add(id)
         nodes.push(CommonUtils.getNodeByType(item))  //直接存入提取过的node
+      }
+    }
+
+    //封装最终生成数据的数据集
+    const datas = {
+      nodes:this.createNodesV2(nodes),
+      edges:this.createRelsEdgesV2(rels)
+    }
+
+    return datas
+  },
+  /**
+   * 处理生成包括出边完整图像的数据(处理HashMap版本结点特供)
+   * @param data
+   * @returns {{nodes: *, edges: ([]|*)}}
+   */
+  handleRelLinkVisiblesHashNode(data){
+    let rels = []
+    let nodes = []
+
+    //首先获取出边数据
+    for (let rel of data.data.relationItems){
+      rels.push(rel)
+    }
+
+    //获取结点集
+    //首先要维护一个集合，用于结点id去重
+    let idSet = new Set()
+
+    for (let item of data.data.finalNodeVos){
+      let id = item.node._id
+      if (idSet.has(id)){
+        //如果idset中包含这个元素,则无需再结点集中添加这个元素
+        continue;
+      }else{
+        //idset中不包含这个元素，添加进结点集
+        idSet.add(id)
+        nodes.push(item)  //直接存入提取过的node
       }
     }
 

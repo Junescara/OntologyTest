@@ -81,6 +81,11 @@ export default {
     currentId: {
       type:String,
       default:""
+    },
+    //绘图标志
+    drawFlag: {
+      type:Boolean,
+      default:false
     }
   },
   created() {

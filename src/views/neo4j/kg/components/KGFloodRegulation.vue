@@ -198,7 +198,7 @@
         <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
       </div>
       <div style="display: flex">
-        <KGVisibleRegulationNetworkLarge :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleRegulationNetworkLarge>
+        <KGVisibleRegulationNetworkLarge :draw-flag="this.regulation.drawFlag" :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleRegulationNetworkLarge>
       </div>
 
       <span slot="footer" class="dialog-footer">

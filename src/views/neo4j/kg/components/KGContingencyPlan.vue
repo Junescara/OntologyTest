@@ -544,14 +544,16 @@ export default {
       contingencyPlanApi.getNodesByName(this.currentType, this.key.nodeKey, this.currentId )
         .then(({data}) => {
           let list = data.data.nodeList;
+
           this.nodeNames = []
           this.nodeIdNames = []
+
           for(let item of list){
             let map = new Map(Object.entries(item.node))
             let id = map.get("_id")
-            let properties = new Map(Object.entries(map.get("properties")))
-            this.nodeNames.push(properties.get(this.contingencyPlan.nameSymbol))
-            this.nodeIdNames.push(id,properties.get(this.contingencyPlan.nameSymbol))
+            let name = map.get(this.contingencyPlan.nameSymbol)
+            this.nodeNames.push(name)
+            this.nodeIdNames.push(id,name)
           }
           // console.log(this.nodeNames)
           // console.log(this.nodeIdNames)
@@ -564,16 +566,19 @@ export default {
     getNodeByName(name){
       contingencyPlanApi.getNodesByName(this.currentType, name, this.currentId)
         .then(({data}) => {
+
           this.nodeByName = []
-          this.nodeByName.push(data.data.nodeList[0].node.properties);
+          this.nodeByName.push(data.data.nodeList[0].node);
 
           const att = new Map(Object.entries(this.nodeByName[0]))
+          att.delete("_id")
+
           this.contingencyPlan.attNameList = Array.from(att.keys())
 
           let properties = JSON.stringify(this.nodeByName[0]);
           this.editNodeInfo.editNodeAtts = JSON.parse(properties);
           this.editNodeInfo.editNodeId = data.data.nodeList[0].node._id;
-          this.editNodeInfo.editNodeLabels = data.data.nodeList[0].node.labels;
+          this.editNodeInfo.editNodeLabels = data.data.nodeList[0].nodeType;
 
           this.contingencyPlan.currentName = name;
 

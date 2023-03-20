@@ -1,12 +1,5 @@
 import request from '@/utils/request'
 export default {
-  getAllRegulationElements(relType, database) {
-    return request({
-      url: `/kg/analyze/regulation/getAllRegulationElements`,
-      method: 'get',
-      params: {relType: relType, database: database}
-    })
-  },
 
   getNodesByName(label, keyword, database) {
     return request({
@@ -16,12 +9,5 @@ export default {
     })
   },
 
-  getSchedulePlan(name, element, value, database) {
-    return request({
-      url: `/kg/analyze/regulation/getSchedulePlan`,
-      method: 'get',
-      params: {name: name, element: element, value: value, database: database}
-    })
-  }
 
 }

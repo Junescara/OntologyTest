@@ -22,6 +22,14 @@ export default {
       method: 'get',
       params: {name: name, element: element, value: value, database: database}
     })
+  },
+
+  getSchedulePlanLink(name, element, value, database) {
+    return request({
+      url: `/kg/analyze/regulation/getSchedulePlanLink`,
+      method: 'get',
+      params: {name: name, element: element, value: value, database: database}
+    })
   }
 
 }

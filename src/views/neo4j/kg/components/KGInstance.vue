@@ -137,6 +137,7 @@
             <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>
             <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>
             <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
+            <el-tag size="mini" color="#747f85" effect="dark" v-show="legend.indexOf('汇流点') != -1">汇流点</el-tag>
           </div>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
@@ -320,6 +321,7 @@
         <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>
         <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>
         <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
+        <el-tag size="mini" color="#747f85" effect="dark" v-show="legend.indexOf('汇流点') != -1">汇流点</el-tag>
       </div>
       <div style="display: flex">
         <KGVisibleVisNetworkLarge :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleVisNetworkLarge>
@@ -417,7 +419,7 @@ export default {
         relLazyCountFlag:0,
         relLoadingFlag:false,
         loadingFlag:false,
-        visibleTypeFlag:4,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
+        visibleTypeFlag:4,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图,5表示默认显示图
         lengthFlag:2,
         relTypeFlag:["位于","包含"],
       },
@@ -1286,6 +1288,30 @@ export default {
         })
       }else if (this.currentType == '流域'){
         WaterShedApi.getWaterShedContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '河段'){
+        ReachApi.getReachContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '汇流点'){
+        PointApi.getPointContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
+          let list = data.data.list
+          this.nodeNames = []
+          for (let item of list){
+            this.nodeNames.push(item.name)
+          }
+        })
+      }else if (this.currentType == '流域雨量站'){
+        RainfallStationApi.getRainfallStationContainsName(this.key.nodeKey,this.currentId).then(({data}) => {
           let list = data.data.list
           this.nodeNames = []
           for (let item of list){

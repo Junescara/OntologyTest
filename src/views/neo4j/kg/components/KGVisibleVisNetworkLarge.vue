@@ -11,7 +11,8 @@
          element-loading-text="拼命加载中"
          element-loading-spinner="el-icon-loading"
          element-loading-background="rgba(0, 0, 0, 0.8)">
-      <div id="KGNetwork" ref="KGNetwork" :style="{width:1600+ 'px',height:1600+ 'px'}"></div>
+      <div id="KGNetwork" ref="KGNetwork" :style="{width:1600+ 'px',height:1600+ 'px'}" v-show="!visibles.nullVisible"></div>
+      <el-empty description="暂无内容" v-show="visibles.nullVisible"></el-empty>
     </div>
 
   </div>
@@ -42,6 +43,9 @@ export default {
       currentNodeType:[],//当前的结点类型，用作图例显示
       currentDbId:null,
       currentDbName:null,
+      visibles:{
+        nullVisible: false
+      },
       KGSize:{
         width:800,
         height:500,
@@ -129,7 +133,9 @@ export default {
         })
       }else if (this.settings.visibleTypeFlag == 4){
         if (this.settings.relType.length == 0){
-          this.$message.error("流域概化图必须要指定关系")
+          // this.$message.error("流域概化图必须要指定关系")
+          this.visibles.nullVisible = true
+          this.loading = false
           return false;
         }
         //显示流域概化图，暂且设定为显示断面的关系
@@ -144,6 +150,13 @@ export default {
           params.relType = params.relType + '，' + this.settings.relType[i]
         }
         relationApi.getLinkedRels(params).then(({data}) => {
+          if (data.data.finalNodeVos.length == 0 && data.data.relationItems.length == 0){
+            this.visibles.nullVisible = true
+            this.loading = false
+            return false
+          }else {
+            this.visibles.nullVisible = false
+          }
           const datas = VisUtils.handleRelLinkVisibles(data)
           _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;

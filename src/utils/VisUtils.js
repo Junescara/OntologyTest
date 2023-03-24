@@ -591,6 +591,7 @@ export default {
 
   /**
    * 处理生成包括出边完整图像的数据
+   * 针对的是概化图的数据结构，分为点集和边集
    * @param data
    * @returns {{nodes: *, edges: ([]|*)}}
    */
@@ -685,8 +686,8 @@ export default {
           //   unselected: '/static/images/icon_normal.svg',
           //   selected: '/static/images/icon_selected.svg',
           // },
-          size: 40, // 节点大小
-          // physics: false, // 关闭物理引擎
+          size: 30, // 节点大小
+          physics: false, // 关闭物理引擎
           title: '实体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
           widthConstraint: { // 节点的最小宽度与最大宽度
             // maximum: 100,
@@ -781,9 +782,9 @@ export default {
         physics: {
           enabled: true,
           barnesHut: {
-            gravitationalConstant: -5000, //斥力
-            centralGravity: 0.3,
-            springLength: 220, //弹簧长度
+            gravitationalConstant: -12000, //斥力
+            centralGravity: 0.1,
+            springLength: 2200, //弹簧长度
             springConstant: 0.04,
             damping: 0.09,
             avoidOverlap: 0
@@ -799,14 +800,14 @@ export default {
         },
         // 布局
         layout: {
-          randomSeed: 2000,
-          // hierarchical: {
-          //   enabled: true,
-          //   levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字
-          //   nodeSpacing: 100,     // 节点之间的距离
-          //   treeSpacing: 100,     // 树之间的距离
-          //   sortMethod: 'directed',
-          // },
+          randomSeed: 20000,
+        //   hierarchical: {
+        //     enabled: true,
+        //     levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字
+        //     nodeSpacing: 100,     // 节点之间的距离
+        //     treeSpacing: 100,     // 树之间的距离
+        //     sortMethod: 'directed',
+        //   },
         },
       }
       return option

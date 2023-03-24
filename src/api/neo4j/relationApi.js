@@ -178,5 +178,12 @@ export default {
       method: 'get',
       }
     )
+  },
+  getDefaultRelLinks(db){
+    return request({
+        url: `/kg/instance/node/getDefaultRelLinks?database=`+db,
+        method: 'get',
+      }
+    )
   }
 }

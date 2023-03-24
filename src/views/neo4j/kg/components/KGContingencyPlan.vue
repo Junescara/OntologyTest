@@ -131,9 +131,8 @@
         <div slot="header" class="clearfix">
           <span>知识图谱</span>
           <el-tag>
-            {{currentVisibleType}}
+            调度方案图
           </el-tag>
-          <el-button style="float: right; padding: 3px 0" @click="visibles.settingsVisible = true" type="text">显示设置</el-button>
           <el-button style="float: right; padding: 3px 0; margin-right: 10px" @click="handleKGSize(1)" type="text">查看大图</el-button>
           <br>
           <el-divider content-position="left">图例</el-divider>
@@ -150,7 +149,7 @@
           </div>
         </div>
 
-        <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleVisNetwork>
+        <KGVisiableContingencyPlanNetwork :draw-flag="this.contingencyPlan.drawFlag" :current-id="this.currentId" :att-value="this.contingencyPlan.attValue" :current-att="this.contingencyPlan.currentAtt" :current-name="this.contingencyPlan.currentName" :current-node="this.nodeByName" :visible-settings="this.visibleSettings" :current-type="this.currentType" @legend="getLegend"></KGVisiableContingencyPlanNetwork>
       </el-card>
 
       <el-card class="box-card" style="width: 400px">
@@ -172,64 +171,7 @@
           </el-descriptions-item>
         </el-descriptions>
 
-        <!--以下为关系属性的表格-->
-        <el-descriptions v-for="(item,index) in relByName" class="margin-top" title="关系属性" :key="index" :column="1" border>
-          <el-descriptions-item label="属性名">属性值</el-descriptions-item>
-          <el-descriptions-item label="起点">
-            {{item[0]}}
-            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
-          </el-descriptions-item>
-          <el-descriptions-item label="关系">
-            {{item[1]}}
-          </el-descriptions-item>
-          <el-descriptions-item label="终点">
-            {{item[2]}}
-            <el-button type="primary" plain size="mini" style="float: right">查看详情</el-button>
-          </el-descriptions-item>
-        </el-descriptions>
       </el-card>
-
-      <!--以下为显示设置卡片-->
-      <el-dialog
-        title="显示设置"
-        :visible.sync="visibles.settingsVisible"
-        width="50%"
-        center>
-
-        <el-form>
-          <el-form-item label="视图类型：">
-            <el-select v-model="flags.visibleTypeFlag" placeholder="请选择">
-              <el-option
-                v-for="item in visibleTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="关系链长度：" v-show="flags.visibleTypeFlag == 3">
-            <el-input-number v-model="flags.lengthFlag" :min="1" :max="5"></el-input-number>
-          </el-form-item>
-          <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 4">
-            <el-select clearable v-model="flags.relTypeFlag" multiple placeholder="请选择关系类型" @click="chooseRelType"
-                       style="margin-top: 20px">
-              <el-option
-                v-for="(item,index) in relLabels"
-                :key=index
-                :label=item
-                :value=item
-              />
-            </el-select>
-          </el-form-item>
-        </el-form>
-
-
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="visibles.settingsVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleSettings">确 定</el-button>
-        </span>
-      </el-dialog>
-
 
     </div>
 
@@ -250,7 +192,7 @@
         <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
       </div>
       <div style="display: flex">
-        <KGVisibleVisNetworkLarge :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleVisNetworkLarge>
+        <KGVisiableContingencyPlanNetworkLarge :current-id="this.currentId" :att-value="this.contingencyPlan.attValue" :current-att="this.contingencyPlan.currentAtt" :current-name="this.contingencyPlan.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" :current-type="this.currentType" @legend="getLegend"  style="margin: 0 auto;"></KGVisiableContingencyPlanNetworkLarge>
       </div>
 
       <span slot="footer" class="dialog-footer">
@@ -267,6 +209,8 @@
 import aggregateApi from '@/api/neo4j/aggregate';
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 import contingencyPlanApi from "../../../../api/neo4j/contingencyPlanApi";
+import KGVisiableContingencyPlanNetwork from "./KGVisiableContingencyPlanNetwork";
+import KGVisiableContingencyPlanNetworkLarge from "./KGVisiableContingencyPlanNetworkLarge";
 
 import KGVisible from './KGVisible'
 import KGVisibleEcahrts from "./KGVisibleEcahrts";
@@ -281,6 +225,8 @@ import regulationApi from "../../../../api/neo4j/regulationApi";
 export default {
   name: 'KGInstance',
   components: {
+    KGVisiableContingencyPlanNetwork,
+    KGVisiableContingencyPlanNetworkLarge,
     KGVisibleVisNetworkLarge,
     KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
   props:{
@@ -318,11 +264,15 @@ export default {
         currentAtt:null,
         //预报值
         attValue: null,
+        //选定监测对象类型
+        currentType: null,
         //名称和标签的标志，由于调度数据库中的名称不一样，因此单独列出来
         nameSymbol: "测站名称",
         labelSymbol: "rdfs__label",
         //查询出来的调度方案
-        plans: null
+        plans: null,
+        //绘图标志
+        drawFlag: false
       },
 
 
@@ -583,6 +533,7 @@ export default {
           this.contingencyPlan.currentName = name;
 
           console.log("当前水利对象： " + this.contingencyPlan.currentName);
+          this.key.nodeKey = this.contingencyPlan.currentName;
       })
       .catch((error) => {
         console.log(error);
@@ -591,30 +542,26 @@ export default {
     },
     //应急预案查询
     getContingencyPlan(){
+      //查询调度方案
       console.log("当前选择要素： " + this.contingencyPlan.currentAtt);
       console.log("预报值： " + this.contingencyPlan.attValue);
-
-      regulationApi.getSchedulePlan(this.contingencyPlan.currentName, this.contingencyPlan.currentAtt, this.contingencyPlan.attValue, this.currentId)
-        .then(({data}) => {
-          let list = data.data.nodeList;
-          let planNum = 0
-          for(let node of list){
-            planNum += 1
-            let planStr = "plan" + planNum
-            let map = new Map(Object.entries(node.node))
-            //console.log(map)
-            let properties = new Map(Object.entries(map.get("properties")))
-
-            this.contingencyPlan.plans = []
-            let planSet = {};
-            this.$set(planSet, map.get("planName"), properties.get(this.contingencyPlan.nameSymbol))
-            this.contingencyPlan.plans.push(planSet)
-            console.log(this.contingencyPlan.plans)
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      // contingencyPlanApi.getSchedulePlan(this.contingencyPlan.currentName,this.currentType, this.contingencyPlan.currentAtt, this.contingencyPlan.attValue, this.currentId)
+      //   .then(({data}) => {
+      //     let list = data.data.nodeList;
+      //     this.contingencyPlan.plans = []
+      //     for(let node of list){
+      //       let map = new Map(Object.entries(node.node))
+      //       //console.log(map)
+      //       let planSet = {};
+      //       this.$set(planSet, map.get("planName"), map.get(this.contingencyPlan.nameSymbol))
+      //       this.contingencyPlan.plans.push(planSet)
+      //       console.log(this.contingencyPlan.plans)
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+      this.contingencyPlan.drawFlag = !this.contingencyPlan.drawFlag
       alert("搜索完毕！")
     },
 

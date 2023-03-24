@@ -379,10 +379,28 @@ export default {
    * @param isStart
    */
   createHashNodeItem(node,isStart){
+
+    let name = null;
+    let map = new Map(Object.entries(node.node))
+
+    for(let type in node.nodeType){
+      if (node.nodeType[type] !== "椒江流域知识图谱" && node.nodeType[type] !== "A387BE524D344370A13F1DFF76C40493"){
+        if(node.nodeType[type] === "行政区划"){
+          name = node.nodeType[type]+"名名称";
+        }else{
+          name = node.nodeType[type]+"名称";
+        }
+        break;
+      }
+    }
+
+    console.log("+++++++++++++",name)
+    console.log("+++++++++++++",node)
+
     if (isStart){
       let nodeItem = {
         id:node.node._id,
-        label:node.node.rdfs__label,
+        label:map.get(name),
         level:1,
         group: 'hashNode'
       }
@@ -390,7 +408,7 @@ export default {
     }else {
       let nodeItem = {
         id:node.node._id,
-        label:node.node.rdfs__label,
+        label:map.get(name),
         level:2,
         group: 'hashNode'
       }

@@ -9,5 +9,12 @@ export default {
     })
   },
 
+  getSchedulePlanLink(name, type, element, value, database) {
+    return request({
+      url: `/kg/analyze/contingencyPlan/getSchedulePlanLink`,
+      method: 'get',
+      params: {name: name, type: type, element: element, value: value, database: database}
+    })
+  }
 
 }

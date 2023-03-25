@@ -385,7 +385,13 @@ export default {
 
     for(let type in node.nodeType){
       if (node.nodeType[type] !== "椒江流域知识图谱" && node.nodeType[type] !== "A387BE524D344370A13F1DFF76C40493"){
-        name = node.nodeType[type]+"名称";
+
+        if(node.nodeType[type] === "行政区划"){
+          name = node.nodeType[type]+"名称"+"（带乡镇）";
+        }else{
+          name = node.nodeType[type]+"名称";
+        }
+
         break;
       }
     }

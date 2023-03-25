@@ -11,7 +11,8 @@
          element-loading-text="拼命加载中"
          element-loading-spinner="el-icon-loading"
          element-loading-background="rgba(0, 0, 0, 0.8)">
-      <div id="KGNetwork" ref="KGNetwork" :style="{width:KGSize.width+ 'px',height:KGSize.height+ 'px'}"></div>
+      <div id="KGNetwork" ref="KGNetwork" :style="{width:KGSize.width+ 'px',height:KGSize.height+ 'px'}" v-show="!visibles.nullVisible"></div>
+      <el-empty description="暂无内容" v-show="visibles.nullVisible"></el-empty>
     </div>
 
   </div>
@@ -45,6 +46,9 @@ export default {
       KGSize:{
         width:800,
         height:500,
+      },
+      visibles:{
+        nullVisible:false
       }
     }
   },
@@ -153,7 +157,9 @@ export default {
         })
       }else if (this.settings.visibleTypeFlag == 4){
         if (this.settings.relType.length == 0){
-          this.$message.error("流域概化图必须要指定关系")
+          // this.$message.error("流域概化图必须要指定关系")
+          this.visibles.nullVisible = true
+          this.loading = false
           return false;
         }
         //显示流域概化图，暂且设定为显示断面的关系
@@ -168,6 +174,24 @@ export default {
           params.relType = params.relType + '，' + this.settings.relType[i]
         }
         relationApi.getLinkedRels(params).then(({data}) => {
+          if (data.data.finalNodeVos.length == 0 && data.data.relationItems.length == 0){
+            this.visibles.nullVisible = true
+            this.loading = false
+            return false
+          }else {
+            this.visibles.nullVisible = false
+          }
+          const datas = VisUtils.handleRelLinkVisibles(data)
+          console.log("datas==",datas)
+          _this.getCurrentNodeType(data.data)
+          const container = this.$refs.KGNetwork;
+          _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
+          _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
+        })
+      }else if (this.settings.visibleTypeFlag == 5){
+        //默认显示图，用于页面初始化时候的显示
+        relationApi.getDefaultRelLinks(this.currentDbId).then(({data}) => {
           const datas = VisUtils.handleRelLinkVisibles(data)
           _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;

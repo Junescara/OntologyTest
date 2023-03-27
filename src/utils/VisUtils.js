@@ -388,7 +388,14 @@ export default {
 
         if(node.nodeType[type] === "行政区划"){
           name = node.nodeType[type]+"名称"+"（带乡镇）";
-        }else{
+        }
+        else if(node.nodeType[type] === "自然人"){
+          name = "姓名";
+        }
+        else if(node.nodeType[type] === "砂石块石储备点"){
+          name = "储备点名称";
+        }
+        else{
           name = node.nodeType[type]+"名称";
         }
 

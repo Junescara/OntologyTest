@@ -118,8 +118,8 @@
         <div slot="header" class="clearfix">
           <span>应急预案文本</span>
         </div>
-        <el-descriptions v-for="(item,index) in this.contingencyPlan.plans" class="margin-top" title="调度方案" :key="index" :column="1" border>
-          <el-descriptions-item label="方案名">方案内容</el-descriptions-item>
+        <el-descriptions v-for="(item,index) in this.contingencyPlan.plans" class="margin-top" title="应急对象" :key="index" :column="1" border>
+          <el-descriptions-item label="对象名称">对象类型</el-descriptions-item>
           <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
             {{proVals}}
           </el-descriptions-item>
@@ -269,12 +269,13 @@ export default {
         //名称和标签的标志，由于调度数据库中的名称不一样，因此单独列出来
         nameSymbol: "测站名称",
         labelSymbol: "rdfs__label",
-        //查询出来的调度方案
-        plans: null,
+        //查询出来的方案
+        plans: {
+          应急对象:{},
+        },
         //绘图标志
         drawFlag: false
       },
-
 
 
       tempAtt:null,
@@ -545,22 +546,20 @@ export default {
       //查询调度方案
       console.log("当前选择要素： " + this.contingencyPlan.currentAtt);
       console.log("预报值： " + this.contingencyPlan.attValue);
-      // contingencyPlanApi.getSchedulePlan(this.contingencyPlan.currentName,this.currentType, this.contingencyPlan.currentAtt, this.contingencyPlan.attValue, this.currentId)
-      //   .then(({data}) => {
-      //     let list = data.data.nodeList;
-      //     this.contingencyPlan.plans = []
-      //     for(let node of list){
-      //       let map = new Map(Object.entries(node.node))
-      //       //console.log(map)
-      //       let planSet = {};
-      //       this.$set(planSet, map.get("planName"), map.get(this.contingencyPlan.nameSymbol))
-      //       this.contingencyPlan.plans.push(planSet)
-      //       console.log(this.contingencyPlan.plans)
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
+      contingencyPlanApi.getSchedulePlan(this.contingencyPlan.currentName,this.currentType, this.contingencyPlan.currentAtt, this.contingencyPlan.attValue, this.currentId)
+       .then(({data}) => {
+         let map = new Map(Object.entries(data.data));
+         let keys = map.keys()
+         for(let key of keys){
+           console.log("key",key)
+           console.log("key",map.get(key))
+           this.contingencyPlan.plans.应急对象[key]=map.get(key)
+
+         }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
       this.contingencyPlan.drawFlag = !this.contingencyPlan.drawFlag
       alert("搜索完毕！")
     },

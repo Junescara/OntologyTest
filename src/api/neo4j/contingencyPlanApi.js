@@ -15,6 +15,14 @@ export default {
       method: 'get',
       params: {name: name, type: type, element: element, value: value, database: database}
     })
+  },
+
+  getSchedulePlan(name, type, element, value, database) {
+    return request({
+      url: `/kg/analyze/contingencyPlan/getSchedulePlan`,
+      method: 'get',
+      params: {name: name, type: type, element: element, value: value, database: database}
+    })
   }
 
 }

@@ -84,17 +84,19 @@
           </div>
 
           <div class="tag-group" v-if="number === 0">
-            <span class="tag-group__title"></span>
+            <el-empty description="暂无内容" v-if="nodeNames.length == 0"></el-empty>
             <!--以下标签用于显示查询出来的节点名称-->
-            <el-tag
-              v-for="(item,index) in nodeNames"
-              :key=index
-              type=''
-              effect="plain"
-              @click="getNodeByName(item)"
-            >
-              {{ item }}
-            </el-tag>
+            <div v-infinite-scroll="nodeLabelsLoad" style="overflow:auto;height: 600px" infinite-scroll-disabled="false">
+              <el-tag
+                v-for="(item,index) in nodeNames"
+                :key=index
+                type=''
+                effect="plain"
+                @click="getNodeByName(item)"
+              >
+                {{ item }}
+              </el-tag>
+            </div>
           </div>
           <div class="tag-group infinite-list-wrapper" v-if="number === 1"  style="overflow: auto;height: calc(100vh - 72px)">
             <span class="tag-group__title"></span>
@@ -145,7 +147,7 @@
 <!--        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>-->
         <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleVisNetwork>
       </el-card>
-      <el-card class="box-card" style="width: 400px">
+      <el-card class="box-card" style="width: 400px;">
         <div slot="header" class="clearfix">
           <span>实体类信息</span>
           <el-button @click="editObjVisible = true" style="float: right; padding-top: 1px; margin-left: 6px " type="text">修改</el-button>
@@ -153,13 +155,14 @@
         </div>
         <el-descriptions :column="1">
           <el-descriptions-item label="实体所属类型">
-            <el-tag size="small">{{ currentType }}</el-tag>
+            <el-tag size="small">{{ currentType == null ? "暂无" : currentType }}</el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="更新时间">2022.11.2</el-descriptions-item>
         </el-descriptions>
         <el-divider/>
         <!--以下为实体属性的表格-->
-        <el-descriptions v-for="(item,index) in nodeByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
+        <el-empty description="暂无内容，请选择节点" v-if="nodeByName == null"></el-empty>
+        <el-descriptions v-for="(item,index) in nodeByName" class="margin-top" title="实体属性" :key="index" :column="1" border v-infinite-scroll="nodeDetailLoad" style="overflow:auto;height: 700px">
           <el-descriptions-item label="属性名">属性值</el-descriptions-item>
           <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
             {{proVals}}
@@ -419,7 +422,7 @@ export default {
         relLazyCountFlag:0,
         relLoadingFlag:false,
         loadingFlag:false,
-        visibleTypeFlag:4,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图,5表示默认显示图
+        visibleTypeFlag:5,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图,5表示默认显示图
         lengthFlag:2,
         relTypeFlag:["位于","包含"],
       },
@@ -451,6 +454,10 @@ export default {
         {
           value: 4,
           label: '流域概化图',
+        },
+        {
+          value: 5,
+          label: '默认显示图',
         },
       ],
       //显示设置
@@ -1348,6 +1355,8 @@ export default {
         return '显示该点完整路径'
       }else if (this.flags.visibleTypeFlag == 4){
         return '流域概化图'
+      }else if (this.flags.visibleTypeFlag == 5){
+        return '默认显示图'
       }
     },
     chooseRelType(){
@@ -1376,6 +1385,12 @@ export default {
       }
 
       this.KGSize = value;
+    },
+    nodeLabelsLoad(){
+
+    },
+    nodeDetailLoad(){
+
     }
   },
   computed:{
@@ -1472,8 +1487,8 @@ export default {
 }
 
 .box-card-2 {
-  width: 750px;
-  height: 550px;
+  width: 1000px;
+  height: 900px;
   margin-top: 20px;
   margin-left: 20px;
 }

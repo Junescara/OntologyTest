@@ -33,9 +33,9 @@ export default {
       edges: null,
       options: null,
       network: null,
-      currentNodeId:3667,
+      currentNodeId:null,
       settings:{
-        visibleTypeFlag: 4,
+        visibleTypeFlag: 5,
         length:2,
         relType:[],
       },
@@ -44,8 +44,8 @@ export default {
       currentDbId:null,
       currentDbName:null,
       KGSize:{
-        width:800,
-        height:500,
+        width:950,
+        height:700,
       },
       visibles:{
         nullVisible:false
@@ -70,13 +70,16 @@ export default {
     this.currentDbId = localStorage.getItem('instanceId')
     this.currentDbName = localStorage.getItem('instanceName')
 
-    if (this.currentDbName == '椒江流域知识图谱'){
-      this.currentNodeId = 3667
-    }else if (this.currentDbName == '屯溪流域知识图谱'){
-      this.currentNodeId = 4491
-    }else if (this.currentDbName == '钱塘江流域知识图谱'){
-      this.currentNodeId = 4615
-    }
+    //初始化查询节点
+    // if (this.currentDbName == '椒江流域知识图谱'){
+    //   this.currentNodeId = 3667
+    // }else if (this.currentDbName == '屯溪流域知识图谱'){
+    //   this.currentNodeId = 4491
+    // }else if (this.currentDbName == '钱塘江流域知识图谱'){
+    //   this.currentNodeId = 4615
+    // }
+
+
 
     this.nodes = new Vis.DataSet([  // nodes是节点
       {id: 1, label: 'Node 1',level: 1},
@@ -109,6 +112,17 @@ export default {
     initKG() {
       this.loading = true
       let _this = this
+
+      //不设置初始节点，必须要求人工选择节点
+      if (this.settings.visibleTypeFlag != 5){
+        if (this.currentNodeId == null){
+          this.visibles.nullVisible = true
+          this.loading = false
+          this.$message.error("必须要选择一个初始节点")
+          return false;
+        }
+      }
+
       //老版本的处理逻辑
       if (this.settings.visibleTypeFlag == 0){
         relationApi.getKGVisiblesOutData(this.currentNodeId,this.currentDbId).then(({data}) => {
@@ -157,7 +171,7 @@ export default {
         })
       }else if (this.settings.visibleTypeFlag == 4){
         if (this.settings.relType.length == 0){
-          // this.$message.error("流域概化图必须要指定关系")
+          this.$message.error("流域概化图必须要指定关系")
           this.visibles.nullVisible = true
           this.loading = false
           return false;

@@ -7,14 +7,13 @@
  -->
 <template>
   <div>
-    <div v-loading="loading"
-         element-loading-text="拼命加载中"
-         element-loading-spinner="el-icon-loading"
-         element-loading-background="rgba(0, 0, 0, 0.8)">
-      <div id="KGNetwork" ref="KGNetwork" :style="{width:1600+ 'px',height:1600+ 'px'}" v-show="!visibles.nullVisible"></div>
+    <div>
+      <div id="KGNetwork" ref="KGNetwork" :style="{width:1600+ 'px',height:1600+ 'px'}" v-show="!visibles.nullVisible" v-loading="loading"
+           element-loading-text="拼命加载中"
+           element-loading-spinner="el-icon-loading"
+           element-loading-background="rgba(0, 0, 0, 0.8)"></div>
       <el-empty description="暂无内容" v-show="visibles.nullVisible"></el-empty>
     </div>
-
   </div>
 </template>
 
@@ -33,9 +32,9 @@ export default {
       edges: null,
       options: null,
       network: null,
-      currentNodeId:3667,
+      currentNodeId:null,
       settings:{
-        visibleTypeFlag: 4,
+        visibleTypeFlag: 5,
         length:2,
         relType:["位于","包含"],
       },
@@ -66,13 +65,13 @@ export default {
     this.currentDbId = localStorage.getItem('instanceId')
     this.currentDbName = localStorage.getItem('instanceName')
 
-    if (this.currentDbName == '椒江流域知识图谱'){
-      this.currentNodeId = 3667
-    }else if (this.currentDbName == '屯溪流域知识图谱'){
-      this.currentNodeId = 4491
-    }else if (this.currentDbName == '钱塘江流域知识图谱'){
-      this.currentNodeId = 4615
-    }
+    // if (this.currentDbName == '椒江流域知识图谱'){
+    //   this.currentNodeId = 3667
+    // }else if (this.currentDbName == '屯溪流域知识图谱'){
+    //   this.currentNodeId = 4491
+    // }else if (this.currentDbName == '钱塘江流域知识图谱'){
+    //   this.currentNodeId = 4615
+    // }
 
     // this.settings.relType.push("位于")
     // this.settings.relType.push("包含")
@@ -82,9 +81,22 @@ export default {
     this.initKG()
   },
   methods: {
+    init(){
+      this.currentDbName = localStorage.getItem("instanceName")
+      this.currentDbId = localStorage.getItem("instanceId")
+    },
     initKG() {
       this.loading = true
       let _this = this
+
+      if (this.settings.visibleTypeFlag != 5){
+        if (this.currentNodeId == null){
+          this.visibles.nullVisible = true
+          this.loading = false
+          return false;
+        }
+      }
+
       //老版本的处理逻辑
       if (this.settings.visibleTypeFlag == 0){
         relationApi.getKGVisiblesOutData(this.currentNodeId,this.currentDbId).then(({data}) => {
@@ -162,6 +174,20 @@ export default {
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
           _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
+        })
+      }else if (this.settings.visibleTypeFlag == 5){
+        if (null == this.currentDbId){
+          return false
+        }
+        //默认显示图，用于页面初始化时候的显示
+        relationApi.getDefaultRelLinks(this.currentDbId).then(({data}) => {
+          const datas = VisUtils.handleRelLinkVisibles(data)
+          _this.getCurrentNodeType(data.data)
+          const container = this.$refs.KGNetwork;
+          _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
+          _this.network = new Vis.Network(container, datas, _this.options);
+          _this.visibles.nullVisible = false
           _this.setLoading()
         })
       }
@@ -243,21 +269,25 @@ export default {
   watch:{
     currentNode: {
       handler(newValue, oldValue) {
-        console.log("currentId",newValue[0]._id)
+        console.log("大图newvalue",newValue == null)
+        if (newValue == null){
+          this.visibles.nullVisible = true
+          this.loading = false
+          return
+        }
         this.currentNodeId = newValue[0]._id
         this.initKG()
       },
       // 因为option是个对象，而我们对于echarts的配置项，要更改的数据往往不在一级属性里面
       // 所以这里设置了deep:true，vue文档有说明
-      deep: true
+      deep: true,
+      immediate:true
     },
     visibleSettings:{
       handler(newValue,oldValue) {
         this.settings.visibleTypeFlag = newValue.visibleTypeFlag
         this.settings.length = newValue.length
         this.settings.relType = newValue.relType
-        console.log("newValue=====",this.settings.relType)
-        console.log("大图显示的参数为：",this.settings)
         this.initKG()
       },
       deep:true,

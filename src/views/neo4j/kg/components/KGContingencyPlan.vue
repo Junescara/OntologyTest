@@ -31,6 +31,21 @@
           </el-col>
           <!--以上为知识图谱选择的下拉菜单-->
 
+          <!--以下为监测要素选择的下拉菜单-->
+          <el-col :span="6">
+            <div style= "margin-top: 15px">
+              <el-select clearable @clear="clear" @change="chooseAtt" v-model="currentAtt" placeholder="请选择监测要素" >
+                <el-option
+                  v-for="(item,index) in attList"
+                  :key=index
+                  :label=item
+                  :value=item
+                />
+              </el-select>
+            </div>
+            <!--以下为监测要素选择的下拉菜单-->
+          </el-col>
+
           <!--以下为监测对象名称的输入框-->
           <el-col :span="6">
             <div style="margin-top: 15px;">
@@ -78,6 +93,21 @@
           </el-col>
           <!--以上为监测对象类型的下拉菜单-->
 
+          <!--以下为应急预案类型的下拉菜单-->
+          <el-col :span="6">
+            <div style= "margin-top: 15px">
+              <el-select clearable @clear="clear" @change="choosePlan" v-model="currentPlan" placeholder="请选择应急预案条目" >
+                <el-option
+                  v-for="(item,index) in planList"
+                  :key=index
+                  :label=item
+                  :value=item
+                />
+              </el-select>
+            </div>
+            <!--以下为应急预案类型的下拉菜单-->
+          </el-col>
+
           <!--以下为预报值的输入框-->
           <el-col :span="6">
             <div style="margin-top: 15px;">
@@ -97,20 +127,20 @@
         </el-row>
 
 
-        <!--以下为应急预案类型的下拉菜单-->
-        <el-row>
-          <div>
-            <el-select clearable @clear="clear" @change="choosePlan" v-model="currentPlan" placeholder="请选择应急预案条目" style= "margin-top: 15px">
-              <el-option
-                v-for="(item,index) in planList"
-                :key=index
-                :label=item
-                :value=item
-              />
-            </el-select>
-          </div>
-        <!--以下为应急预案类型的下拉菜单-->
-        </el-row>
+<!--        &lt;!&ndash;以下为应急预案类型的下拉菜单&ndash;&gt;-->
+<!--        <el-col :span="6">-->
+<!--          <div style="margin-top: 15px;">-->
+<!--            <el-select clearable @clear="clear" @change="choosePlan" v-model="currentPlan" placeholder="请选择应急预案条目" style= "margin-top: 15px">-->
+<!--              <el-option-->
+<!--                v-for="(item,index) in planList"-->
+<!--                :key=index-->
+<!--                :label=item-->
+<!--                :value=item-->
+<!--              />-->
+<!--            </el-select>-->
+<!--          </div>-->
+<!--        &lt;!&ndash;以下为应急预案类型的下拉菜单&ndash;&gt;-->
+<!--        </el-col>-->
 
       </el-card>
     </div>
@@ -259,6 +289,8 @@ export default {
       nodeLabelList: [],
       //记录应急预案的所有条目
       planList: ["工程调度","堤防巡查和抢护","人员转移","重点单位抢险"],
+      //记录监测要素的所有条目
+      attList: ["水位","降水","流量"],
       //选定知识图谱id
       currentId:null,
       //选定知识图谱名称
@@ -267,6 +299,7 @@ export default {
       currentType:null,
       //选定类型监测对象类型
       currentPlan:"工程调度",
+      currentAtt:"",
       //记录查询出的节点名称
       nodeNames: [],
       //记录查询出的节点id和名称
@@ -279,6 +312,8 @@ export default {
         currentName: null,
         //选定应急预案类型
         currentPlan: 0,
+        //选定监测要素
+        currentAtt: null,
         //预报值
         attValue: null,
         //选定监测对象类型
@@ -416,6 +451,14 @@ export default {
       this.contingencyPlan.currentPlan = this.planList.indexOf(value);
 
       this.getContingencyPlan();
+
+    },
+
+    //选择监测要素
+    chooseAtt(value) {
+
+      this.currentAtt = value;
+      this.contingencyPlan.currentAtt = this.attList.indexOf(value);
 
     },
 

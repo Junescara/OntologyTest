@@ -58,7 +58,7 @@ export default {
       default:""
     },
     //当前调度要素
-    currentAtt: {
+    currentPlan: {
       type:String,
       default:""
     },
@@ -99,7 +99,7 @@ export default {
       this.loading = true
       let _this = this
 
-      contingencyPlanApi.getSchedulePlanLink(this.currentName,this.currentType,this.currentAtt,this.attValue,this.currentId)
+      contingencyPlanApi.getContingencyPlanLink(this.currentName,this.currentType,this.attValue,this.currentId,this.currentPlan)
         .then(({data}) => {
           const datas = VisUtils.handleRelLinkVisiblesHashNode(data)
           _this.getCurrentNodeType(data.data)

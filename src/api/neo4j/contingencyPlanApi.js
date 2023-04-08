@@ -9,19 +9,27 @@ export default {
     })
   },
 
-  getSchedulePlanLink(name, type, element, value, database) {
+  getContingencyPlanLink(name, type, value, database, plan) {
     return request({
-      url: `/kg/analyze/contingencyPlan/getSchedulePlanLink`,
+      url: `/kg/analyze/contingencyPlan/getContingencyPlanLink`,
       method: 'get',
-      params: {name: name, type: type, element: element, value: value, database: database}
+      params: {name: name, type: type, value: value, database: database, plan: plan}
     })
   },
 
-  getSchedulePlan(name, type, element, value, database) {
+  getContingencyPlanNode(name, type, value, database, plan) {
     return request({
-      url: `/kg/analyze/contingencyPlan/getSchedulePlan`,
+      url: `/kg/analyze/contingencyPlan/getContingencyPlanNode`,
       method: 'get',
-      params: {name: name, type: type, element: element, value: value, database: database}
+      params: {name: name, type: type, value: value, database: database, plan: plan}
+    })
+  },
+
+  getContingencyPlanText(name, type, value, database, plan) {
+    return request({
+      url: `/kg/analyze/contingencyPlan/getContingencyPlanText`,
+      method: 'get',
+      params: {name: name, type: type, value: value, database: database, plan: plan}
     })
   }
 

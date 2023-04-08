@@ -16,6 +16,7 @@
 
         <!--以下为知识图谱选择的下拉菜单-->
         <el-row>
+          <el-col :span="6">
           <div>
             <el-select clearable @clear="clear" @change="chooseKnowledegGraph" v-model="currentDbName" placeholder="请选择知识图谱"
                        style= "margin-top: 15px">
@@ -27,25 +28,8 @@
               />
             </el-select>
           </div>
-        </el-row>
-        <!--以上为知识图谱选择的下拉菜单-->
-
-        <el-row>
-          <!--以下为监测对象类型的下拉菜单-->
-          <el-col :span="6">
-          <div>
-            <el-select clearable @clear="clear" @change="chooseEntity" v-model="currentType" placeholder="请选择监测对象类型"
-                       style= "margin-top: 15px">
-              <el-option
-                v-for="(item,index) in nodeLabelList"
-                :key=index
-                :label=item
-                :value=item
-              />
-            </el-select>
-          </div>
-        </el-col>
-          <!--以上为监测对象类型的下拉菜单-->
+          </el-col>
+          <!--以上为知识图谱选择的下拉菜单-->
 
           <!--以下为监测对象名称的输入框-->
           <el-col :span="6">
@@ -73,16 +57,18 @@
             </div>
           </el-col>
           <!--以上标签用于显示查询出来的节点名称-->
+
         </el-row>
 
         <el-row>
-          <!--以下为监测对象属性的下拉菜单-->
+
+          <!--以下为监测对象类型的下拉菜单-->
           <el-col :span="6">
             <div>
-              <el-select clearable @clear="clear" @change="chooseAtt" v-model="contingencyPlan.attNameList.index" placeholder="请选择监测对象属性"
+              <el-select clearable @clear="clear" @change="chooseEntity" v-model="currentType" placeholder="请选择监测对象类型"
                          style= "margin-top: 15px">
                 <el-option
-                  v-for="(item,index) in contingencyPlan.attNameList"
+                  v-for="(item,index) in nodeLabelList"
                   :key=index
                   :label=item
                   :value=item
@@ -90,7 +76,7 @@
               </el-select>
             </div>
           </el-col>
-          <!--以上为监测对象属性的下拉菜单-->
+          <!--以上为监测对象类型的下拉菜单-->
 
           <!--以下为预报值的输入框-->
           <el-col :span="6">
@@ -110,15 +96,44 @@
 
         </el-row>
 
+
+        <!--以下为应急预案类型的下拉菜单-->
+        <el-row>
+          <div>
+            <el-select clearable @clear="clear" @change="choosePlan" v-model="currentPlan" placeholder="请选择应急预案条目" style= "margin-top: 15px">
+              <el-option
+                v-for="(item,index) in planList"
+                :key=index
+                :label=item
+                :value=item
+              />
+            </el-select>
+          </div>
+        <!--以下为应急预案类型的下拉菜单-->
+        </el-row>
+
       </el-card>
     </div>
 
     <div style="display: flex" >
       <el-card class="box-card" style = "width: 400px">
         <div slot="header" class="clearfix">
-          <span>应急预案文本</span>
+          <span>应急预案</span>
         </div>
-        <el-descriptions v-for="(item,index) in this.contingencyPlan.plans" class="margin-top" title="应急对象" :key="index" :column="1" border>
+
+        <span style="font-weight: bold">触发条件</span>
+        <div style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04); margin-top: 15px;margin-bottom: 15px; padding: 10px">
+          {{this.contingencyPlan.triggerRule}}
+        </div>
+
+        <span style="font-weight: bold;">预案文本</span>
+        <div style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04); margin-top: 15px; padding: 10px">
+          {{this.contingencyPlan.planText}}
+        </div>
+
+
+
+        <el-descriptions v-for="(item,index) in this.contingencyPlan.plans" class="margin-top" title="应急对象" :key="index" :column="1" border  style= "margin-top: 15px">
           <el-descriptions-item label="对象名称">对象类型</el-descriptions-item>
           <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
             {{proVals}}
@@ -129,10 +144,8 @@
 
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
-          <span>知识图谱</span>
-          <el-tag>
-            调度方案图
-          </el-tag>
+          <span>应急预案图</span>
+
           <el-button style="float: right; padding: 3px 0; margin-right: 10px" @click="handleKGSize(1)" type="text">查看大图</el-button>
           <br>
           <el-divider content-position="left">图例</el-divider>
@@ -149,7 +162,7 @@
           </div>
         </div>
 
-        <KGVisiableContingencyPlanNetwork :draw-flag="this.contingencyPlan.drawFlag" :current-id="this.currentId" :att-value="this.contingencyPlan.attValue" :current-att="this.contingencyPlan.currentAtt" :current-name="this.contingencyPlan.currentName" :current-node="this.nodeByName" :visible-settings="this.visibleSettings" :current-type="this.currentType" @legend="getLegend"></KGVisiableContingencyPlanNetwork>
+        <KGVisiableContingencyPlanNetwork :draw-flag="this.contingencyPlan.drawFlag" :current-id="this.currentId" :att-value="this.contingencyPlan.attValue" :current-plan="this.contingencyPlan.currentPlan" :current-name="this.contingencyPlan.currentName" :current-node="this.nodeByName" :visible-settings="this.visibleSettings" :current-type="this.currentType" @legend="getLegend"></KGVisiableContingencyPlanNetwork>
       </el-card>
 
       <el-card class="box-card" style="width: 400px">
@@ -192,7 +205,7 @@
         <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
       </div>
       <div style="display: flex">
-        <KGVisiableContingencyPlanNetworkLarge :current-id="this.currentId" :att-value="this.contingencyPlan.attValue" :current-att="this.contingencyPlan.currentAtt" :current-name="this.contingencyPlan.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" :current-type="this.currentType" @legend="getLegend"  style="margin: 0 auto;"></KGVisiableContingencyPlanNetworkLarge>
+        <KGVisiableContingencyPlanNetworkLarge :current-id="this.currentId" :att-value="this.contingencyPlan.attValue" :current-plan="this.contingencyPlan.currentPlan" :current-name="this.contingencyPlan.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" :current-type="this.currentType" @legend="getLegend"  style="margin: 0 auto;"></KGVisiableContingencyPlanNetworkLarge>
       </div>
 
       <span slot="footer" class="dialog-footer">
@@ -244,12 +257,16 @@ export default {
       kgIdNameList: [],
       //记录选定知识图谱拥有的全部标签
       nodeLabelList: [],
+      //记录应急预案的所有条目
+      planList: ["工程调度","堤防巡查和抢护","人员转移","重点单位抢险"],
       //选定知识图谱id
       currentId:null,
       //选定知识图谱名称
       currentDbName:null,
       //选定类型监测对象类型
       currentType:null,
+      //选定类型监测对象类型
+      currentPlan:"工程调度",
       //记录查询出的节点名称
       nodeNames: [],
       //记录查询出的节点id和名称
@@ -260,19 +277,20 @@ export default {
         attNameList: [],
         //当前选定监测对象名称
         currentName: null,
-        //选定监测对象属性
-        currentAtt:null,
+        //选定应急预案类型
+        currentPlan: 0,
         //预报值
         attValue: null,
         //选定监测对象类型
         currentType: null,
-        //名称和标签的标志，由于调度数据库中的名称不一样，因此单独列出来
-        nameSymbol: "测站名称",
-        labelSymbol: "rdfs__label",
         //查询出来的方案
         plans: {
           应急对象:{},
         },
+        //当前触发条件
+        triggerRule:null,
+        //当前应急预案文本
+        planText:null,
         //绘图标志
         drawFlag: false
       },
@@ -391,6 +409,16 @@ export default {
       this.currentType = value;
     },
 
+    //选择应急预案
+    choosePlan(value) {
+
+      this.currentPlan = value;
+      this.contingencyPlan.currentPlan = this.planList.indexOf(value);
+
+      this.getContingencyPlan();
+
+    },
+
     //选择知识图谱下拉框改变当前知识图谱
     chooseKnowledegGraph(value) {
 
@@ -405,12 +433,6 @@ export default {
       console.log(this.currentId)
 
       this.getNodeLabelList()
-    },
-
-    //改变当前监测对象的属性
-    chooseAtt(value) {
-      this.contingencyPlan.currentAtt = value;
-      console.log(this.contingencyPlan.currentAtt);
     },
 
     //切换下拉菜单
@@ -463,6 +485,7 @@ export default {
       aggregateApi.getNodeLabels(this.currentId)
         .then((response) => {
           this.nodeLabelList = response.data.data.nodeLabels
+          console.log(this.nodeLabelList)
         })
         .catch((error) => {
           console.log(error);
@@ -499,15 +522,39 @@ export default {
           this.nodeNames = []
           this.nodeIdNames = []
 
+          let nodeNameKey = ""
+
           for(let item of list){
+            let nodeType = item.nodeType
+            for(let t of nodeType){
+              if(t === "A387BE524D344370A13F1DFF76C40493" || t === "椒江流域知识图谱"){
+                continue
+              }
+              if(t === "行政区划"){
+                nodeNameKey = "行政区划名称（带乡镇）"
+              }
+              else if(t === "自然人"){
+                nodeNameKey = "姓名"
+              }
+              else if(t === "砂石块石储备点"){
+                nodeNameKey = "储备点名称"
+              }
+              else{
+                nodeNameKey = t + "名称"
+              }
+            }
+
+            console.log(nodeNameKey)
+
             let map = new Map(Object.entries(item.node))
             let id = map.get("_id")
-            let name = map.get(this.contingencyPlan.nameSymbol)
+            let name = map.get(nodeNameKey)
             this.nodeNames.push(name)
             this.nodeIdNames.push(id,name)
           }
-          // console.log(this.nodeNames)
-          // console.log(this.nodeIdNames)
+          console.log(this.nodeNames)
+          console.log(this.nodeIdNames)
+
       })
       .catch((error) => {
         console.log(error);
@@ -544,9 +591,22 @@ export default {
     //应急预案查询
     getContingencyPlan(){
       //查询调度方案
-      console.log("当前选择要素： " + this.contingencyPlan.currentAtt);
       console.log("预报值： " + this.contingencyPlan.attValue);
-      contingencyPlanApi.getSchedulePlan(this.contingencyPlan.currentName,this.currentType, this.contingencyPlan.currentAtt, this.contingencyPlan.attValue, this.currentId)
+      this.contingencyPlan.plans.应急对象 = {}
+      // this.contingencyPlan.triggerRule = null;
+      // this.contingencyPlan.planText = null;
+
+      contingencyPlanApi.getContingencyPlanText(this.contingencyPlan.currentName, this.currentType, this.contingencyPlan.attValue, this.currentId, this.contingencyPlan.currentPlan)
+        .then(({data}) => {
+          let map = new Map(Object.entries(data.data));
+          this.contingencyPlan.triggerRule = map.get("triggerRule")
+          this.contingencyPlan.planText = map.get("contingencyPlan")
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      contingencyPlanApi.getContingencyPlanNode(this.contingencyPlan.currentName, this.currentType, this.contingencyPlan.attValue, this.currentId, this.contingencyPlan.currentPlan)
        .then(({data}) => {
          let map = new Map(Object.entries(data.data));
          let keys = map.keys()
@@ -554,14 +614,16 @@ export default {
            console.log("key",key)
            console.log("key",map.get(key))
            this.contingencyPlan.plans.应急对象[key]=map.get(key)
-
          }
         })
         .catch((error) => {
           console.log(error);
         });
+
       this.contingencyPlan.drawFlag = !this.contingencyPlan.drawFlag
-      alert("搜索完毕！")
+
+      alert("查询已完成！")
+
     },
 
     handleSettings(){
@@ -570,36 +632,11 @@ export default {
       this.visibleSettings.relType = this.flags.relTypeFlag
       this.visibles.settingsVisible = false
     },
-    getCurrentVisibleType(){
-      if (this.flags.visibleTypeFlag == 0){
-        return '显示出边'
-      }else if (this.flags.visibleTypeFlag == 1){
-        return '显示入边'
-      }else if (this.flags.visibleTypeFlag == 2){
-        return '显示该点完整关系'
-      }else if (this.flags.visibleTypeFlag == 3){
-        return '显示该点完整路径'
-      }else if (this.flags.visibleTypeFlag == 4){
-        return '流域概化图'
-      }
-    },
-    chooseRelType(){
-      this.visibleSettings.relType = this.flags.relTypeFlag
-    },
+
     getLegend(data){
       this.legend = data
     },
-    // initDbInfo(){
-      // this.currentDbName = localStorage.getItem("instanceName")
-      // this.currentId = this.$route.params.id
-      // this.currentId = localStorage.getItem("instanceId")
-      // this.currentOntoId = localStorage.getItem('ontoId')
-      // if (this.currentId !== undefined){
-      //   KGConnectApi.getConnectionById(this.currentId).then(({data}) => {
-      //     this.kgInfo = data.data
-      //   })
-      // }
-    // },
+
     handleKGSize(value){
       if (value == 1){
         this.visibles.largeKGVisible = true
@@ -617,14 +654,10 @@ export default {
     noMore () {
       return this.flags.relLazyCountFlag >= this.relNames.length
     },
-    currentVisibleType(){
-      return this.getCurrentVisibleType()
-    },
   },
   watch:{
     relNames:{
       handler(newValue, oldValue) {
-        // this.relNamesLazy = []
         if (oldValue.length > 0){
           this.relNamesLazy = []
           this.flags.relLazyCountFlag = 0
@@ -633,50 +666,6 @@ export default {
       },
       deep: true
     },
-    flags:{
-      handler(newValue, oldValue){
-        if (newValue.relTypeFlag.indexOf('上游') >= 0 && newValue.relTypeFlag.indexOf('下游') >= 0){
-          this.$message.error('上下游不能同时被选中！')
-          let i1 = this.flags.relTypeFlag.indexOf('上游')
-          let i2 = this.flags.relTypeFlag.indexOf('下游')
-          delete this.flags.relTypeFlag[i1]
-          delete this.flags.relTypeFlag[i2]
-        }
-        if (newValue.relTypeFlag.indexOf('位于') >= 0 && newValue.relTypeFlag.indexOf('监测') >= 0){
-          this.$message.error('位于监测不能同时被选中！')
-          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
-          let i1 = this.flags.relTypeFlag.indexOf('位于')
-          let i2 = this.flags.relTypeFlag.indexOf('监测')
-          delete this.flags.relTypeFlag[i1]
-          delete this.flags.relTypeFlag[i2]
-        }
-        if (newValue.relTypeFlag.indexOf('含有') >= 0 && newValue.relTypeFlag.indexOf('属于') >= 0){
-          this.$message.error('含有属于不能同时被选中！')
-          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
-          let i1 = this.flags.relTypeFlag.indexOf('含有')
-          let i2 = this.flags.relTypeFlag.indexOf('属于')
-          delete this.flags.relTypeFlag[i1]
-          delete this.flags.relTypeFlag[i2]
-        }
-        if (newValue.relTypeFlag.indexOf('上级') >= 0 && newValue.relTypeFlag.indexOf('下级') >= 0){
-          this.$message.error('上下级不能同时被选中！')
-          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
-          let i1 = this.flags.relTypeFlag.indexOf('上级')
-          let i2 = this.flags.relTypeFlag.indexOf('下级')
-          delete this.flags.relTypeFlag[i1]
-          delete this.flags.relTypeFlag[i2]
-        }
-        if (newValue.relTypeFlag.indexOf('支流') >= 0 && newValue.relTypeFlag.indexOf('干流') >= 0){
-          this.$message.error('干支流不能同时被选中！')
-          console.log("oldValue.relTypeFlag=====",oldValue.relTypeFlag)
-          let i1 = this.flags.relTypeFlag.indexOf('支流')
-          let i2 = this.flags.relTypeFlag.indexOf('干流')
-          delete this.flags.relTypeFlag[i1]
-          delete this.flags.relTypeFlag[i2]
-        }
-      },
-      deep: true
-    }
   }
 }
 </script>

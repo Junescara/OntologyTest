@@ -20,7 +20,7 @@
             <el-select clearable @clear="clear" @change="chooseWaterShed" v-model="currentId" placeholder="请选择流域"
                        style= "margin-top: 15px">
               <el-option
-                v-for="(item,index) in nodeLabels"
+                v-for="(item,index) in regulation.kgNameList"
                 :key=index
                 :label=item
                 :value=item
@@ -364,7 +364,11 @@ export default {
         //当前存在的节点类型
         currentNodeTypes: null,
         // 类型名称和颜色的映射关系对象
-        typeColors: {}
+        typeColors: {},
+        //记录所有知识图谱的名称
+        kgNameList: [],
+        //记录所有知识图谱的id和名称
+        kgIdNameList: [],
       }
     }
   },
@@ -373,6 +377,7 @@ export default {
     this.initDbInfo()
     this.getAllRegulationElements()
     this.getAllNodeLabels()
+    this.getInstNameList()
     this.regulation.drawDefaultFlag = !this.regulation.drawDefaultFlag
 
   },
@@ -382,6 +387,20 @@ export default {
 
   },
   methods: {
+    //获得所有知识图谱名称
+    getInstNameList() {
+      KGConnectApi.getInstNameList()
+        .then((response) => {
+
+          this.regulation.kgIdNameList = response.data.data
+          for(const key in this.regulation.kgIdNameList){
+            this.regulation.kgNameList.push(this.regulation.kgIdNameList[key])
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     //传递绘图时获得的结点类型
     onChildEvent(message) {
       this.regulation.currentNodeTypes = message
@@ -443,6 +462,8 @@ export default {
 
     //选择流域下拉框改变当前流域
     chooseWaterShed(value) {
+      this.getAllNodeLabels();
+      this.getAllRegulationElements();
       this.currentId = value
     },
     //改变当前监测单位的属性

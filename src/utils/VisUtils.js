@@ -483,7 +483,7 @@ export default {
     if (isStart){
       let nodeItem = {
         id:node.node._id,
-        label:node.node.rdfs__label,
+        label:node.node.label,
         level:1,
         group: nodeType
       }
@@ -491,7 +491,7 @@ export default {
     }else {
       let nodeItem = {
         id:node.node._id,
-        label:node.node.rdfs__label,
+        label:node.node.label,
         level:2,
         group: nodeType
       }

@@ -353,8 +353,8 @@ export default {
         //预报值
         attValue: null,
         //名称和标签的标志，由于调度数据库中的名称不一样，因此单独列出来
-        nameSymbol: "rdfs__name",
-        labelSymbol: "rdfs__label",
+        nameSymbol: "name",
+        labelSymbol: "label",
         //查询出来的调度方案
         plans: null,
         //绘图标志
@@ -515,7 +515,7 @@ export default {
 
     //获得所有调度要素标签
     getAllRegulationElements() {
-      regulationApi.getAllRegulationElements("ns0__控制要素","")
+      regulationApi.getAllRegulationElements("控制要素","")
         .then((response) => {
           this.regulation.attNameList = response.data.data
         })

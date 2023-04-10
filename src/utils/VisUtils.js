@@ -64,6 +64,26 @@ export default {
     return new Vis.DataSet(linkList)
   },
   /**
+   * 调度方案特供
+   * @param rels
+   * @returns {*}
+   */
+  createRelsEdgesV3(rels) {
+    let linkList = []
+    for (let item of rels) {
+      //这里用结点的name属性来指定关系边的头尾
+      let linkItem = {
+        from: item.start.toString(),
+        to: item.end.toString(),
+        label: item.relName
+      }
+
+      linkList.push(linkItem)
+    }
+
+    return new Vis.DataSet(linkList)
+  },
+  /**
    * 创建格式化点数据集
    * @param nodes
    * @param startId
@@ -105,6 +125,20 @@ export default {
     let nodeList = []
     for (let item of nodes) {
       let nodeItem = this.switchNodeToItem(item,false)
+      nodeList.push(nodeItem)
+    }
+    return new Vis.DataSet(nodeList)
+  },
+
+  /**
+   * 直接利用转换好的结点生成vis的结点数据集（调度方案特供）
+   * @param nodes
+   * @returns {*}
+   */
+  createNodesV3(nodes) {
+    let nodeList = []
+    for (let item of nodes) {
+      let nodeItem = this.switchNodeToItem2(item,false)
       nodeList.push(nodeItem)
     }
     return new Vis.DataSet(nodeList)
@@ -426,6 +460,46 @@ export default {
   },
 
   /**
+   * 将HashNode转换为存入datalist的对象元素（调度方案特供）
+   * @param node
+   * @param isStart
+   */
+  createHashNodeItem2(node,isStart){
+    let nodeTypes = node.nodeType
+    let nodeType = "hashNode"
+    //挑出一个可能合适的结点类型
+    for(let x = 0;x<nodeTypes.length;x++){
+      const type = nodeTypes[x]
+      for(let i = 0; i< type.length;i++){
+        let ch = type.charAt(i)
+        //如果包含除了字母和数字以外的字符则停在当前的type
+        if(!(/^[^a-zA-Z0-9]*$/.test(ch))) {
+          break
+        }
+      }
+      nodeType = type
+      break;
+    }
+    if (isStart){
+      let nodeItem = {
+        id:node.node._id,
+        label:node.node.rdfs__label,
+        level:1,
+        group: nodeType
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node.node._id,
+        label:node.node.rdfs__label,
+        level:2,
+        group: nodeType
+      }
+      return nodeItem
+    }
+  },
+
+  /**
    * 将河对象本体转换为存入datalist的对象元素
    * @param node
    * @param isStart
@@ -539,6 +613,17 @@ export default {
       //用于处理HashNode结点
       return this.createHashNodeItem(node,isStart)
     }
+  },
+  /**
+   * 将无类型的node存入dataList（调度方案特供）
+   * @param node
+   * @param isStart
+   */
+  switchNodeToItem2(node,isStart){
+
+    //用于处理HashNode结点
+    return this.createHashNodeItem2(node,isStart)
+
   },
   /**
    * 处理生成包括出边和入边完整图像的数据
@@ -716,6 +801,45 @@ export default {
     const datas = {
       nodes:this.createNodesV2(nodes),
       edges:this.createRelsEdgesV2(rels)
+    }
+
+    return datas
+  },
+
+  /**
+   * 处理生成包括出边完整图像的数据(处理HashMap版本结点特供，调度方案特供)
+   * @param data
+   * @returns {{nodes: *, edges: ([]|*)}}
+   */
+  handleRelLinkVisiblesHashNode2(data){
+    let rels = []
+    let nodes = []
+
+    //首先获取出边数据
+    for (let rel of data.data.relationItems){
+      rels.push(rel)
+    }
+
+    //获取结点集
+    //首先要维护一个集合，用于结点id去重
+    let idSet = new Set()
+
+    for (let item of data.data.finalNodeVos){
+      let id = item.node._id
+      if (idSet.has(id)){
+        //如果idset中包含这个元素,则无需再结点集中添加这个元素
+        continue;
+      }else{
+        //idset中不包含这个元素，添加进结点集
+        idSet.add(id)
+        nodes.push(item)  //直接存入提取过的node
+      }
+    }
+
+    //封装最终生成数据的数据集
+    const datas = {
+      nodes:this.createNodesV3(nodes),
+      edges:this.createRelsEdgesV3(rels)
     }
 
     return datas

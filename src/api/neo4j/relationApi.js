@@ -185,5 +185,14 @@ export default {
         method: 'get',
       }
     )
+  },
+  getTopoGraph(searchDto){
+    // let json = JSON.stringify(searchDto)
+    // const jsonStr =  json.toString()
+    return request({
+      url: `/kg/instance/graph/getTopoGraphV2`,
+      method:`get`,
+      params: searchDto,
+    })
   }
 }

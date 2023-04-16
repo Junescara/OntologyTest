@@ -145,7 +145,8 @@
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
 <!--        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>-->
-        <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleVisNetwork>
+        <KGVisibleVisNetwork :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend" v-if="visibleSettings.visibleTypeFlag != 6"></KGVisibleVisNetwork>
+        <KGVisibleGojs v-if="visibleSettings.visibleTypeFlag == 6" :query-props="queryProps" :current-node="nodeByName"></KGVisibleGojs>
       </el-card>
       <el-card class="box-card" style="width: 400px;">
         <div slot="header" class="clearfix">
@@ -215,6 +216,39 @@
                 :key=index
                 :label=item
                 :value=item
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="关系类型：" v-show="flags.visibleTypeFlag == 6">
+            <el-select clearable v-model="flags.relTypeFlag" multiple placeholder="请选择关系类型" @click="chooseRelType"
+                       style="margin-top: 20px">
+              <el-option
+                v-for="(item,index) in relLabels"
+                :key=index
+                :label=item
+                :value=item
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="水库粒度:" v-if="flags.visibleTypeFlag == 6">
+            <el-select clearable v-model="queryProps.enScales" multiple placeholder="请选择水库查询粒度"
+                       style="margin-top: 20px">
+              <el-option
+                v-for="item in reservoirOptions"
+                :key=item.value
+                :label=item.label
+                :value=item.value
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="测站粒度:" v-if="flags.visibleTypeFlag == 6">
+            <el-select clearable v-model="queryProps.reportLevels" multiple placeholder="请选择测站查询粒度"
+                       style="margin-top: 20px">
+              <el-option
+                v-for="item in stationOptions"
+                :key=item.value
+                :label=item.label
+                :value=item.value
               />
             </el-select>
           </el-form-item>
@@ -364,9 +398,12 @@ import RainfallStationApi from "../../../../api/neo4j/RainfallStationApi";
 import ReachApi from "../../../../api/neo4j/ReachApi";
 import KGVisibleVisNetworkLarge from "./KGVisibleVisNetworkLarge";
 import PointApi from "../../../../api/neo4j/PointApi";
+import KGVisibleGojs from "./KGVisibleGojs";
+import Neo4jEntityApi from "../../../../api/neo4j/Neo4jEntityApi";
 export default {
   name: 'KGInstance',
   components: {
+    KGVisibleGojs,
     KGVisibleVisNetworkLarge,
     KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
   props:{
@@ -459,12 +496,51 @@ export default {
           value: 5,
           label: '默认显示图',
         },
+        {
+          value: 6,
+          label: '拓扑概化图（新）',
+        },
       ],
+      reservoirOptions:[{
+        value:"\"大（1）型\"",
+        label:"大（1）型"
+      },{
+        value:"\"大（2）型\"",
+        label:"大（2）型"
+      },{
+        value:"\"小（1）型\"",
+        label:"小（1）型"
+      },{
+        value:"\"小（2）型\"",
+        label:"小（2）型"
+      }],
+      stationOptions:[{
+        value:"\"中央报汛站\"",
+        label:"中央报汛站"
+      },{
+        value:"\"省级重点报汛站\"",
+        label:"省级重点报汛站"
+      },{
+        value:"\"省级一般报讯站\"",
+        label:"省级一般报讯站"
+      },{
+        value:"\"其他报讯站\"",
+        label:"其他报讯站"
+      },{
+        value:"\"未知\"",
+        label:"未知"
+      }],
       //显示设置
       visibleSettings:{
         length:2, //关系链长度，默认为2
         visibleTypeFlag:0,
         relType:[],
+      },
+      queryProps:{
+        length:30,
+        relType:[],
+        enScales:[],
+        reportLevels:[],
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -626,6 +702,23 @@ export default {
             });
           break;
         default:
+          this.currentType = value
+          let labels = []
+          labels.push(value)
+          const queryParams = {
+            database:this.currentId,
+            labels:value
+          }
+          Neo4jEntityApi.listNames(queryParams).then(responce => {
+            console.log("responce=====",responce.data)
+            if (responce.data.code == 200){
+              this.nodeNames = responce.data.data
+            }else {
+              this.$message.error(responce.data.msg)
+            }
+          }).catch(error => {
+            this.$message.error("网络异常！")
+          })
       }
     },
     //选择关系菜单
@@ -678,33 +771,48 @@ export default {
     getNodeByName(name) {
       if (this.currentType === '行政区划') {
         this.getRegionalismNodeByName(name)
-      }
-      if (this.currentType === '断面') {
+      }else if (this.currentType === '断面') {
         this.getSectionNodeByName(name)
-      }
-      if (this.currentType === '测站') {
+      }else if (this.currentType === '测站') {
         this.getStationNodeByName(name)
-      }
-      if (this.currentType == '河流') {
+      }else if (this.currentType == '河流') {
         this.getRiverNodeByName(name)
       }
-      if (this.currentType == '水闸') {
+      else if (this.currentType == '水闸') {
         this.getWaterGateNodeByName(name)
       }
-      if (this.currentType == '流域') {
+      else if (this.currentType == '流域') {
         this.getWaterShedNodeByName(name)
       }
-      if (this.currentType == '水库') {
-        this.getReservoirNodeByName(name)
-      }
-      if (this.currentType == '流域雨量站') {
+      // else if (this.currentType == '水库') {
+      //   this.getReservoirNodeByName(name)
+      // }
+      else if (this.currentType == '流域雨量站') {
         this.getRainfallStationNodeByName(name)
-      }
-      if (this.currentType == '河段') {
+      }else if (this.currentType == '河段') {
         this.getReachNodeByName(name)
-      }
-      if (this.currentType == '汇流点'){
+      }else if (this.currentType == '汇流点'){
         this.getPointNodeByName(name)
+      }else {
+        const queryParams = {
+          database:this.currentId,
+          name:name,
+          labels:this.currentType
+        }
+        Neo4jEntityApi.listNodeByName(queryParams).then(responce => {
+          if (responce.data.code == 200){
+            if (responce.data.data.length > 0){
+              const res = responce.data.data
+              this.nodeByName = []
+              for (let item of res){
+                this.nodeByName.push(item.node)
+              }
+              console.log("nodeByName=====",this.nodeByName)
+            }
+          }
+        }).catch(error => {
+          console.log(error)
+        })
       }
     },
     getRelByName(name) {
@@ -1343,6 +1451,9 @@ export default {
       this.visibleSettings.length = this.flags.lengthFlag
       this.visibleSettings.relType = this.flags.relTypeFlag
       this.visibles.settingsVisible = false
+      if (this.flags.visibleTypeFlag == 6){
+        this.queryProps.relType = this.flags.relTypeFlag
+      }
     },
     getCurrentVisibleType(){
       if (this.flags.visibleTypeFlag == 0){
@@ -1357,10 +1468,17 @@ export default {
         return '流域概化图'
       }else if (this.flags.visibleTypeFlag == 5){
         return '默认显示图'
+      }else if (this.flags.visibleTypeFlag == 6){
+        return '拓扑概化图（新）'
       }
     },
     chooseRelType(){
       this.visibleSettings.relType = this.flags.relTypeFlag
+      console.log("this.flags.visibleTypeFlag======",this.flags.visibleTypeFlag)
+      if (this.flags.visibleTypeFlag == 6){
+        this.queryProps.relType = this.flags.relTypeFlag
+        console.log("this.queryProps.relType======",this.queryProps.relType)
+      }
     },
     getLegend(data){
       this.legend = data
@@ -1369,6 +1487,7 @@ export default {
       this.currentDbName = localStorage.getItem("instanceName")
       // this.currentId = this.$route.params.id
       this.currentId = localStorage.getItem("instanceId")
+
       this.currentOntoId = localStorage.getItem('ontoId')
       this.submitInstance.database = this.currentOntoId
       if (this.currentId !== undefined){

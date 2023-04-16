@@ -4292,6 +4292,11 @@ globule@^1.0.0:
     lodash "^4.17.21"
     minimatch "~3.0.2"
 
+gojs@^2.3.5:
+  version "2.3.5"
+  resolved "https://registry.npmmirror.com/gojs/-/gojs-2.3.5.tgz#0bdacee79113456e06b2d57000182915c2bc52a1"
+  integrity sha512-yXtakWD8WGxzDQopeGUlqPR91ehRP8KhhcON2v9bXnZbelFwanEBmw6GgGzr1ZNKxf+hzttEwlWonLk0lCrtJA==
+
 good-listener@^1.2.2:
   version "1.2.2"
   resolved "https://registry.npmmirror.com/good-listener/-/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"

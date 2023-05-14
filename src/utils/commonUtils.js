@@ -72,6 +72,16 @@ export default {
       nodeItem = node.point
       nodeItem['nodeType'] = '汇流点'
       return nodeItem
+    }else {
+      //出现了不属于以上类型的标签，进行结点类型的自填加
+      //首先把结点值加进去
+      nodeItem = node.node
+      //然后开始添加类型标签
+      //在后台把图谱标签剔除掉
+      for (let label of node.nodeType){
+        nodeItem['nodeType'] = label
+      }
+      return nodeItem
     }
   }
 }

@@ -408,6 +408,30 @@ export default {
     }
   },
   /**
+   * 将通用结点结点转换为存入datalist的对象元素（wzy版本）
+   * @param node
+   * @param isStart
+   */
+  createNodeItem(node,isStart){
+    if (isStart){
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:1,
+        group: 'river'
+      }
+      return nodeItem
+    }else {
+      let nodeItem = {
+        id:node._id,
+        label:node.name,
+        level:2,
+        group: 'river'
+      }
+      return nodeItem
+    }
+  },
+  /**
    * 将HashNode转换为存入datalist的对象元素
    * @param node
    * @param isStart
@@ -611,7 +635,8 @@ export default {
       return this.createPointItem(node,isStart)
     }else{
       //用于处理HashNode结点
-      return this.createHashNodeItem(node,isStart)
+      // return this.createHashNodeItem(node,isStart)
+      return this.createNodeItem(node,isStart)
     }
   },
   /**
@@ -731,6 +756,7 @@ export default {
   /**
    * 处理生成包括出边完整图像的数据
    * 针对的是概化图的数据结构，分为点集和边集
+   * 已支持通用查询
    * @param data
    * @returns {{nodes: *, edges: ([]|*)}}
    */

@@ -769,31 +769,37 @@ export default {
       this.nodeByName = null
     },
     getNodeByName(name) {
-      if (this.currentType === '行政区划') {
-        this.getRegionalismNodeByName(name)
-      }else if (this.currentType === '断面') {
-        this.getSectionNodeByName(name)
-      }else if (this.currentType === '测站') {
-        this.getStationNodeByName(name)
-      }else if (this.currentType == '河流') {
-        this.getRiverNodeByName(name)
-      }
-      else if (this.currentType == '水闸') {
+      // if (this.currentType === '行政区划') {
+      //   this.getRegionalismNodeByName(name)
+      // }
+      // else if (this.currentType === '断面') {
+      //   this.getSectionNodeByName(name)
+      // }
+      // else if (this.currentType === '测站') {
+      //   this.getStationNodeByName(name)
+      // }
+      // else if (this.currentType == '河流') {
+      //   this.getRiverNodeByName(name)
+      // }
+      if (this.currentType == '水闸') {
         this.getWaterGateNodeByName(name)
       }
-      else if (this.currentType == '流域') {
-        this.getWaterShedNodeByName(name)
-      }
+      // else if (this.currentType == '流域') {
+      //   this.getWaterShedNodeByName(name)
+      // }
       // else if (this.currentType == '水库') {
       //   this.getReservoirNodeByName(name)
       // }
-      else if (this.currentType == '流域雨量站') {
-        this.getRainfallStationNodeByName(name)
-      }else if (this.currentType == '河段') {
-        this.getReachNodeByName(name)
-      }else if (this.currentType == '汇流点'){
-        this.getPointNodeByName(name)
-      }else {
+      // else if (this.currentType == '流域雨量站') {
+      //   this.getRainfallStationNodeByName(name)
+      // }
+      // else if (this.currentType == '河段') {
+      //   this.getReachNodeByName(name)
+      // }
+      // else if (this.currentType == '汇流点'){
+      //   this.getPointNodeByName(name)
+      // }
+      else {
         const queryParams = {
           database:this.currentId,
           name:name,

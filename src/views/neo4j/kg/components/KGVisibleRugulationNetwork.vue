@@ -86,6 +86,15 @@ export default {
     drawFlag: {
       type:Boolean,
       default:false
+    },
+    //默认绘图标志
+    drawDefault: {
+      type:Boolean,
+      default:false
+    },
+    typeColors: {
+      type:Object,
+      default: () => {}
     }
   },
   created() {
@@ -125,39 +134,52 @@ export default {
     ]);
   },
   mounted() {
-    this.initKG()
   },
   methods: {
+    defaultKG() {
+      this.loading = true
+      let _this = this
+      regulationApi.getDefaultRelLinks(this.currentId)
+        .then(({data}) => {
+          const datas = VisUtils.handleRelLinkVisiblesHashNode2(data)
+          _this.getCurrentNodeType(data.data)
+          const container = this.$refs.KGNetwork;
+
+          // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
+          const groups = {}
+          for (const type in this.typeColors) {
+            if (this.typeColors.hasOwnProperty(type)) {
+              const color = this.typeColors[type]
+              groups[type] = { color }
+            }
+          }
+          _this.options = VisUtils.setVisibleOption(4)
+          _this.options.groups = groups
+          _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
+        })
+
+    },
     initKG() {
       this.loading = true
       let _this = this
-      //老版本的处理逻辑
-      //显示流域概化图，暂且设定为显示断面的关系
-      // const params = {
-      //   nodeId:this.currentNodeId,
-      //   length: 15,
-      //   relType:this.settings.relType[0],
-      //   relDir:0,
-      //   database:this.currentDbId
-      // }
-      // for (let i = 1; i < this.settings.relType.length; i++){
-      //   params.relType = params.relType + '，' + this.settings.relType[i]
-      // }
-      // relationApi.getLinkedRels(params).then(({data}) => {
-      //   const datas = VisUtils.handleRelLinkVisibles(data)
-      //   _this.getCurrentNodeType(data.data)
-      //   const container = this.$refs.KGNetwork;
-      //   _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
-      //   _this.network = new Vis.Network(container, datas, _this.options);
-      //   _this.setLoading()
-      // })
-
       regulationApi.getSchedulePlanLink(this.currentName,this.currentAtt,this.attValue,this.currentId)
         .then(({data}) => {
-          const datas = VisUtils.handleRelLinkVisiblesHashNode(data)
+          const datas = VisUtils.handleRelLinkVisiblesHashNode2(data)
           _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
+
+          // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
+          const groups = {}
+          for (const type in this.typeColors) {
+            if (this.typeColors.hasOwnProperty(type)) {
+              const color = this.typeColors[type]
+              groups[type] = { color }
+            }
+          }
+
           _this.options = VisUtils.setVisibleOption(4)
+          _this.options.groups = groups
           _this.network = new Vis.Network(container, datas, _this.options);
           _this.setLoading()
         })
@@ -236,6 +258,7 @@ export default {
 
       this.currentNodeType = Array.from(set);
       console.log('当前类型包括：',this.currentNodeType)
+      this.$emit('child-event',this.currentNodeType)
     }
   },
   watch:{
@@ -255,7 +278,7 @@ export default {
         this.settings.length = newValue.length
         this.settings.relType = newValue.relType
         console.log("小图显示参数为：",this.settings)
-        this.initKG()
+        // this.initKG()
       },
       deep:true
     },
@@ -280,6 +303,12 @@ export default {
     drawFlag: {
       handler(newValue,oldValue) {
         this.initKG()
+      }
+    },
+    //页面打开时绘制默认图
+    drawDefault: {
+      handler(newValue,oldValue) {
+        this.defaultKG()
       }
     }
   }

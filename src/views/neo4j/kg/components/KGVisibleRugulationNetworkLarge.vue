@@ -86,6 +86,15 @@ export default {
     drawFlag: {
       type:Boolean,
       default:false
+    },
+    //默认绘图标志
+    drawDefault: {
+      type:Boolean,
+      default:false
+    },
+    typeColors: {
+      type:Object,
+      default: () => {}
     }
   },
   created() {
@@ -100,41 +109,78 @@ export default {
       this.currentNodeId = 4615
     }
 
+    this.nodes = new Vis.DataSet([  // nodes是节点
+      {id: 1, label: 'Node 1',level: 1},
+      {id: 2, label: 'Node 2',level: 2},
+      {id: 8, label: 'Node 8',level: 2},
+      {id: 9, label: 'Node 9',level: 2},
+      {id: 10, label: 'Node 10',level: 2},
+      {id: 3, label: 'Node 3',level: 2},
+      {id: 4, label: 'Node 4',level: 3},
+      {id: 5, label: 'Node 5',level: 3},
+      {id: 6, label: 'Node 6',level: 4},
+      {id: 7, label: 'Node 7',level: 5},
+    ]);
+    this.edges = new Vis.DataSet([  // edges是线
+      {from: 1, to: 2},  // 决定了节点从左往右的顺序
+      {from: 1, to: 3},
+      {from: 1, to: 8},
+      {from: 1, to: 9},
+      {from: 1, to: 10},
+      {from: 2, to: 4},
+      {from: 2, to: 5},
+      {from: 5, to: 6},
+      {from: 6, to: 7},
+    ]);
   },
   mounted() {
-    this.initKG()
+    this.defaultKG()
   },
   methods: {
+    defaultKG() {
+      this.loading = true
+      let _this = this
+      regulationApi.getDefaultRelLinks(this.currentId)
+        .then(({data}) => {
+          const datas = VisUtils.handleRelLinkVisiblesHashNode2(data)
+          _this.getCurrentNodeType(data.data)
+          const container = this.$refs.KGNetwork;
+
+          // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
+          const groups = {}
+          for (const type in this.typeColors) {
+            if (this.typeColors.hasOwnProperty(type)) {
+              const color = this.typeColors[type]
+              groups[type] = { color }
+            }
+          }
+          _this.options = VisUtils.setVisibleOption(4)
+          _this.options.groups = groups
+          _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
+        })
+
+    },
     initKG() {
       this.loading = true
       let _this = this
-      //老版本的处理逻辑
-      //显示流域概化图，暂且设定为显示断面的关系
-      // const params = {
-      //   nodeId:this.currentNodeId,
-      //   length: 15,
-      //   relType:this.settings.relType[0],
-      //   relDir:0,
-      //   database:this.currentDbId
-      // }
-      // for (let i = 1; i < this.settings.relType.length; i++){
-      //   params.relType = params.relType + '，' + this.settings.relType[i]
-      // }
-      // relationApi.getLinkedRels(params).then(({data}) => {
-      //   const datas = VisUtils.handleRelLinkVisibles(data)
-      //   _this.getCurrentNodeType(data.data)
-      //   const container = this.$refs.KGNetwork;
-      //   _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
-      //   _this.network = new Vis.Network(container, datas, _this.options);
-      //   _this.setLoading()
-      // })
-
       regulationApi.getSchedulePlanLink(this.currentName,this.currentAtt,this.attValue,this.currentId)
         .then(({data}) => {
-          const datas = VisUtils.handleRelLinkVisiblesHashNode(data)
+          const datas = VisUtils.handleRelLinkVisiblesHashNode2(data)
           _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
+
+          // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
+          const groups = {}
+          for (const type in this.typeColors) {
+            if (this.typeColors.hasOwnProperty(type)) {
+              const color = this.typeColors[type]
+              groups[type] = { color }
+            }
+          }
+
           _this.options = VisUtils.setVisibleOption(4)
+          _this.options.groups = groups
           _this.network = new Vis.Network(container, datas, _this.options);
           _this.setLoading()
         })
@@ -212,6 +258,7 @@ export default {
       }
 
       this.currentNodeType = Array.from(set);
+      this.$emit('child-event',this.currentNodeType)
       console.log('当前类型包括：',this.currentNodeType)
     }
   },
@@ -248,6 +295,12 @@ export default {
     drawFlag: {
       handler(newValue,oldValue) {
         this.initKG()
+      }
+    },
+    //页面打开时绘制默认图
+    drawDefault: {
+      handler(newValue,oldValue) {
+        this.defaultKG()
       }
     }
   }

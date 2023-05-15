@@ -30,6 +30,14 @@ export default {
       method: 'get',
       params: {name: name, element: element, value: value, database: database}
     })
+  },
+
+  getDefaultRelLinks(db){
+    return request({
+        url: `/kg/analyze/regulation/getDefaultRelLinks?database=`+db,
+        method: 'get',
+      }
+    )
   }
 
 }

@@ -20,7 +20,7 @@
             <el-select clearable @clear="clear" @change="chooseWaterShed" v-model="currentId" placeholder="请选择流域"
                        style= "margin-top: 15px">
               <el-option
-                v-for="(item,index) in nodeLabels"
+                v-for="(item,index) in regulation.kgNameList"
                 :key=index
                 :label=item
                 :value=item
@@ -140,21 +140,24 @@
           <br>
           <el-divider content-position="left">图例</el-divider>
           <div>
-            <el-tag size="mini" color="#0ce3ca" effect="dark" v-show="legend.indexOf('河流') != -1">河流</el-tag>
-            <el-tag size="mini" color="#d4de40" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>
-            <el-tag size="mini" color="#f3022e" effect="dark" v-show="legend.indexOf('行政区划') != -1">行政区划</el-tag>
-            <el-tag size="mini" color="#af36d7" effect="dark" v-show="legend.indexOf('测站') != -1">测站</el-tag>
-            <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>
-            <el-tag size="mini" color="#7e8ead" effect="dark" v-show="legend.indexOf('水库') != -1">水库</el-tag>
-            <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>
-            <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>
-            <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
+<!--            <el-tag size="mini" color="#0ce3ca" effect="dark" v-show="legend.indexOf('河流') != -1">河流</el-tag>-->
+<!--            <el-tag size="mini" color="#d4de40" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>-->
+<!--            <el-tag size="mini" color="#f3022e" effect="dark" v-show="legend.indexOf('行政区划') != -1">行政区划</el-tag>-->
+<!--            <el-tag size="mini" color="#af36d7" effect="dark" v-show="legend.indexOf('测站') != -1">测站</el-tag>-->
+<!--            <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>-->
+<!--            <el-tag size="mini" color="#7e8ead" effect="dark" v-show="legend.indexOf('水库') != -1">水库</el-tag>-->
+<!--            <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>-->
+<!--            <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>-->
+<!--            <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>-->
+            <el-tag size="mini" effect="dark" v-for="(nodeType, index) in this.regulation.currentNodeTypes" :key="index" :color="getTypeColor(nodeType)">
+              {{ nodeType }}
+            </el-tag>
           </div>
         </div>
         <!--        <el-empty description="描述文字"></el-empty>-->
 <!--        <KGVisible/>-->
 <!--        <KGVisibleEcahrts :current-node="nodeByName"></KGVisibleEcahrts>-->
-        <KGVisibleRegulationNetwork :draw-flag="this.regulation.drawFlag" :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleRegulationNetwork>
+        <KGVisibleRegulationNetwork @child-event="onChildEvent" :type-colors="this.regulation.typeColors" :draw-default="this.regulation.drawDefaultFlag" :draw-flag="this.regulation.drawFlag" :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"></KGVisibleRegulationNetwork>
       </el-card>
 
       <el-card class="box-card" style="width: 400px">
@@ -187,18 +190,21 @@
       :visible.sync="visibles.largeKGVisible"
       >
       <div>
-        <el-tag size="mini" color="#0ce3ca" effect="dark" v-show="legend.indexOf('河流') != -1">河流</el-tag>
-        <el-tag size="mini" color="#d4de40" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>
-        <el-tag size="mini" color="#f3022e" effect="dark" v-show="legend.indexOf('行政区划') != -1">行政区划</el-tag>
-        <el-tag size="mini" color="#af36d7" effect="dark" v-show="legend.indexOf('测站') != -1">测站</el-tag>
-        <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>
-        <el-tag size="mini" color="#7e8ead" effect="dark" v-show="legend.indexOf('水库') != -1">水库</el-tag>
-        <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>
-        <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>
-        <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>
+<!--        <el-tag size="mini" color="#0ce3ca" effect="dark" v-show="legend.indexOf('河流') != -1">河流</el-tag>-->
+<!--        <el-tag size="mini" color="#d4de40" effect="dark" v-show="legend.indexOf('流域') != -1">流域</el-tag>-->
+<!--        <el-tag size="mini" color="#f3022e" effect="dark" v-show="legend.indexOf('行政区划') != -1">行政区划</el-tag>-->
+<!--        <el-tag size="mini" color="#af36d7" effect="dark" v-show="legend.indexOf('测站') != -1">测站</el-tag>-->
+<!--        <el-tag size="mini" color="#f1a94b" effect="dark" v-show="legend.indexOf('断面') != -1">断面</el-tag>-->
+<!--        <el-tag size="mini" color="#7e8ead" effect="dark" v-show="legend.indexOf('水库') != -1">水库</el-tag>-->
+<!--        <el-tag size="mini" color="#00ff00" effect="dark" v-show="legend.indexOf('水闸') != -1">水闸</el-tag>-->
+<!--        <el-tag size="mini" color="#abd78e" effect="dark" v-show="legend.indexOf('流域雨量站') != -1">流域雨量站</el-tag>-->
+<!--        <el-tag size="mini" color="#058df1" effect="dark" v-show="legend.indexOf('河段') != -1">河段</el-tag>-->
+        <el-tag size="mini" effect="dark" v-for="(nodeType, index) in this.regulation.currentNodeTypes" :key="index" :color="getTypeColor(nodeType)">
+          {{ nodeType }}
+        </el-tag>
       </div>
       <div style="display: flex">
-        <KGVisibleRegulationNetworkLarge :draw-flag="this.regulation.drawFlag" :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleRegulationNetworkLarge>
+        <KGVisibleRegulationNetworkLarge @child-event="onChildEvent" :type-colors="this.regulation.typeColors" :draw-default="this.regulation.drawDefaultFlag" :draw-flag="this.regulation.drawFlag" :current-id="this.currentId" :att-value="this.regulation.attValue" :current-att="this.regulation.currentAtt" :current-name="this.regulation.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" @legend="getLegend"  style="margin: 0 auto;"></KGVisibleRegulationNetworkLarge>
       </div>
 
       <span slot="footer" class="dialog-footer">
@@ -347,12 +353,22 @@ export default {
         //预报值
         attValue: null,
         //名称和标签的标志，由于调度数据库中的名称不一样，因此单独列出来
-        nameSymbol: "rdfs__name",
-        labelSymbol: "rdfs__label",
+        nameSymbol: "name",
+        labelSymbol: "label",
         //查询出来的调度方案
         plans: null,
         //绘图标志
-        drawFlag: false
+        drawFlag: false,
+        //初始绘图标志
+        drawDefaultFlag: false,
+        //当前存在的节点类型
+        currentNodeTypes: null,
+        // 类型名称和颜色的映射关系对象
+        typeColors: {},
+        //记录所有知识图谱的名称
+        kgNameList: [],
+        //记录所有知识图谱的id和名称
+        kgIdNameList: [],
       }
     }
   },
@@ -361,6 +377,9 @@ export default {
     this.initDbInfo()
     this.getAllRegulationElements()
     this.getAllNodeLabels()
+    this.getInstNameList()
+    this.regulation.drawDefaultFlag = !this.regulation.drawDefaultFlag
+
   },
   created() {
     // this.currentDbName = this.$route.params.name
@@ -368,6 +387,70 @@ export default {
 
   },
   methods: {
+    //获得所有知识图谱名称
+    getInstNameList() {
+      KGConnectApi.getInstNameList()
+        .then((response) => {
+
+          this.regulation.kgIdNameList = response.data.data
+          for(const key in this.regulation.kgIdNameList){
+            this.regulation.kgNameList.push(this.regulation.kgIdNameList[key])
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    //传递绘图时获得的结点类型
+    onChildEvent(message) {
+      this.regulation.currentNodeTypes = message
+      //清楚字母和数字的组合类型
+      // for (let i = 0; i < this.regulation.currentNodeTypes.length; i++) {
+        // (/^[^a-zA-Z0-9]*$/.test(nodeType))
+        // if (nodeType === "A387BE524D344370A13F1DFF76C40493"){
+        //   this.regulation.currentNodeTypes.splice(i,1)
+        // }
+      // }
+      this.regulation.currentNodeTypes = this.regulation.currentNodeTypes.filter(str => !/^[A-F0-9]{32}$/i.test(str));
+
+      for (let i = 0; i < this.regulation.currentNodeTypes.length; i++) {
+        let nodeType = this.regulation.currentNodeTypes[i]
+        //如果没有这个类型，添加一个
+        if (!this.regulation.typeColors.hasOwnProperty(nodeType)){
+          this.regulation.typeColors[nodeType] = this.generateRandomColor()
+        }
+      }
+      console.log("清理后的label： ", this.regulation.currentNodeTypes)
+    },
+    // 获取随机颜色
+    getRandomColor() {
+      let letters = '0123456789ABCDEF'
+      let color = '#'
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)]
+      }
+      return color
+    },
+    //生成随机浅色
+    generateRandomColor() {
+      // 固定饱和度和亮度
+      const saturation = 0.5;
+      const lightnessValues = [0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9];
+
+      // 随机生成色调
+      const hue = Math.floor(Math.random() * 360);
+
+      // 根据亮度值生成颜色
+      const index = Math.floor(Math.random() * lightnessValues.length);
+      const lightness = lightnessValues[index];
+      const color = `hsl(${hue}, ${saturation * 100}%, ${lightness * 100}%)`;
+
+      return color;
+    },
+    // 根据节点类型获取对应的颜色
+    getTypeColor(nodeType) {
+      return this.regulation.typeColors[nodeType] || 'default'
+    },
     goBack() {
       const data = true
       this.$emit('goBack', data)
@@ -379,6 +462,8 @@ export default {
 
     //选择流域下拉框改变当前流域
     chooseWaterShed(value) {
+      this.getAllNodeLabels();
+      this.getAllRegulationElements();
       this.currentId = value
     },
     //改变当前监测单位的属性
@@ -430,7 +515,7 @@ export default {
 
     //获得所有调度要素标签
     getAllRegulationElements() {
-      regulationApi.getAllRegulationElements("ns0__控制要素","")
+      regulationApi.getAllRegulationElements("控制要素","")
         .then((response) => {
           this.regulation.attNameList = response.data.data
         })

@@ -59,7 +59,7 @@ export default {
     },
     //当前监测属性
     currentPlan: {
-      type:String,
+      type:Number,
       default:""
     },
     //预报值
@@ -120,7 +120,7 @@ export default {
     ]);
   },
   mounted() {
-    this.initKG()
+
   },
   methods: {
     initKG() {
@@ -129,7 +129,8 @@ export default {
 
       contingencyPlanApi.getContingencyPlanLink(this.currentName,this.currentType,this.attValue,this.currentId,this.currentPlan)
         .then(({data}) => {
-          const datas = VisUtils.handleRelLinkVisiblesHashNode(data)
+          const datas = VisUtils.handleRelLinkVisiblesHashNode3(data)
+
           _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(4)
@@ -230,7 +231,7 @@ export default {
         this.settings.length = newValue.length
         this.settings.relType = newValue.relType
         console.log("小图显示参数为：",this.settings)
-        this.initKG()
+        // this.initKG()
       },
       deep:true
     },

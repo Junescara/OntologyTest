@@ -143,6 +143,20 @@ export default {
     }
     return new Vis.DataSet(nodeList)
   },
+
+  /**
+   * 直接利用转换好的结点生成vis的结点数据集（应急预案临时）
+   * @param nodes
+   * @returns {*}
+   */
+  createNodesV4(nodes) {
+    let nodeList = []
+    for (let item of nodes) {
+      let nodeItem = this.switchNodeToItem3(item,false)
+      nodeList.push(nodeItem)
+    }
+    return new Vis.DataSet(nodeList)
+  },
   /**
    * 将断面结点转换为存入datalist的对象元素
    * @param node
@@ -651,6 +665,41 @@ export default {
 
   },
   /**
+   * 将无类型的node存入dataList,应急预案临时使用
+   * @param node
+   * @param isStart
+   */
+  switchNodeToItem3(node,isStart){
+    if (node.nodeType == '行政区划'){
+      return this.createRegionalismItem(node,isStart)
+    }else if (node.nodeType == '断面'){
+      return this.createSectionItem(node,isStart)
+    }else if (node.nodeType == '测站'){
+      return this.createStationItem(node,isStart)
+    }else if (node.nodeType == '河流'){
+      return this.createRiverItem(node,isStart)
+    }else if (node.nodeType == '流域'){
+      return this.createWaterShedItem(node,isStart)
+    }else if (node.nodeType == '水闸'){
+      return this.createWaterGateItem(node,isStart)
+    }else if (node.nodeType == '水库'){
+      return this.createReservoirItem(node,isStart)
+    }else if (node.nodeType == '对象本体'){
+      return this.createOntologyObjItem(node,isStart)
+    }else if (node.nodeType == '属性本体'){
+      return this.createOntologyPropItem(node,isStart)
+    }else if (node.nodeType == '流域雨量站'){
+      return this.createRainfallStationItem(node,isStart)
+    }else if (node.nodeType == '河段'){
+      return this.createReachItem(node,isStart)
+    }else if (node.nodeType == '汇流点'){
+      return this.createPointItem(node,isStart)
+    }else{
+      //用于处理HashNode结点
+      return this.createHashNodeItem(node,isStart)
+    }
+  },
+  /**
    * 处理生成包括出边和入边完整图像的数据
    * @param data
    * @returns {{nodes: *, edges: ([]|*)}}
@@ -799,13 +848,17 @@ export default {
    * @returns {{nodes: *, edges: ([]|*)}}
    */
   handleRelLinkVisiblesHashNode(data){
+
+
     let rels = []
     let nodes = []
 
     //首先获取出边数据
     for (let rel of data.data.relationItems){
+
       rels.push(rel)
     }
+
 
     //获取结点集
     //首先要维护一个集合，用于结点id去重
@@ -830,6 +883,7 @@ export default {
     }
 
     return datas
+
   },
 
   /**
@@ -869,6 +923,48 @@ export default {
     }
 
     return datas
+  },
+  /**
+   * 处理生成包括出边完整图像的数据(处理HashMap版本结点特供)
+   * @param data
+   * @returns {{nodes: *, edges: ([]|*)}}
+   */
+  handleRelLinkVisiblesHashNode3(data){
+
+    let rels = []
+    let nodes = []
+
+    //首先获取出边数据
+    for (let rel of data.data.relationItems){
+
+      rels.push(rel)
+    }
+
+
+    //获取结点集
+    //首先要维护一个集合，用于结点id去重
+    let idSet = new Set()
+
+    for (let item of data.data.finalNodeVos){
+      let id = item.node._id
+      if (idSet.has(id)){
+        //如果idset中包含这个元素,则无需再结点集中添加这个元素
+        continue;
+      }else{
+        //idset中不包含这个元素，添加进结点集
+        idSet.add(id)
+        nodes.push(item)  //直接存入提取过的node
+      }
+    }
+
+    //封装最终生成数据的数据集
+    const datas = {
+      nodes:this.createNodesV4(nodes),
+      edges:this.createRelsEdgesV2(rels)
+    }
+
+    return datas
+
   },
   setVisibleOption(type){
     if (type != 4){

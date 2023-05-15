@@ -59,7 +59,7 @@ export default {
     },
     //当前调度要素
     currentPlan: {
-      type:String,
+      type:Number,
       default:""
     },
     //调度要素预报值
@@ -92,7 +92,7 @@ export default {
 
   },
   mounted() {
-    this.initKG()
+
   },
   methods: {
     initKG() {
@@ -203,7 +203,7 @@ export default {
         this.settings.relType = newValue.relType
         console.log("newValue=====",this.settings.relType)
         console.log("大图显示的参数为：",this.settings)
-        this.initKG()
+        // this.initKG()
       },
       deep:true,
       immediate:true

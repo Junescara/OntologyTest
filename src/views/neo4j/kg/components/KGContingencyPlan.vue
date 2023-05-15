@@ -450,8 +450,6 @@ export default {
       this.currentPlan = value;
       this.contingencyPlan.currentPlan = this.planList.indexOf(value);
 
-      this.getContingencyPlan();
-
     },
 
     //选择监测要素

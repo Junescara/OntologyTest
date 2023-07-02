@@ -152,8 +152,13 @@
         </div>
 
         <span style="font-weight: bold">触发条件</span>
-        <div style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04); margin-top: 15px;margin-bottom: 15px; padding: 10px">
+        <div style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04); margin-top: 15px; margin-bottom: 15px; padding: 10px">
           {{this.contingencyPlan.triggerRule}}
+        </div>
+
+        <span style="font-weight: bold;">受灾影响</span>
+        <div style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04); margin-top: 15px;  margin-bottom: 15px; padding: 10px">
+          {{this.contingencyPlan.disasterImpact}}
         </div>
 
         <span style="font-weight: bold;">预案文本</span>
@@ -326,6 +331,8 @@ export default {
         triggerRule:null,
         //当前应急预案文本
         planText:null,
+        //当前受灾影响文本
+        disasterImpact:null,
         //绘图标志
         drawFlag: false
       },
@@ -641,6 +648,7 @@ export default {
         .then(({data}) => {
           let map = new Map(Object.entries(data.data));
           this.contingencyPlan.triggerRule = map.get("triggerRule")
+          this.contingencyPlan.disasterImpact = map.get("disasterImpact")
           this.contingencyPlan.planText = map.get("contingencyPlan")
         })
         .catch((error) => {

@@ -27,10 +27,10 @@ const routes = [
         },
       },
       {
-        path: "entity",
-        name: "entity",
+        path: "instance",
+        name: "instance",
         menu: true,
-        component: () => import("@/views/system/Entity.vue"),
+        component: () => import("@/views/system/Instance.vue"),
         meta: {
           title: "实例构建",
         },

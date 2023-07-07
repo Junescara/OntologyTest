@@ -3,7 +3,7 @@
     <h1>欢迎进入</h1>
     <p>本体-实例构建平台</p>
     <button @click="router.push('ontology')">构建本体</button>
-    <button @click="router.push('entity')">构建实例</button>
+    <button @click="router.push('instance')">构建实例</button>
   </div>
 </template>
 

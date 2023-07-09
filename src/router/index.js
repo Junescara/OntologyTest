@@ -5,13 +5,13 @@ const routes = [
   {
     path: "",
     component: Layout,
-    name: "layout",
+    rule: "layout",
     redirect: "index",
     // 页面主体部分组件
     children: [
       {
         path: "index",
-        name: "index",
+        rule: "index",
         // 是否显示在侧边栏菜单列表中
         menu: false,
         component: () => import("@/views/Index.vue"),
@@ -19,7 +19,7 @@ const routes = [
       },
       {
         path: "ontology",
-        name: "ontology",
+        rule: "ontology",
         menu: true,
         component: () => import("@/views/system/Ontology.vue"),
         meta: {

@@ -14,10 +14,7 @@ const router = useRouter();
 
 <style lang="less" scoped>
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: center;
+ 
   button {
     margin: 40px;
   }

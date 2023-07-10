@@ -15,23 +15,20 @@
       <span>首页</span>
     </el-menu-item>
     <!-- 子菜单 -->
-    <el-sub-menu index="/">
+    <el-sub-menu v-for="item in routes" index="/">
       <template #title>
         <el-icon>
           <Document />
         </el-icon>
-        <span>平台功能</span>
+        <span>{{ item.meta.menuName }}</span>
       </template>
       <!-- 路由循环 -->
       <el-menu-item
-        v-for="item in menus"
-        v-show="item.menu === true"
-        :index="`/${item.path}`"
-        >{{ item.meta.title }}</el-menu-item
+        v-for="subItem in item.children"
+        v-show="subItem.menu === true"
+        :index="`/${subItem.path}`"
+        >{{ subItem.meta.title }}</el-menu-item
       >
-      <!-- <el-menu-item index="/student">学生信息</el-menu-item>
-      <el-menu-item index="/course">课程信息</el-menu-item>
-      <el-menu-item index="/grade">选课信息</el-menu-item> -->
     </el-sub-menu>
   </el-menu>
 </template>
@@ -40,7 +37,7 @@
 import { House, Document } from "@element-plus/icons-vue";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { children as menus } from "@/router"; //菜单
+import { routes } from "@/router"; //菜单
 
 let activePath = ref("/index");
 const route = useRoute();

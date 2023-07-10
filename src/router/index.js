@@ -1,11 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Layout from "@/Layout/index.vue";
+import NProgress from "nprogress"; // 导入 nprogress模块
+import "nprogress/nprogress.css";
 
 const routes = [
   {
     path: "",
     component: Layout,
     name: "layout",
+    meta: { menuName: "平台功能" },
     redirect: "index",
     // 页面主体部分组件
     children: [
@@ -58,9 +61,13 @@ const router = createRouter({
 });
 // 路由守卫
 router.beforeEach((to, from, next) => {
+  NProgress.start();
   if (to.meta.title) document.title = to.meta.title;
   next();
 });
 
+router.afterEach(() => {
+  NProgress.done();
+});
 export default router;
-export const { children } = routes[0];
+export { routes };

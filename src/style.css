@@ -87,3 +87,7 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#nprogress .bar {
+  background: rgb(255, 207, 215) !important;
+}

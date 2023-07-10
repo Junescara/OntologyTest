@@ -1,5 +1,4 @@
 <template>
-  <div>entity</div>
   <div class="top-content">
     <h5>构建实例</h5>
   </div>
@@ -40,12 +39,10 @@
   </div>
 </template>
 
-<script setup></script>
 <script setup>
 import { add } from "@/api/module/instance.js";
 import { queryOntolist } from "@/api/module/ontology.js";
 import { reactive, ref } from "vue";
-<style lang="scss" scoped></style>;
 const ontoId = ref("");
 const attrForm = reactive([]);
 const ontoList = reactive([]);
@@ -66,6 +63,7 @@ const handleInsCreate = () => {};
   width: 100%;
   height: 100%;
   padding: 30px;
+  overflow: hidden;
   .el-form {
     width: 30%;
     .el-button {

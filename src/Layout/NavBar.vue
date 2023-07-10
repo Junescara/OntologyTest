@@ -1,48 +1,34 @@
 <template>
-  <div class="navbar">
-    <el-row style="height: 100%;">
-    
-    </el-row>
-  </div>
+  <!-- 导航栏 -->
+  <el-row class="navbar" >
+    <el-col :span="12"><Breadcrumb /></el-col>
+    <el-col :span="12"><Personal /></el-col>
+  </el-row>
+  <el-row class="navbar">
+    <RouteTags />
+  </el-row>
+  <!-- 导航栏结束 -->
 </template>
 
-<style scoped>
+<script setup>
+import Breadcrumb from "@/components/Navbar/Breadcrumb.vue";
+import RouteTags from "@/components/Navbar/RouteTags.vue";
+import Personal from "@/components/Navbar/Personal.vue";
+</script>
+
+<style scoped lang="less">
 .navbar {
-  height: 100%;
+  padding: 0;
   width: 100%;
+  height: 8vh;
   background-color: #fff;
-  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.15);
-  margin-bottom: 20px;
-}
 
-.logo img {
-  margin-right: 200px;
-  height: 60px;
-  vertical-align: middle;
-}
-
-
-
-.user-menu {
-  height: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.username {
-  padding: 10px;
-}
-
-.el-dropdown-menu__item__icon {
-  font-size: 16px;
-  margin-right: 10px;
-}
-
-.user-menu img {
-  width: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-  vertical-align: middle;
+  &:nth-child(1) {
+    border-bottom: 1px solid #c1c1c1;
+  }
+  &:nth-child(2) {
+    height: 6vh;
+    // box-shadow: 0px 2px 5px 3px #c1c1c1;
+  }
 }
 </style>

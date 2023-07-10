@@ -1,17 +1,26 @@
 <template>
   <div class="tags-content">
-    <el-tag
-      v-for="(tag, index) in RouteTags"
-      :key="index"
-      closable
-      size="small"
-      :disable-transitions="false"
-      @close="handleClose(index)"
-      @click="router.push(tag.path)"
-      style="cursor: pointer"
-    >
-      {{ tag.name }}
-    </el-tag>
+    <div v-if="RouteTags.length !== 0">
+      <el-tag
+        v-for="(tag, index) in RouteTags"
+        :key="index"
+        closable
+        size="small"
+        :disable-transitions="false"
+        @close="handleClose(index)"
+        @click="router.push(tag.path)"
+      >
+        {{ tag.name }}
+      </el-tag>
+    </div>
+    <div v-else>
+      <el-tag
+        size="small"
+        :disable-transitions="false"
+        @click="router.push('/index')"
+        >首页</el-tag
+      >
+    </div>
   </div>
 </template>
 
@@ -45,6 +54,7 @@ const handleClose = (index) => {
   .el-tag {
     height: 26px;
     margin: 5px 10px;
+    cursor: pointer;
   }
 }
 </style>

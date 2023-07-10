@@ -6,10 +6,7 @@
 
     <el-container>
       <el-header>
-        <Breadcrumb />
-      </el-header>
-      <el-header>
-        <RouteTags />
+        <NavBar />
       </el-header>
       <el-main>
         <AppMain />
@@ -22,26 +19,17 @@
 import AppMain from "./AppMain.vue";
 import NavBar from "./NavBar.vue";
 import SideBar from "./SideBar.vue";
-import Breadcrumb from "@/components/common/Breadcrumb.vue";
-import RouteTags from "@/components/common/RouteTags.vue";
 </script>
 
 <style lang="less" scoped>
 .el-header {
   padding: 0;
   width: 100%;
-  height: 8vh;
-  &:nth-child(1) {
-    box-shadow: 0px 2px 5px 3px #c1c1c1;
-    border-bottom: 1px solid #c1c1c1;
-  }
-  &:nth-child(2) {
-    height: 6vh;
-  }
-  // background-color: #545c64;
+  margin-bottom: 30px;
 }
 
 .el-main {
+  height: 100px;
   margin: 30px 0 0 30px;
   background-color: #fff;
   box-shadow: 0px -2px 5px 3px #c1c1c1;

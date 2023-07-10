@@ -42,6 +42,7 @@ import RouteTags from "@/components/common/RouteTags.vue";
 }
 
 .el-main {
+  margin: 30px 0 0 30px;
   background-color: #fff;
   box-shadow: 0px -2px 5px 3px #c1c1c1;
 }

@@ -2,9 +2,9 @@
   <el-menu
     :default-active="route.fullPath"
     class="el-menu-vertical-demo"
-    active-text-color="#ffd04b"
-    text-color="#fff"
-    background-color="#545c64"
+    :active-text-color="themeColors.data.activeText"
+    :text-color="themeColors.data.text"
+    :background-color="themeColors.data.backgroundColor"
     router
   >
     <!-- 首页 -->
@@ -35,13 +35,27 @@
 
 <script setup>
 import { House, Document } from "@element-plus/icons-vue";
-import { ref, watch } from "vue";
+import { ref, watch, reactive } from "vue";
 import { useRoute } from "vue-router";
 import { routes } from "@/router"; //菜单
+import { usethemeStore } from "@/store/module/theme.js";
 
 let activePath = ref("/index");
 const route = useRoute();
+const themeStore = usethemeStore();
 
+let themeColors = reactive({
+  data: themeStore.dark ? themeStore.darkColor : themeStore.brightColor,
+});
+// 监听模式变化
+watch(
+  () => themeStore.dark,
+  (newv) => {
+    newv
+      ? (themeColors.data = themeStore.darkColor)
+      : (themeColors.data = themeStore.brightColor);
+  }
+);
 // 更新当前所在菜单
 watch(
   () => route.fullPath,

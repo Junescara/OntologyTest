@@ -10,12 +10,18 @@
           v-for="item in arr.breadCrumbList"
           :key="item.path"
         >
-          <span v-if="item.path !== '/index'">
+          <span
+            v-if="item.path !== '/index'"
+            :class="{ 'text-dark': themeStore.dark }"
+          >
             {{ item.meta.title || item.meta.menuName }}
           </span>
-          <a v-else @click="handleLine(item)">{{
-            item.meta.title || item.meta.menuName
-          }}</a>
+          <a
+            v-else
+            :class="{ 'text-dark': themeStore.dark }"
+            @click="handleLine(item)"
+            >{{ item.meta.title || item.meta.menuName }}</a
+          >
         </el-breadcrumb-item>
       </transition-group>
     </div>
@@ -25,6 +31,8 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
 import { reactive, watch } from "vue";
+import { usethemeStore } from "@/store/module/theme.js";
+const themeStore = usethemeStore();
 
 const router = useRouter();
 const route = useRoute();
@@ -64,12 +72,13 @@ const handleLine = ({ redirect, path }) => {
 </script>
 
 <style lang="less" scoped>
+@import url("../../assets/css/color.less");
 .el-breadcrumb {
   height: 100%;
   display: flex;
   padding-left: 10px;
   line-height: 50px;
-  background-color: #fff;
+  // background-color: #fff;
 }
 
 .breadcrumb-item {
@@ -97,5 +106,8 @@ const handleLine = ({ redirect, path }) => {
 .breadcrumb-leave-active {
   position: absolute;
   right: -50px;
+}
+.text-dark {
+  color: @dark-text-color !important;
 }
 </style>

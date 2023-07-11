@@ -50,7 +50,7 @@ const handleClose = (index) => {
   justify-content: start;
   align-items: center;
   height: 100%;
-  background-color: #fff;
+  // background-color: #fff;
   .el-tag {
     height: 26px;
     margin: 5px 10px;

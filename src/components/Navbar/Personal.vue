@@ -43,8 +43,9 @@
       </el-button>
     </el-button-group>
     <el-divider direction="vertical"></el-divider>
+    <!-- 下拉框 -->
     <el-dropdown @command="handleCommand">
-      <span class="ve_nav_dropdown">
+      <span class="ve_nav_dropdown" :class="{ 'text-dark': themeStore.dark }">
         你好!{{ uname }}
         <el-icon>
           <arrow-down-bold />
@@ -62,25 +63,30 @@
 </template>
 
 <script setup>
-// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { useFullscreen } from "@vueuse/core";
+import { usethemeStore } from "@/store/module/theme.js";
 
 const { toggle } = useFullscreen();
-// const store = useStore();
 const router = useRouter();
 const uname = ref("admin");
-// const reload = inject("reload");
+const themeStore = usethemeStore();
+
 const handleCommand = (command) => {
   router.push(command);
 };
-const dark = ref(false);
+const dark = ref(true);
 // 修改主题
-const toggleTheme = () => {};
+const toggleTheme = () => {
+  dark.value = !dark.value;
+  themeStore.dark = !themeStore.dark;
+};
 </script>
 
 <style lang="less" scoped>
+@import url("../../assets/css/color.less");
+
 .ve_personal {
   display: flex;
   height: 100%;
@@ -93,5 +99,8 @@ const toggleTheme = () => {};
   .ve_nav_dropdown {
     font-weight: bold;
   }
+}
+.text-dark {
+  color: @dark-text-color;
 }
 </style>

@@ -57,7 +57,7 @@ const handleInsCreate = () => {};
 </script>
 
 <style lang="less" scoped>
-@import url("../../assets/global.less");
+@import url("../../assets/css/global.less");
 @length: 130px;
 .main-content {
   width: 100%;

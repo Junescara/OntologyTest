@@ -1,5 +1,4 @@
 <template>
-  <div>ontology</div>
  <div style="width: 200px;height: 100px;">
     请输入您要添加的本体名称：<el-input placeholder="请输入"></el-input><br><br>
       请选择此本体应有的属性：<el-input placeholder="请输入"></el-input>

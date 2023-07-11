@@ -90,6 +90,7 @@ const toggleTheme = () => {
 .ve_personal {
   display: flex;
   height: 100%;
+  padding-right: 5%;
   justify-content: end;
   align-items: center;
   text-align: right;

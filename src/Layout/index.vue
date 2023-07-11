@@ -1,6 +1,6 @@
 <template>
   <el-container class="layout-container-demo">
-    <el-aside width="250px">
+    <el-aside width="auto">
       <SideBar />
     </el-aside>
 
@@ -26,8 +26,16 @@ import SideBar from "./SideBar.vue";
   padding: 0;
   width: 100%;
   margin-bottom: 30px;
+  margin-left: 1px;
 }
-
+.el-aside {
+  transition: width 0.25s;
+  -webkit-transition: width 0.25s;
+  -moz-transition: width 0.25s;
+  -webkit-transition: width 0.25s;
+  -o-transition: width 0.25s;
+  overflow: visible;
+}
 .el-main {
   height: 100px;
   margin: 30px 0 0 30px;

@@ -6,6 +6,7 @@
         :key="index"
         closable
         size="small"
+        :effect="tag.path === route.path ? 'dark' : ''"
         :disable-transitions="false"
         @close="handleClose(index)"
         @click="router.push(tag.path)"

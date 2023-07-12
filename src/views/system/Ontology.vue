@@ -50,6 +50,9 @@
 
 
 <script>
+import {createOnto} from "@/api/module/ontology.js"
+import { listbasic } from "../../api/module/ontology";
+
 export default {
             data() {
                 return {

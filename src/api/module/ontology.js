@@ -1,40 +1,36 @@
 import request from "@/api/request";
-const baseURL = "/kg/instance/connect";
+const baseURL = "/dbtest";
 /**
  * 添加本体
- * @param {*} types 本体类型
- * @param {*} attributes 属性
- * @param {*} database 本体库id
+ * @param {*} propsClzs
+ * @param {*} name
  * @returns
  */
-export function add(types, attributes, database) {
+export function createOnto(propsClzs, name) {
   return request({
-    url: `${baseURL}/addInstInfo`,
-    url: `${baseURL}/addNode`,
+    url: `${baseURL}/create-ontology`,
     type: "post",
-    // 参数字面量
-    params,
+    headers: {
+      "Content-Type": "application/json",
+    },
     data: {
-      types,
-      attributes,
-      database,
+      propsClzs,
+      name,
     },
   });
 }
 
 /**
- * 查询本体列表
- * @param {*} type 0对象1属性
- * @param {*} database
+ * 加载本体
+ * @param {*} neoId
  * @returns
  */
-export function queryOntolist(type, database) {
+export function loadOntoInfo(neoId) {
   return request({
-    url: `${baseURL}/getOntoList`,
+    url: `${baseURL}/load-ontology`,
     type: "get",
     params: {
-      type,
-      database,
+      neoId,
     },
   });
 }

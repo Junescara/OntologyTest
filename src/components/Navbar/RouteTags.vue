@@ -29,7 +29,11 @@
 import { reactive, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-const RouteTags = reactive(JSON.parse(sessionStorage.getItem("tags") || []));
+const RouteTags = reactive(
+  sessionStorage.getItem("tags")
+    ? JSON.parse(sessionStorage.getItem("tags"))
+    : []
+);
 const route = useRoute();
 const router = useRouter();
 

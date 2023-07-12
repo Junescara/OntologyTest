@@ -51,9 +51,23 @@ const routes = [
   },
 ];
 
+const constantRoutes = [
+  {
+    name: "to404",
+    path: "/:catchAll(.*)",
+    redirect: "/404",
+  },
+  {
+    path: "/404",
+    name: "404",
+    component: () => import("@/views/error/404.vue"),
+    meta: { title: "404" },
+  },
+];
+
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes: routes.concat(constantRoutes),
   scrollBehavior(to, from, savedPosition) {
     // 始终滚动到顶部
     return { top: 0 };

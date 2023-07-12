@@ -8,7 +8,6 @@
         <el-select
           v-model="ontoId"
           placeholder="请选择实例所属本体源"
-          size="normal"
           @change="handleSelChange"
           clearable
         >
@@ -40,8 +39,8 @@
 </template>
 
 <script setup>
-import { add } from "@/api/module/instance.js";
-import { queryOntolist } from "@/api/module/ontology.js";
+import { createIns } from "@/api/module/instance.js";
+// import { queryOntolist } from "@/api/module/ontology.js";
 import { reactive, ref } from "vue";
 const ontoId = ref("");
 const attrForm = reactive([]);

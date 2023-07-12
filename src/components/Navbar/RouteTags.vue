@@ -6,7 +6,7 @@
         :key="index"
         closable
         size="small"
-        :effect="tag.path === route.path ? 'dark' : ''"
+        :effect="tag.path === route.path ? 'dark' : 'plain'"
         :disable-transitions="false"
         @close="handleClose(index)"
         @click="router.push(tag.path)"
@@ -29,15 +29,15 @@
 import { reactive, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-const RouteTags = reactive([]);
+const RouteTags = reactive(JSON.parse(sessionStorage.getItem("tags") || []));
 const route = useRoute();
 const router = useRouter();
 
 // 监听路由变化
 watch(route, (oldv, newv) => {
-  console.log(newv);
   for (let i in RouteTags) if (RouteTags[i].path === newv.fullPath) return;
   RouteTags.push({ name: route.meta.title || "", path: route.fullPath });
+  sessionStorage.setItem("tags", JSON.stringify(RouteTags));
 });
 
 const handleClose = (index) => {

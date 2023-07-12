@@ -1,4 +1,5 @@
 <template>
+ 
  <div style="width: 200px;height: 100px;">
     请输入您要添加的本体名称：<el-input placeholder="请输入"></el-input><br><br>
       请选择此本体应有的属性：<el-input placeholder="请输入"></el-input>
@@ -6,8 +7,8 @@
 <br>
  
  <div align-items: center>
-  <el-table :data="tableData" style="width: 100%">
-    <el-table-column label="属性名" width="300" align="center">
+  <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: 100%" >
+    <el-table-column  prop="attribute" label="属性名" width="300" align="center">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <el-icon><timer /></el-icon>
@@ -15,7 +16,7 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="属性规范" width="300" align="center">
+    <el-table-column prop="rule" label="属性规范" width="300" align="center">
       <template #default="scope" >
         <el-popover effect="light" trigger="hover" placement="top" width="auto" align="center">
           <template #default >
@@ -41,7 +42,17 @@
       </template>
     </el-table-column>
   </el-table>
+  <el-pagination align='center' 
+   @size-change="handleSizeChange" 
+   @current-change="handleCurrentChange"
+   :current-page="currentPage" 
+   :page-sizes="[1,5,10,20]" 
+   :page-size="pageSize" 
+   layout="total, sizes, prev, pager, next, jumper" 
+   :total="tableData.length">
+</el-pagination>
  </div>
+
 <br>
  <el-row class="mb-6" justify="end">
     <el-button type="success" >提交</el-button>
@@ -49,27 +60,13 @@
 </template>
 
 
-<script setup></script>
-<script lang="ts" setup>
-import { ref } from 'vue'
-import { Timer } from '@element-plus/icons-vue'
-
-const input = ref('')
-interface User {
-  attribute: string
-  rule: string
-}
-
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row)
-}
-const handleDelete = (index: number, row: User) => {
-  console.log(index, row)
-}
-
-const tableData: User[] = [
-  {
-    attribute: '经度',
+<script>
+export default {
+            data() {
+                return {
+                    tableData: [
+                        {
+                          attribute: '经度',
     rule: '类型：Float 范围：-180~180',
     
   },
@@ -86,9 +83,27 @@ const tableData: User[] = [
   {
     attribute: '水利对象编码',
     rule: '类型：String 长度：0~255',
-    
-  },
-]
+                        },
+                    ],
+                    currentPage: 1, // 当前页码
+                    total: 20, // 总条数
+                    pageSize: 2 // 每页的数据条数
+                };
+            },
+            methods: {
+                //每页条数改变时触发 选择一页显示多少行
+                handleSizeChange(val) {
+                    console.log(`每页 ${val} 条`);
+                    this.currentPage = 1;
+                    this.pageSize = val;
+                },
+                //当前页改变时触发 跳转其他页
+                handleCurrentChange(val) {
+                    console.log(`当前页: ${val}`);
+                    this.currentPage = val;
+                }
+            }
+        };
 </script>
 
 <style lang="scss" scoped></style>

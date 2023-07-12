@@ -8,15 +8,16 @@
  
  <div align-items: center>
   <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: 100%" >
-    <el-table-column  prop="attribute" label="属性名" width="300" align="center">
+    <el-table-column type="selection" width="300" align="left" />
+    <el-table-column  prop="attribute" label="属性名" width="300" align="left">
       <template #default="scope">
         <div style="display: flex; align-items: center">
           <el-icon><timer /></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.attribute }}</span>
+          <span style="margin-left: 0px">{{ scope.row.attribute }}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="rule" label="属性规范" width="300" align="center">
+    <el-table-column prop="rule" label="属性规范" width="500" align="left">
       <template #default="scope" >
         <el-popover effect="light" trigger="hover" placement="top" width="auto" align="center">
           <template #default >
@@ -28,19 +29,7 @@
         </el-popover>
       </template>
     </el-table-column>
-    <el-table-column label="操作" width="450" align="center">
-      <template #default="scope" >
-        <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
-          >添加</el-button
-        >
-        <el-button
-          size="small"
-          type="danger"
-          @click="handleDelete(scope.$index, scope.row)"
-          >删除</el-button
-        >
-      </template>
-    </el-table-column>
+   
   </el-table>
   <el-pagination align='center' 
    @size-change="handleSizeChange" 

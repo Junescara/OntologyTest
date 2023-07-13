@@ -3,6 +3,22 @@ import Layout from "@/Layout/index.vue";
 import NProgress from "nprogress"; // 导入 nprogress模块
 import "nprogress/nprogress.css";
 
+// 默认路由
+const constantRoutes = [
+  {
+    name: "to404",
+    path: "/:catchAll(.*)",
+    redirect: "/404",
+  },
+  {
+    path: "/404",
+    name: "404",
+    component: () => import("@/views/error/404.vue"),
+    meta: { title: "404" },
+  },
+];
+
+// 系统相关路由
 const routes = [
   {
     path: "",
@@ -39,29 +55,24 @@ const routes = [
         },
       },
       {
-        path: "result",
-        name: "result",
-        menu: false,
-        component: () => import("@/views/system/Result.vue"),
+        path: "ontology-result",
+        name: "ontology-result",
+        menu: true,
+        component: () => import("@/views/system/Ontology-result.vue"),
         meta: {
-          title: "构建结果",
+          title: "本体构建结果",
+        },
+      },
+      {
+        path: "entity-result",
+        name: "entity-result",
+        menu: true,
+        component: () => import("@/views/system/Entity-result.vue"),
+        meta: {
+          title: "实例构建结果",
         },
       },
     ],
-  },
-];
-
-const constantRoutes = [
-  {
-    name: "to404",
-    path: "/:catchAll(.*)",
-    redirect: "/404",
-  },
-  {
-    path: "/404",
-    name: "404",
-    component: () => import("@/views/error/404.vue"),
-    meta: { title: "404" },
   },
 ];
 

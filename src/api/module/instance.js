@@ -1,6 +1,8 @@
 import request from "@/api/request";
 const baseURL = "/dbtest";
-
+const headers = {
+  "Content-Type": "application/json",
+};
 /**
  * 添加实例
  * @param neoId  节点id
@@ -11,9 +13,13 @@ export function createIns(neoId, name) {
   return request({
     url: `${baseURL}/instantiate-instance`,
     method: "post",
+<<<<<<< HEAD
     headers: {
       "Content-Type": "application/json",
     },
+=======
+    headers,
+>>>>>>> 8865ff0ff4054fe4347899e7cb61142551ce4def
     data: {
       neoId,
       name,
@@ -24,14 +30,20 @@ export function createIns(neoId, name) {
 /**
  * 查询本体列表
  * @param {*} name
- * @param {*} database
  * @returns
  */
-export function queryOntoList() {
+export function queryOntoList(name) {
   return request({
+<<<<<<< HEAD
     url: `${baseURL}/list-basic-clz`,
     method: "post",
     params: {},
+=======
+    url: `${baseURL}/list-onto-inst`,
+    method: "post",
+    headers,
+    data: { name },
+>>>>>>> 8865ff0ff4054fe4347899e7cb61142551ce4def
   });
 }
 /**
@@ -44,12 +56,33 @@ export function udpateInst(neoId, value) {
   return request({
     url: `${baseURL}/update-subinstance`,
     method: "post",
+<<<<<<< HEAD
     headers: {
       "Content-Type": "application/json",
     },
+=======
+    headers,
+>>>>>>> 8865ff0ff4054fe4347899e7cb61142551ce4def
     data: {
       neoId,
       value,
+    },
+  });
+}
+
+/**
+ * 查询实例列表
+ * @param {*} name
+ * @returns
+ */
+export function queryInsList(labels, name) {
+  return request({
+    url: `${baseURL}//list-main-inst`,
+    method: "post",
+    headers,
+    data: {
+      labels,
+      name,
     },
   });
 }

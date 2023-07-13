@@ -13,13 +13,7 @@ export function createIns(neoId, name) {
   return request({
     url: `${baseURL}/instantiate-instance`,
     method: "post",
-<<<<<<< HEAD
-    headers: {
-      "Content-Type": "application/json",
-    },
-=======
     headers,
->>>>>>> 8865ff0ff4054fe4347899e7cb61142551ce4def
     data: {
       neoId,
       name,
@@ -34,16 +28,10 @@ export function createIns(neoId, name) {
  */
 export function queryOntoList(name) {
   return request({
-<<<<<<< HEAD
-    url: `${baseURL}/list-basic-clz`,
-    method: "post",
-    params: {},
-=======
     url: `${baseURL}/list-onto-inst`,
     method: "post",
     headers,
     data: { name },
->>>>>>> 8865ff0ff4054fe4347899e7cb61142551ce4def
   });
 }
 /**
@@ -56,13 +44,7 @@ export function udpateInst(neoId, value) {
   return request({
     url: `${baseURL}/update-subinstance`,
     method: "post",
-<<<<<<< HEAD
-    headers: {
-      "Content-Type": "application/json",
-    },
-=======
     headers,
->>>>>>> 8865ff0ff4054fe4347899e7cb61142551ce4def
     data: {
       neoId,
       value,

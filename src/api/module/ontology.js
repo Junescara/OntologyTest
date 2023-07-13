@@ -9,7 +9,7 @@ const baseURL = "/dbtest";
 export function createOnto(propsClzs, name) {
   return request({
     url: `${baseURL}/create-ontology`,
-    type: "post",
+    method: "post",
     headers: {
       "Content-Type": "application/json",
     },
@@ -28,7 +28,7 @@ export function createOnto(propsClzs, name) {
 export function loadOntoInfo(neoId) {
   return request({
     url: `${baseURL}/load-ontology`,
-    type: "get",
+    method: "get",
     params: {
       neoId,
     },
@@ -44,10 +44,8 @@ export function loadOntoInfo(neoId) {
 export function listbasic(type) {
   return request({
     url: `${baseURL}/list-basic-clz`,
-    type: "post",
-    params: {
-      type,
-    },
+    method: "post",
+    params:type
   });
 }
 

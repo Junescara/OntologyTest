@@ -10,7 +10,7 @@ const baseURL = "/dbtest";
 export function createIns(neoId, name) {
   return request({
     url: `${baseURL}/instantiate-instance`,
-    type: "post",
+    method: "post",
     headers: {
       "Content-Type": "application/json",
     },
@@ -30,7 +30,7 @@ export function createIns(neoId, name) {
 export function queryOntoList() {
   return request({
     url: `${baseURL}/list-basic-clz`,
-    type: "post",
+    method: "post",
     params: {},
   });
 }
@@ -43,7 +43,7 @@ export function queryOntoList() {
 export function udpateInst(neoId, value) {
   return request({
     url: `${baseURL}/update-subinstance`,
-    type: "post",
+    method: "post",
     headers: {
       "Content-Type": "application/json",
     },

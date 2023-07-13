@@ -34,3 +34,21 @@ export function loadOntoInfo(neoId) {
     },
   });
 }
+
+
+/**
+ * 查询属性类
+ * @param {*} type
+ * @returns
+ */
+export function listbasic(type) {
+  return request({
+    url: `${baseURL}/list-basic-clz`,
+    type: "post",
+    params: {
+      type,
+    },
+  });
+}
+
+

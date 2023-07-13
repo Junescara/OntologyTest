@@ -32,44 +32,49 @@ const routes = [
         path: "index",
         rule: "index",
         // 是否显示在侧边栏菜单列表中
-        menu: false,
         component: () => import("@/views/Index.vue"),
-        meta: { title: "首页" },
+        meta: {
+          title: "首页",
+          menu: false,
+        },
       },
       {
         path: "ontology",
         rule: "ontology",
-        menu: true,
         component: () => import("@/views/system/Ontology.vue"),
         meta: {
+          menu: true,
           title: "本体构建",
         },
       },
       {
         path: "instance",
         name: "instance",
-        menu: true,
         component: () => import("@/views/system/Instance.vue"),
         meta: {
+          menu: true,
           title: "实例构建",
         },
       },
       {
         path: "ontology-result",
         name: "ontology-result",
-        menu: true,
+
         component: () => import("@/views/system/Ontology-result.vue"),
         meta: {
           title: "本体构建结果",
+          menu: false,
+          visByUrl: false,
         },
       },
       {
         path: "entity-result",
         name: "entity-result",
-        menu: true,
         component: () => import("@/views/system/Entity-result.vue"),
         meta: {
           title: "实例构建结果",
+          menu: false,
+          visByUrl: false,
         },
       },
     ],
@@ -87,6 +92,8 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
   NProgress.start();
+  // 不能通过url访问的路径重定向至首页
+  if (to.meta.visByUrl === false) next("/index");
   if (to.meta.title) document.title = to.meta.title;
   next();
 });

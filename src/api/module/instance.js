@@ -59,7 +59,7 @@ export function udpateInst(neoId, value) {
  */
 export function queryInsList(labels, name) {
   return request({
-    url: `${baseURL}//list-main-inst`,
+    url: `${baseURL}/list-main-inst`,
     method: "post",
     headers,
     data: {

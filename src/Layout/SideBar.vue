@@ -26,7 +26,7 @@
       <!-- 路由循环 -->
       <el-menu-item
         v-for="subItem in item.children"
-        v-show="subItem.menu === true"
+        v-show="subItem.meta.menu"
         :index="`/${subItem.path}`"
         >{{ subItem.meta.title }}</el-menu-item
       >

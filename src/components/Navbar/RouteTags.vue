@@ -38,9 +38,10 @@ const route = useRoute();
 const router = useRouter();
 
 // 监听路由变化
-watch(route, (oldv, newv) => {
+watch(route, (newv) => {
   for (let i in RouteTags) if (RouteTags[i].path === newv.fullPath) return;
-  RouteTags.push({ name: route.meta.title || "", path: route.fullPath });
+  if (newv.meta.menu)
+    RouteTags.push({ name: route.meta.title || "", path: route.fullPath });
   sessionStorage.setItem("tags", JSON.stringify(RouteTags));
 });
 

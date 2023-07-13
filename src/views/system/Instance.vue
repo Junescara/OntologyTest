@@ -37,7 +37,13 @@
       </el-form-item>
     </el-form>
     <!-- 实例表格 -->
-    <el-table :data="insList" style="width: 50%" empty-text="暂无实例">
+    <el-table
+      :data="
+        insList.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      "
+      style="width: 50%"
+      empty-text="暂无实例"
+    >
       <el-table-column prop="neoId" label="实例编号" width="180" />
       <el-table-column prop="name" label="实例名称" width="180" />
       <el-table-column label="实例标签" width="240">
@@ -110,96 +116,32 @@ const router = useRouter();
 
 let ontoId = ref(null); //当前选择本体源neoid
 let insName = ref(""); //创建实例名称
-let ontoName = computed(() => (neoId) => {
-  for (let i in ontoList)
-    if (ontoList[i].neoId === neoId) {
-      return ontoList[i].name;
-    }
-}); //本体源id对应本体名
 
-const ontoList = reactive([
-  {
-    name: '"水库"',
-    labels: ["水利对象本体"],
-    neoId: "ba096d0a-bc85-4445-9a47-7aa0e93c89d4",
-    basicClzList: null,
-    funcClzList: null,
-    propClzList: null,
-  },
-]); //本体源列表
-const insList = reactive([
-  {
-    neoId: "b7557188-0a48-4046-93a8-25b6b48e760a",
-    name: '"水利对象接口测试1"',
-    labels: ["水利对象", "水库"],
-    basicObjList: [],
-    funcObjList: [],
-    propObjList: [
-      {
-        typeCode: "p00001",
-        neoId: "95924061-16dc-4987-be0a-0dba1fa5f455",
-        value: "null",
-        dimension: "°",
-        range1: "-180",
-        range2: "180",
-        label: "经度",
-        allowEqual: true,
-      },
-      {
-        typeCode: "p00002",
-        neoId: "a58b21fd-4652-40a4-b8aa-ff541df2a7df",
-        value: "null",
-        dimension: "°",
-        range1: "-90",
-        range2: "90",
-        label: "纬度",
-        allowEqual: true,
-      },
-      {
-        typeCode: "p10001",
-        neoId: "c6cbc8ea-882d-47b7-8304-3255cdeb43bf",
-        value: "null",
-        dimension: "m",
-        range1: "-10000",
-        range2: "10000",
-        label: "监测水位",
-        allowEqual: true,
-      },
-      {
-        typeCode: "p10004",
-        neoId: "099a1406-c92f-4e48-bc70-f844549af5b9",
-        value: "null",
-        dimension: "m³",
-        range1: "0",
-        range2: "100000",
-        label: "径流量",
-        allowEqual: true,
-      },
-    ],
-  },
-]); //实例列表
+const ontoList = reactive([]); //本体源列表
+const insList = reactive([]); //实例列表
 const attrList = reactive([]); //当前实例属性列表
 
 const dialogVisible = ref(false);
 
 // 表格相关
-let currentPage = ref({ type: Number, default: 1 });
+let currentPage = ref(1);
 let total = computed(() => {
   return insList.length;
 });
-let pageSize = ref(6);
+let pageSize = ref(5);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
 
 // 初始化数据
 const initData = () => {
   // 获取本体列表
-  queryOntoList().then((data) => {
-    ontoList.push(data);
+  queryOntoList().then(({ data }) => {
+    ontoList.length = 0;
+    ontoList.push(...data);
   });
   // 获取实例列表
-  queryInsList().then((data) => {
+  queryInsList().then(({ data }) => {
     insList.length = 0;
-    insList.push(data);
+    insList.push(...data);
   });
 };
 initData();
@@ -209,6 +151,7 @@ const handleInsCreate = () => {
     confirmButtonText: "确认",
     cancelButtonText: "取消",
     type: "warning",
+    title: "创建确认",
   }).then(() => {
     if (ontoId.value === null) {
       ElMessage.warning("请选择本体源");
@@ -218,12 +161,12 @@ const handleInsCreate = () => {
       ElMessage.warning("请输入实例名");
       return;
     }
-    createIns(ontoId.value, insName.value, [ontoName(ontoId.value)]).then(
-      ({ neoId }) => {
-        initData();
-        router.push({ path: "/entity-result", query: { neoId } });
-      }
-    );
+
+    createIns(ontoId.value, insName.value, []).then(({ data }) => {
+      console.log(data);
+      initData();
+      router.push({ path: "/entity-result", query: { neoId: data.neoId } });
+    });
   });
 };
 // 打开修改属性窗口

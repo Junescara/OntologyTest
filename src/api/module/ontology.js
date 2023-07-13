@@ -6,17 +6,15 @@ const baseURL = "/dbtest";
  * @param {*} name
  * @returns
  */
-export function createOnto(propsClzs, name) {
+export function createOnto(propsClzs,name) {
+  console.log("propsClzs;",propsClzs)
   return request({
     url: `${baseURL}/create-ontology`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
     },
-    data: {
-      propsClzs,
-      name,
-    },
+    data:propsClzs
   });
 }
 

@@ -124,7 +124,7 @@ export default {
     createOnto({ propsClzs,name:this.insName}).then(data => {
         //console.log(data)
         ElMessage.success("构建成功");
-        this.$router.push({ path:"/Ontology-result", query:{ neoId: data.neoId}});
+        this.$router.push({ path: "/Ontology-result", query: { neoId: data.neoId } });
 
       })
 

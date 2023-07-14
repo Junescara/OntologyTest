@@ -14,6 +14,11 @@ export default {
       dialogVisible: false,
       nodes: [],
       edges: [],
+      id: "",
+      label: "",
+      color: "",
+      from: "",
+      to: "",
       // network:null,
       container: null,
       //   节点数组
@@ -140,20 +145,23 @@ export default {
       getEntity(this.neoId).then((res) => {
         //给nodeArray数组赋值
         //实例结点的id为neoId，label为实例名称，颜色为黄色
-        (this.nodesArray[0].id = res.data.neoId),
-          (this.nodesArray[0].label = res.data.name),
-          (this.nodesArray[0].color = { background: "yellow" });
+      //  (this.nodesArray[0].id = res.data.neoId),
+      //    (this.nodesArray[0].label = res.data.name),
+      //    (this.nodesArray[0].color = { background: "yellow" });
+      this.nodesArray.push({id:res.data.neoId, label:res.data.name, color:"yellow"})
         //属性结点的id为属性编码，label为属性名，颜色为粉色
         for (let i = 1; i <= res.data.propObjList.length; i++) {
-          (this.nodesArray[i].id = res.data.propObjList[i - 1].neoId),
-            (this.nodesArray[i].label = res.data.propObjList[i - 1].label),
-            (this.nodesArray[i].color = { background: "pink" });
+        //  (this.nodesArray[i].id = res.data.propObjList[i - 1].neoId),
+        //    (this.nodesArray[i].label = res.data.propObjList[i - 1].label),
+        //    (this.nodesArray[i].color = { background: "pink" });
+            this.nodesArray.push({id:res.data.propObjList[i - 1].neoId, label:res.data.propObjList[i - 1].label, color:"pink"})
         }
         //给edgesArray数组赋值
-        for (let i = 0; i < res.data.propObjList.length - 1; i++) {
-          (this.edgesArray[i].from = res.data.neoId),
-            (this.edgesArray[i].to = this.nodesArray[i + 1].id),
-            (this.edgesArray[i].label = "包含");
+        for (let i = 0; i < res.data.propObjList.length; i++) {
+        //  (this.edgesArray[i].from = res.data.neoId),
+        //    (this.edgesArray[i].to = this.nodesArray[i + 1].id),
+        //    (this.edgesArray[i].label = "包含");
+        this.edgesArray.push({from:res.data.neoId, to:this.nodesArray[i + 1].id, label:"包含"})
         }
         this.getTopoPicture();
       });

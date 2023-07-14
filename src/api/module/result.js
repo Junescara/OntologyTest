@@ -5,7 +5,9 @@ const baseURL = "/dbtest";
 export function getOntology(neoId) {
   return server({
     method: "get",
-    url: `${baseURL}/load-ontology?neoId=${neoId}`,
+    url: `${baseURL}/load-ontology`,
+    params: 
+      neoId
   });
 }
 //获取实例

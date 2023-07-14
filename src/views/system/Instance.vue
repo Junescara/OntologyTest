@@ -106,6 +106,7 @@ import {
   queryInsList,
   udpateInst,
 } from "@/api/module/instance.js";
+import { getEntity as getInstance } from "@/api/module/result.js";
 import { reactive, ref, computed } from "vue";
 import { Search, Plus } from "@element-plus/icons-vue";
 import MyPagination from "@/components/common/MyPagination.vue";
@@ -163,7 +164,7 @@ const handleInsCreate = () => {
     }
 
     createIns(ontoId.value, insName.value, []).then(({ data }) => {
-      console.log(data);
+      // console.log(data);
       initData();
       router.push({ path: "/entity-result", query: { neoId: data.neoId } });
     });
@@ -171,15 +172,16 @@ const handleInsCreate = () => {
 };
 // 打开修改属性窗口
 const openUpdateDialog = (instance) => {
-  dialogVisible.value = true;
-  attrList.length = 0;
-  attrList.push(...instance.propObjList);
-  for (let i in attrList)
-    if (attrList[i].value === "null") attrList[i].value = "";
+  getInstance(instance.neoId).then(({ data }) => {
+    attrList.length = 0;
+    attrList.push(...data.propObjList);
+    for (let i in attrList)
+      if (attrList[i].value === "null") attrList[i].value = "";
+    dialogVisible.value = true;
+  });
 };
 // 更新实例属性
 const handleUpdateAtrr = (neoId, value) => {
-  console.log(neoId, value);
   udpateInst(neoId, value).then(() => {
     initData();
   });

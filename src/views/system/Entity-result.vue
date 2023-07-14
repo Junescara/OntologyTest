@@ -6,7 +6,7 @@
 </template>
 <script>
 import Vis from "vis";
-import { getEntity, getOntology } from "@/api/module/result.js";
+import { getEntity } from "@/api/module/result.js";
 export default {
   data() {
     return {
@@ -132,7 +132,7 @@ export default {
   created() {
     //获取路由中的参数
     this.getParams();
-    this.getTopoPicture();
+    this.topoPictureInit();
   },
   methods: {
     //给nodesArray[]和edgesArray[]数组赋值
@@ -155,11 +155,12 @@ export default {
             (this.edgesArray[i].to = this.nodesArray[i + 1].id),
             (this.edgesArray[i].label = "包含");
         }
+        this.getTopoPicture();
       });
     },
     //获取拓扑图
     getTopoPicture() {
-      getOntology(this.neoId)
+      getEntity(this.neoId)
         .then((response) => {
           //1.创建一个nodes数组
           this.nodes = new Vis.DataSet(this.nodesArray);

@@ -93,7 +93,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   NProgress.start();
   // 不能通过url访问的路径重定向至首页
-  if (to.meta.visByUrl === false) next("/index");
+  // if (to.meta.visByUrl === false) next("/index");
   if (to.meta.title) document.title = to.meta.title;
   next();
 });

@@ -12,6 +12,9 @@ export function getOntology(neoId) {
 export function getEntity(neoId) {
   return server({
     method: "post",
-    url: `${baseURL}/load-instance?neoId=${neoId}`,
+    url: `${baseURL}/load-instance`,
+    params: {
+      neoId,
+    },
   });
 }

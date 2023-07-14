@@ -1,8 +1,14 @@
-<template slot-scope="scope">
- 
+<template  slot-scope="scope">
+ <div class="top-content">
+    <h5>构建本体</h5>
+  </div>
  <div style="width: 200px;height: 100px;">
-    请输入您要添加的本体名称：<el-input placeholder="请输入" v-model="iname" @input="changeNow($event)"></el-input><br><br>
-      请选择此本体应有的属性：<el-input placeholder="请输入"></el-input>
+    
+    <el-form-item label="本体名称">
+      <el-input  v-model="insName" placeholder="请输入本体名" clearable >
+      </el-input>
+    </el-form-item><br><br>
+      请选择此本体应有的属性：
  </div>
 <br>
  
@@ -28,21 +34,28 @@
 
 <br>
  <el-row class="mb-6" justify="end">
-    <el-button type="success" @click="createOnto" >提交</el-button>
+    <el-button type="success" @click="create" >提交</el-button>
   </el-row>
 </template>
 
 
-<script>
+<script >
 import {createOnto} from "@/api/module/ontology.js";
 import { listbasic } from "@/api/module/ontology.js";
 import {loadOntoInfo} from "@/api/module/ontology.js";
+import { ElMessageBox, ElMessage } from "element-plus";
+import { reactive, ref, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+
 
 export default {
             data() {
                 return {
                     tableData:  [],
-
+      insName:"",
       multipleSelection: [],
       msg: "hello 竹子",
       collapseBtnClass: 'el-icon-s-fold',
@@ -60,14 +73,14 @@ export default {
     // 请求分页查询数据
     this.load()
   },
-            methods: {
-              
-changeNow() {
-    this.$forceUpdate()
-},
+
+
+
+//方法
+  methods: {
+    
  load() {
-      listbasic({ type:"p"})
-      .then(res => {
+      listbasic({ type:"p"}).then(res => {
         console.log(res)
 
         this.tableData = res.data
@@ -93,15 +106,41 @@ changeNow() {
                     console.log(val)
                    this.multipleSelection = val
             },
-                 createOnto(){
-                  createOnto()
+            
+            create(){
+              let insName = ref("");
+              let propsClzs = this.multipleSelection.map(v => v.code)
+ 
+  ElMessageBox.confirm("确定创建该本体吗？", "warning", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    title: "创建确认",
+  }).then(() => {
+    
+    
+    
 
-            },
+    createOnto({ propsClzs,name:this.insName}).then(data => {
+        console.log(data)
+        ElMessage.success("构建成功");
+        router.push({ path: "/ontology-result", query: { neoId: data.neoId } });
+
+      })
+
+    
+  });
+},
+            
+                 
           
                 
         }
       }
     
+</script>
+<script setup>
+
 </script>
 
 <style lang="scss" scoped></style>

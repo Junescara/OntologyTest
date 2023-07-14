@@ -6,15 +6,15 @@ const baseURL = "/dbtest";
  * @param {*} name
  * @returns
  */
-export function createOnto(propsClzs,name) {
-  console.log("propsClzs;",propsClzs)
+export function createOnto(propsClzs, name) {
+  console.log("propsClzs;", propsClzs);
   return request({
     url: `${baseURL}/create-ontology`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
     },
-    data:propsClzs
+    data: propsClzs,
   });
 }
 
@@ -33,7 +33,6 @@ export function loadOntoInfo(neoId) {
   });
 }
 
-
 /**
  * 查询属性类
  * @param {*} type
@@ -43,8 +42,6 @@ export function listbasic(type) {
   return request({
     url: `${baseURL}/list-basic-clz`,
     method: "post",
-    params:type
+    params: type,
   });
 }
-
-

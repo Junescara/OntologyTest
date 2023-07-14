@@ -6,8 +6,7 @@ export function getOntology(neoId) {
   return server({
     method: "get",
     url: `${baseURL}/load-ontology`,
-    params: 
-      neoId
+    params: { neoId },
   });
 }
 //获取实例

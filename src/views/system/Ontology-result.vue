@@ -139,7 +139,7 @@ export default {
   created() {
     //获取路由中的参数
     this.getParams();
-    this.getTopoPicture();
+    this.topoPictureInit();
   },
   methods: {
     //编码转换——将属性编码转换为属性名称
@@ -183,26 +183,39 @@ export default {
       getOntology(this.neoId).then((res) => {
         //给nodeArray数组赋值
         //本体结点的id为neoId，label为本体名称，颜色为黄色
-       // (this.nodesArray[0].id = res.data.neoId),
-       //   (this.nodesArray[0].label = res.data.name),
-       //   (this.nodesArray[0].color = { background: "yellow" });
-          this.nodesArray.push({id:res.data.neoId, label:res.data.name, color:"yellow"})
+        // (this.nodesArray[0].id = res.data.neoId),
+        //   (this.nodesArray[0].label = res.data.name),
+        //   (this.nodesArray[0].color = { background: "yellow" });
+        this.nodesArray.push({
+          id: res.data.neoId,
+          label: res.data.name,
+          color: "yellow",
+        });
         //属性结点的id为属性编码，label为属性名，颜色为粉色
         for (let i = 1; i <= res.data.propClzList.length; i++) {
-        //  (this.nodesArray[i].id = res.data.propClzList[i - 1]),
-        //    (this.nodesArray[i].label = res.data.propClzList[i - 1]),
-            //将属性编码转换为属性名
-        //    this.codeConversion(this.nodesArray[i].label),
-        //    (this.nodesArray[i].color = { background: "pink" });
-            this.nodesArray.push({id:res.data.propClzList[i - 1], label:this.codeConversion(res.data.propClzList[i - 1]), color:"pink"})
+          //  (this.nodesArray[i].id = res.data.propClzList[i - 1]),
+          //    (this.nodesArray[i].label = res.data.propClzList[i - 1]),
+          //将属性编码转换为属性名
+          //    this.codeConversion(this.nodesArray[i].label),
+          //    (this.nodesArray[i].color = { background: "pink" });
+          this.nodesArray.push({
+            id: res.data.propClzList[i - 1],
+            label: this.codeConversion(res.data.propClzList[i - 1]),
+            color: "pink",
+          });
         }
         //给edgesArray数组赋值
         for (let i = 0; i < res.data.propClzList.length - 1; i++) {
-        //  (this.edgesArray[i].from = res.data.neoId),
-        //    (this.edgesArray[i].to = this.nodesArray[i + 1].id),
-        //    (this.edgesArray[i].label = "包含");
-            this.edgesArray.push({from:res.data.neoId, to:this.nodesArray[i + 1].id, label:"包含"})
+          //  (this.edgesArray[i].from = res.data.neoId),
+          //    (this.edgesArray[i].to = this.nodesArray[i + 1].id),
+          //    (this.edgesArray[i].label = "包含");
+          this.edgesArray.push({
+            from: res.data.neoId,
+            to: this.nodesArray[i + 1].id,
+            label: "包含",
+          });
         }
+        this.getTopoPicture();
       });
     },
     //获取拓扑图

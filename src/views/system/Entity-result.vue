@@ -1,4 +1,7 @@
 <template>
+  <div class="top-content">
+    <h5>实例可视化</h5>
+  </div>
   <div>
     <!--width,height 画布的宽度，高度。 可以是百分比或像素，一般在dom元素上设置 -->
     <div id="network_id" class="network" style="height: 80vh"></div>
@@ -145,23 +148,35 @@ export default {
       getEntity(this.neoId).then((res) => {
         //给nodeArray数组赋值
         //实例结点的id为neoId，label为实例名称，颜色为黄色
-      //  (this.nodesArray[0].id = res.data.neoId),
-      //    (this.nodesArray[0].label = res.data.name),
-      //    (this.nodesArray[0].color = { background: "yellow" });
-      this.nodesArray.push({id:res.data.neoId, label:res.data.name, color:"yellow"})
+        //  (this.nodesArray[0].id = res.data.neoId),
+        //    (this.nodesArray[0].label = res.data.name),
+        //    (this.nodesArray[0].color = { background: "yellow" });
+        this.nodesArray.push({
+          id: res.data.neoId,
+          label: res.data.name,
+          color: "yellow",
+        });
         //属性结点的id为属性编码，label为属性名，颜色为粉色
         for (let i = 1; i <= res.data.propObjList.length; i++) {
-        //  (this.nodesArray[i].id = res.data.propObjList[i - 1].neoId),
-        //    (this.nodesArray[i].label = res.data.propObjList[i - 1].label),
-        //    (this.nodesArray[i].color = { background: "pink" });
-            this.nodesArray.push({id:res.data.propObjList[i - 1].neoId, label:res.data.propObjList[i - 1].label, color:"pink"})
+          //  (this.nodesArray[i].id = res.data.propObjList[i - 1].neoId),
+          //    (this.nodesArray[i].label = res.data.propObjList[i - 1].label),
+          //    (this.nodesArray[i].color = { background: "pink" });
+          this.nodesArray.push({
+            id: res.data.propObjList[i - 1].neoId,
+            label: res.data.propObjList[i - 1].label,
+            color: "pink",
+          });
         }
         //给edgesArray数组赋值
         for (let i = 0; i < res.data.propObjList.length; i++) {
-        //  (this.edgesArray[i].from = res.data.neoId),
-        //    (this.edgesArray[i].to = this.nodesArray[i + 1].id),
-        //    (this.edgesArray[i].label = "包含");
-        this.edgesArray.push({from:res.data.neoId, to:this.nodesArray[i + 1].id, label:"包含"})
+          //  (this.edgesArray[i].from = res.data.neoId),
+          //    (this.edgesArray[i].to = this.nodesArray[i + 1].id),
+          //    (this.edgesArray[i].label = "包含");
+          this.edgesArray.push({
+            from: res.data.neoId,
+            to: this.nodesArray[i + 1].id,
+            label: "包含",
+          });
         }
         this.getTopoPicture();
       });
@@ -209,4 +224,6 @@ export default {
   },
 };
 </script>
-<style lang="less"></style>
+<style lang="less">
+@import url("../../assets/css/global.less");
+</style>

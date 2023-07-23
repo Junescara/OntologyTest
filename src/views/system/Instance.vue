@@ -30,10 +30,16 @@
       </el-form-item>
 
       <el-form-item>
-        <el-input placeholder="请输入实例名" clearable />
+        <el-input
+          placeholder="请输入实例名"
+          clearable
+          v-model="searchContent"
+        />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" :icon="Search">搜索</el-button>
+        <el-button type="primary" :icon="Search" @click="searchInst"
+          >搜索</el-button
+        >
       </el-form-item>
     </el-form>
     <!-- 实例表格 -->
@@ -41,7 +47,7 @@
       :data="
         insList.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
-      style="width: 50%"
+      style="width: 60%"
       empty-text="暂无实例"
     >
       <el-table-column prop="neoId" label="实例编号" width="180" />
@@ -49,7 +55,7 @@
       <el-table-column label="实例标签" width="240">
         <template v-slot="scope"> {{ scope.row.labels.toString() }} </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="120">
+      <el-table-column label="操作" width="180">
         <template #default="scope">
           <el-button
             link
@@ -57,8 +63,20 @@
             size="small"
             @click="openUpdateDialog(scope.row)"
             >修改属性</el-button
-          ></template
-        >
+          >
+          <el-button
+            link
+            type="primary"
+            size="small"
+            @click="
+              router.push({
+                path: 'entity-result',
+                query: { neoId: scope.row.neoId },
+              })
+            "
+            >查看结点</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页器 -->
@@ -119,8 +137,18 @@ let ontoId = ref(null); //当前选择本体源neoid
 let insName = ref(""); //创建实例名称
 
 const ontoList = reactive([]); //本体源列表
-const insList = reactive([]); //实例列表
+const insList = reactive([
+  {
+    neoId: "5249d48f-b96d-4a71-bbc3-6d2da022951a",
+    name: '"btest5"',
+    labels: ["水利对象", "水库"],
+    basicObjList: null,
+    funcObjList: null,
+    propObjList: null,
+  },
+]); //实例列表
 const attrList = reactive([]); //当前实例属性列表
+let searchContent = ref("");
 
 const dialogVisible = ref(false);
 
@@ -191,6 +219,13 @@ const handleUpdateAtrr = (neoId, value) => {
 const pageFunc = (pageData) => {
   currentPage.value = pageData.pageNum;
   pageSize.value = pageData.pageSize;
+};
+// 搜索实例
+const searchInst = () => {
+  queryInsList([], searchContent.value).then(({ data }) => {
+    insList.length = 0;
+    insList.push(...data);
+  });
 };
 </script>
 

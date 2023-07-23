@@ -1,4 +1,8 @@
 <template>
+  <div class="top-content">
+    <h5>实例可视化</h5>
+  </div>
+
   <div>
     <!--width,height 画布的宽度，高度。 可以是百分比或像素，一般在dom元素上设置 -->
     <div id="network_id" class="network" style="height: 80vh"></div>
@@ -261,4 +265,6 @@ export default {
   },
 };
 </script>
-<style lang="less"></style>
+<style lang="less">
+@import url("../../assets/css/global.less");
+</style>

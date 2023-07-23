@@ -116,29 +116,24 @@ export default {
                    this.multipleSelection = val
             },
             
-            create(){
-              let insName = ref("");
-              let propsClzs = this.multipleSelection.map(v => v.code)
- 
-  ElMessageBox.confirm("确定创建该本体吗？", "warning", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-    title: "创建确认",
-  }).then(() => {
-    
-    
-    
-
-    createOnto({ propsClzs,name:this.insName}).then(data => {
-        //console.log(data)
-        ElMessage.success("构建成功");
-        this.$router.push({ path: "/Ontology-result", query: { neoId: data.neoId } });
-
-      })
-
-    
-  });
+            create() {
+      let insName = ref("");
+      let propsClzs = this.multipleSelection.map((v) => v.code);
+      ElMessageBox.confirm("确定创建该本体吗？", "warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        title: "创建确认",
+      }).then(() => {
+        createOnto({ propsClzs, name: this.insName }).then(({ data }) => {
+          // console.log(data);
+          ElMessage.success("构建成功");
+          this.$router.push({
+            path: "/Ontology-result",
+            query: { neoId: data.neoId },
+          });
+        });
+      });
 },
             
                  

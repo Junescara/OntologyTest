@@ -1,4 +1,4 @@
-<template  slot-scope="scope">
+<template  >
  <div class="top-content">
     <h5>构建本体</h5>
   </div>
@@ -8,7 +8,7 @@
       <el-input  v-model="insName" placeholder="请输入本体名" clearable >
       </el-input>
     </el-form-item><br><br>
-      请选择此本体应有的属性：
+      请选择此本体应有的属性
  </div>
 <br>
  
@@ -17,8 +17,14 @@
     <el-table-column type="selection" width="auto" align="left" />
     <el-table-column  prop="code" label="属性编号" width="auto" align="left">
     </el-table-column>
-    <el-table-column  prop="name" label="属性名" width="auto" align="left">
-    </el-table-column>
+    <el-table-column  prop="name" label="属性名" width="auto" align="left"></el-table-column>
+    <el-table-column  prop="rangeItem.range1,rangeItem.range2" width="auto" align="left" label="范围" >
+<template #default="scope" >
+<div v-if="scope.row.rangeItem">{{ scope.row.rangeItem.range1 }}~{{ scope.row.rangeItem.range2 }}</div>
+</template>
+</el-table-column>
+<el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
+    
    
   </el-table>
   <el-pagination align='center' 
@@ -56,6 +62,7 @@ export default {
                 return {
                     tableData:  [],
       insName:"",
+      rangeItem:[],
       multipleSelection: [],
       msg: "hello 竹子",
       collapseBtnClass: 'el-icon-s-fold',
@@ -72,6 +79,7 @@ export default {
             created() {
     // 请求分页查询数据
     this.load()
+    
   },
 
 
@@ -81,10 +89,11 @@ export default {
     
  load() {
       listbasic({ type:"p"}).then(res => {
-        console.log(res)
+        
+        
+        this.tableData = res.data;
+        this.total = res.total;
 
-        this.tableData = res.data
-        this.total = res.total
 
       })
     },

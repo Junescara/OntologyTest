@@ -5,6 +5,20 @@
  
 <br>
 
+<el-form label-width="120px" inline align="left"><el-form-item>
+        <el-input align="left"
+          placeholder="请输入实例名"
+          clearable
+          v-model="searchContent"
+          width="auto"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" :icon="Search" @click="searchInst"
+          >搜索</el-button
+        >
+      </el-form-item></el-form>
+
 <el-table :data="tableData1.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
     <el-table-column prop="name" label="本体名称" width="auto" align="left" />
     <el-table-column  prop="labels" label="标签" width="auto" align="left">
@@ -108,6 +122,7 @@ export default {
                     tableData:  [],
                     tableData1:  [],
       insName:"",
+      searchContent:"",
       rangeItem:[],
       multipleSelection: [],
       msg: "hello 竹子",
@@ -210,6 +225,15 @@ export default {
           });
         });
       });
+},
+
+searchInst(){
+  Ontolist({name:this.searchContent}).then(res=>{
+
+this.tableData1=res.data;
+this.total=res.total;
+})
+
 },
             
                  

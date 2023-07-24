@@ -209,7 +209,7 @@ export default {
           });
         }
         //给edgesArray数组赋值
-        for (let i = 0; i < res.data.propClzList.length - 1; i++) {
+        for (let i = 0; i < res.data.propClzList.length; i++) {
           //  (this.edgesArray[i].from = res.data.neoId),
           //    (this.edgesArray[i].to = this.nodesArray[i + 1].id),
           //    (this.edgesArray[i].label = "包含");

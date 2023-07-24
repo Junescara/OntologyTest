@@ -45,3 +45,19 @@ export function listbasic(type) {
     params: type,
   });
 }
+
+/**
+ * 本体列表
+ * @param {*} name
+ * @returns
+ */
+export function Ontolist( name) {
+  return request({
+    url: `${baseURL}/list-onto-inst`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: name,
+  });
+}

@@ -222,6 +222,14 @@ export default {
       this.neoId = this.$route.query.neoId;
     },
   },
+  watch: {
+    $route(to, from) {
+      if (to.fullPath.indexOf("entity-result") !== -1) {
+        this.neoId = to.query.neoId;
+        this.topoPictureInit();
+      }
+    },
+  },
 };
 </script>
 <style lang="less">

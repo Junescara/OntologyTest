@@ -47,7 +47,7 @@
       :data="
         insList.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       "
-      style="width: 60%"
+      style="width: 70%; text-align: left"
       empty-text="暂无实例"
     >
       <el-table-column prop="neoId" label="实例编号" width="180" />

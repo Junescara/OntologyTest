@@ -59,7 +59,6 @@ const routes = [
       {
         path: "ontology-result",
         name: "ontology-result",
-
         component: () => import("@/views/system/Ontology-result.vue"),
         meta: {
           title: "本体构建结果",

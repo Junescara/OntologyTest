@@ -143,6 +143,7 @@ export default {
   created() {
     //获取路由中的参数
     this.getParams();
+    this.getTopoPicture();
     this.topoPictureInit();
   },
   methods: {
@@ -190,6 +191,7 @@ export default {
         // (this.nodesArray[0].id = res.data.neoId),
         //   (this.nodesArray[0].label = res.data.name),
         //   (this.nodesArray[0].color = { background: "yellow" });
+        this.nodesArray = [];
         this.nodesArray.push({
           id: res.data.neoId,
           label: res.data.name,
@@ -208,6 +210,7 @@ export default {
             color: "pink",
           });
         }
+        this.edgesArray = [];
         //给edgesArray数组赋值
         for (let i = 0; i < res.data.propClzList.length; i++) {
           //  (this.edgesArray[i].from = res.data.neoId),

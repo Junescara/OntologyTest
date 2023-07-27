@@ -22,6 +22,7 @@ export default {
       color: "",
       from: "",
       to: "",
+      //  isReady:false,
       // network:null,
       container: null,
       //   节点数组
@@ -151,6 +152,7 @@ export default {
         //  (this.nodesArray[0].id = res.data.neoId),
         //    (this.nodesArray[0].label = res.data.name),
         //    (this.nodesArray[0].color = { background: "yellow" });
+        this.nodesArray = [];
         this.nodesArray.push({
           id: res.data.neoId,
           label: res.data.name,
@@ -167,6 +169,7 @@ export default {
             color: "pink",
           });
         }
+        this.edgesArray = [];
         //给edgesArray数组赋值
         for (let i = 0; i < res.data.propObjList.length; i++) {
           //  (this.edgesArray[i].from = res.data.neoId),

@@ -55,7 +55,7 @@
  
 
 
-<br><br><br>
+<br><br><br><br><br><br><br>
 <div class="top-content">
     <h5>构建本体</h5>
   </div>
@@ -193,13 +193,13 @@ export default {
                   console.log(`每页 ${val} 条`);
                  this.currentPage1 = 1;
                   this.pageSize1 = val;
-                  this.load1()
+                  
                 },
                 //当前页改变时触发 跳转其他页
                 handleCurrentChange1(val) {
                   console.log(`当前页: ${val}`);
                   this.currentPage1 = val;
-                   this.load1()
+                  
                 },
 
                 handleSelectionChange(val) {

@@ -1,6 +1,6 @@
 <template>
   <el-container class="layout-container-demo">
-    <el-aside width="250px">
+    <el-aside width="auto">
       <SideBar />
     </el-aside>
 
@@ -16,30 +16,30 @@
 </template>
 
 <script setup>
-import AppMain from './AppMain.vue';
-import NavBar from './NavBar.vue';
-import SideBar from './SideBar.vue';
+import AppMain from "./AppMain.vue";
+import NavBar from "./NavBar.vue";
+import SideBar from "./SideBar.vue";
 </script>
 
 <style lang="less" scoped>
-@el-margin: 3%;
-
 .el-header {
   padding: 0;
   width: 100%;
-  background-color: #545c64;
+  margin-bottom: 30px;
+  margin-left: 1px;
 }
-
-.el-side,
-.el-main,
-.el-container {
-  padding: 0;
-  height: 100%;
-  width: 100%;
+.el-aside {
+  transition: width 0.25s;
+  -webkit-transition: width 0.25s;
+  -moz-transition: width 0.25s;
+  -webkit-transition: width 0.25s;
+  -o-transition: width 0.25s;
+  overflow: visible;
 }
-
 .el-main {
-  margin: @el-margin 0 0 @el-margin;
+  height: 100px;
+  margin: 30px 0 0 30px;
   background-color: #fff;
+  box-shadow: 0px -2px 5px 3px #c1c1c1;
 }
 </style>

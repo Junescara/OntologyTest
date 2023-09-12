@@ -65,6 +65,19 @@
           </el-descriptions>
         </el-card>
       </el-col>
+
+      <!-- 抢险方案卡片 -->
+      <el-col :span="8">
+        <el-card class="box-card" style="width: 100%">
+          <el-descriptions column="1" title="抢险方案查询">
+            <template slot="extra">
+              <el-button type="primary" size="small" @click="toRescuePlan">查看详情</el-button>
+            </template>
+            <el-descriptions-item label="所属分类">工程险情</el-descriptions-item>
+            <el-descriptions-item label="用途">用于根据要素查询对应水利工程险情应急预案</el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
     </el-row>
 
   </div>
@@ -91,6 +104,9 @@ export default {
     },
     toContingencyPlan() {
       this.$router.push('ContingencyPlan')
+    },
+    toRescuePlan() {
+      this.$router.push('RescuePlan')
     },
   }
 }

@@ -161,6 +161,13 @@ export const constantRouterMap = [
         meta: { title: '应急预案查询', icon: 'table' },
         hidden: true
       },
+      {
+        path: 'RescuePlan',
+        name: 'RescuePlan',
+        component: () => import('@/views/neo4j/kg/components/KGRescuePlan'),
+        meta: { title: '抢险方案查询', icon: 'table' },
+        hidden: true
+      },
       // {
       //   path: 'relation',
       //   name: '河流节点关系',

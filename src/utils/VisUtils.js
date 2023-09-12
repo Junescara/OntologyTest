@@ -456,7 +456,7 @@ export default {
     let map = new Map(Object.entries(node.node))
 
     for(let type in node.nodeType){
-      if (node.nodeType[type] !== "椒江流域知识图谱" && node.nodeType[type] !== "A387BE524D344370A13F1DFF76C40493"){
+      if (node.nodeType[type] !== "椒江流域知识图谱" && node.nodeType[type] !== "A387BE524D344370A13F1DFF76C40493" && node.nodeType[type] !== "5084A06CAF2C4AF097DC8B2D9A75F406"){
 
         if(node.nodeType[type] === "行政区划"){
           name = node.nodeType[type]+"名称"+"（带乡镇）";

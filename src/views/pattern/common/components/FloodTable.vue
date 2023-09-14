@@ -1,12 +1,12 @@
 <template>
   <div class="flood-table-main">
     <div class="flood-table-up">
-      <el-select v-model="selectBasin" clearable placeholder="选择流域数据">
+      <el-select v-model="selectBasin" clearable placeholder="选择流域数据" @change="changeBasin">
         <el-option
           v-for="item in basinName"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
+          :key="item.basinId"
+          :label="item.basinName"
+          :value="item.basinId">
         </el-option>
       </el-select>
     </div>
@@ -18,13 +18,10 @@
         highlight-current-row
       >
         <el-table-column prop="floodId" label="洪水场次" width="80"></el-table-column>
-        <el-table-column prop="floodStartTime" label="起涨时间" width="110" :formatter="tableTimeFormatter"></el-table-column>
-        <el-table-column prop="floodEndTime" label="退水时间" width="110" :formatter="tableTimeFormatter"></el-table-column>
-        <el-table-column prop="peakPattern" label="洪峰型态"></el-table-column>
-        <el-table-column prop="floodDurationTime" label="持续时间"></el-table-column>
-        <el-table-column prop="peakFlow" label="洪峰流量"></el-table-column>
-        <el-table-column prop="peakStage" label="洪峰水位"></el-table-column>
-        <el-table-column prop="totalFloodVolume" label="洪水总量" width="110"></el-table-column>
+        <el-table-column prop="floodStartTime" label="起涨时间" width="150" :formatter="tableTimeFormatter"></el-table-column>
+        <el-table-column prop="floodEndTime" label="退水时间" width="150" :formatter="tableTimeFormatter"></el-table-column>
+        <el-table-column prop="flowStationName" label="流量站"></el-table-column>
+        <el-table-column prop="rainStationName" label="雨量站"></el-table-column>
         <el-table-column fixed="right" label="操作" width="170">
           <template slot-scope="scope">
             <el-button
@@ -44,7 +41,7 @@
       </el-table>
 
       <!--   分页器-->
-      <el-pagination small background layout="total,prev,pager,next" :total=31 :current-page.sync="currentPage" :page-size.sync="pageSize"
+      <el-pagination small background layout="total,prev,pager,next" :total="totalFloodNum" :current-page.sync="currentPage" :page-size.sync="pageSize"
                      @current-change="changePage"
       ></el-pagination>
       <!--   模态框-->
@@ -98,10 +95,12 @@
 <script>
 
 import {mapState,mapMutations} from 'vuex'
-import {DateFormation2} from "../../../../api/pattern/timeUtil";
-import {postRequest, postRequestJson} from "../../../../api/pattern/api";
+import { DateFormation, DateFormation2 } from '../../../../api/pattern/timeUtil'
+import { postRequest, postRequestJson, getRequest } from '../../../../api/pattern/api'
 import {Message} from "element-ui";
 import MatchModel from "./MatchModel";
+import { MyLog } from '../../../../utils/LogUtils'
+import { getAllBasins, getAllFloods, getFloodNum } from '../../../../api/pattern/floodTable'
 
 
 export default {
@@ -114,14 +113,11 @@ export default {
   data(){
     return{
       tableData:[{
-        "flood_id":1,
-        "flood_start_time":"2020-01-22 08:00:00",
-        "flood_end_time":"2020-02-03 15:00:00",
-        "peak_pattern":"双峰",
-        "flood_duration_time":"295H",
-        "peak_flow":"515",
-        "peak_stage":"122.59",
-        "total_flood_volume":"46160.34",
+        "floodId":1,
+        "floodStartTime":"2020-01-22 08:00:00",
+        "floodEndTime":"2020-02-03 15:00:00",
+        "flowStationName":"屯溪",
+        "rainStationName":"屯溪",
       }],
       currentPage:1,
       pageSize:5,
@@ -136,17 +132,8 @@ export default {
       matchInnerDialogVisible:false,
       Features:[{'name':'降雨量序列','value':1},{'name':'降雨趋势','value':1},{'name':'面降雨总量','value':1},{'name':'MaxIndex','value':1}
         ,{'name':'降雨量级','value':1},{'name':'格点最大小时雨量','value':1},{'name':'最大格点累计雨量','value':1},{'name':'蓄水流量','value':1}],
-      basinName:[{
-        value:"1",
-        label:"屯溪"
-      },{
-        value:"2",
-        label:"椒江"
-      },{
-        value:"3",
-        label:"湟水河"
-      }],
-      selectBasin:"",
+      basinName:[],
+      selectBasin: null,
       detailVisible:false,//详情dialog是否可见
       detailDialogMsg:{//详情dialog中的内容
         basin:"屯溪",
@@ -155,30 +142,33 @@ export default {
         floodEndTime:"2020-02-03 15:00:00",
         peakPattern:"双峰",
         floodDuration:"295h",
-      }
+      },
+      uploadDialogVisible:false,
+      fileList:[],//用来存放上传的文件
+      totalFloodNum:0,
     }
   },
   methods:{
     ...mapMutations(['changeSelectedFlood','changeMatchID','getMatchID', 'changeMatchedSim3', 'changeMatchedPre']),
     matchFlood(index,row){
-      console.log(index,row)//当前列表第几个，一行的proxy数据
+      // console.log(index,row)//当前列表第几个，一行的proxy数据
       let matchId = row.floodId
       // this.clickMatch(matchId)
       this.currentSelect = matchId
 
       this.matchDialogVisible = true
-      console.log("现在是",this.matchDialogVisible)
+      // console.log("现在是",this.matchDialogVisible)
       this.changeMatchID(this.currentSelect)
       // console.log("currentSelect",this.currentSelect)
     },
     //页面改变，重新请求。
     changePage(page){
       let _this = this
-      postRequest("/flood",{
+      getAllFloods({
         "page":page,
-        "size":_this.pageSize
+        "size":_this.pageSize,
+        "basinId":_this.selectBasin
       }).then((res)=>{
-        console.log(res.data)
         _this.tableData = res.data.data.records
         _this.currentPage = res.data.data.current
       }).catch((err)=>{
@@ -190,7 +180,7 @@ export default {
     },
     //时间格式化
     tableTimeFormatter(row,column,cellValue,index){
-      let formatTime = DateFormation2(cellValue)
+      let formatTime = DateFormation(cellValue)
       // return toRaw(data).floodStartTime
       return formatTime
     },
@@ -277,7 +267,8 @@ export default {
         let v = this.Features[i].value
         weights.push(v)
       }
-      console.log(weights)
+      weights = weights.toString()
+
       this.start()
       let matchID = this.currentSelect;
       console.log(matchID)
@@ -320,22 +311,59 @@ export default {
       this.detailDialogMsg.floodEndTime = row.floodEndTime
       this.detailDialogMsg.peakPattern = row.peakPattern
       this.detailDialogMsg.floodDuration = row.floodDurationTime
+    },
+    changeBasin(value){
+      console.log(value)
+      let params = {
+        "page":1,
+        "size":5,
+        "basinId":value}
+      //切换流域，更新当前流域下的所有场次
+      getAllFloods(params)
+        .then((res)=>{
+          this.tableData = res.data.data.records
+        }).catch((err)=>{
+        Message({
+          message:err,
+          type:'error'
+        })
+      })
+      //切换流域，同时更新场次总数，用于分页
+      getFloodNum({
+        "basinId":this.selectBasin
+      }).then((res)=>{
+        console.log("count",res.data.data)
+        this.totalFloodNum = res.data.data
+      })
     }
+
 
   },
   mounted() {
-    postRequest("/flood",{//这里采用的是params传参
+    getAllFloods({//这里采用的是params传参
       "page":1,
-      "size":this.pageSize
+      "size":5,
+      "basinId": null
     }).then((res)=>{
-      // console.log(res.data.data.records)
-
+      console.log("res.data",res.data)
       this.tableData = res.data.data.records
     }).catch((err)=>{
       Message({
         message:err,
         type:'error'
       })
+    })
+
+    getAllBasins()
+      .then((res)=>{
+        let datas = res.data.data
+        this.basinName = datas
+      })
+
+    getFloodNum({
+      "basinId": null
+    }).then((res)=>{
+      this.totalFloodNum = res.data.data
     })
   },
   watch: {
@@ -367,5 +395,6 @@ export default {
   flex-direction: row;
   /*靠右显示*/
   /*justify-content: flex-end;*/
+  justify-content: space-between;
 }
 </style>

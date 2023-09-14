@@ -113,15 +113,14 @@ export default {
       let _this = this;
       //得到当前权重
       let weights = []
+      console.log("Features",Features)
       for (let i = 0; i < Features.length; i++) {
         let v = Features[i].value.value
         weights.push(v)
-
       }
       // console.log(weights)
       this.start()
       let matchID = this.getMatchID();
-      console.log(matchID)
       //请求后端拿到匹配的结果
       postRequestJson("/match", JSON.stringify({"id": matchID, "weights": weights}))
         .then((res) => {

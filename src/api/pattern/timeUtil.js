@@ -4,6 +4,8 @@
  * @description：时间格式化工具
  */
 
+import da from 'element-ui/src/locale/lang/da'
+
 /**
  * 返回yyyy-MM-dd hh:mm:ss格式
  * @param data
@@ -14,11 +16,11 @@ export const DateFormation = function (data) {
     let date = new Date(data);
     let year = date.getFullYear();
     let month = date.getMonth()<9?"0"+(date.getMonth()+1):""+(date.getMonth()+1);
-    let day = date.getDay()<10?"0"+date.getDay():""+date.getDay();
+    let day = date.getDate()<10?"0"+date.getDate():""+date.getDate();
 
     let hour = date.getHours()<10?"0"+date.getHours():""+date.getHours();
 
-    return year+"-"+month+"-"+day+" "+hour+":00:00";
+    return year+"-"+month+"-"+day+" "+hour+":00";
 }
 /**
  * 返回yyyy-MM-dd格式

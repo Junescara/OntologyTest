@@ -18,3 +18,8 @@ export function getAllBasins(){
 export function getFloodNum(params){
   return getRequest('/flood/num',params)
 }
+
+//获得当前id下的详细信息
+export function getFloodDetails(params){
+  return getRequest('/flood/detail',params)
+}

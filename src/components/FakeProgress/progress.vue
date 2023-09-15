@@ -1,13 +1,13 @@
 <template>
   <!--进度条,应该嵌在模态框中-->
-  <el-dialog :visible.sync="isVisible" title="历史模式库匹配" append-to-body destroy-on-close @closed="matchDialogVisible = false">
+  <el-dialog :visible.sync="isVisible" title="历史模式库匹配">
     <el-progress :percentage="percentage" :show-text="false" :key="reRenderNum"></el-progress>
   </el-dialog>
 </template>
 
 <script>
 export default {
-  name: 'load-progress',
+  name: 'loadProgress',
   props:['isVisible'],
   data(){
     return{
@@ -85,14 +85,24 @@ export default {
       this.progress(1)
       // console.log("status.value",status)
       //关闭窗口
-      this.innerModelFinish()
+
+      this.$emit('matchDialogCancel')
+      console.log("done")
     },
   },
   watch:{
-      isVisible(newVal){
+      isVisible(newVal){//监听传入的参数，显示/隐藏进度条
         if (newVal == true){
+          console.log("isVisible")
+          // this.status = 0
           this.start()
+        }else{
+          this.done()
         }
+      },
+      status(newValue,oldValue){
+        // console.log(newValue)
+        this.percentage = newValue * 100
       }
   }
 }

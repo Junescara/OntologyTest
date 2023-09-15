@@ -1,7 +1,7 @@
 <template>
   <div class="flood-table-main">
     <div class="flood-table-up">
-      <el-select v-model="selectBasin" clearable placeholder="选择流域数据" @change="changeBasin">
+      <el-select v-model="selectBasin" clearable placeholder="选择流域数据" @change="changeBasin" style="height: 100%">
         <el-option
           v-for="item in basinName"
           :key="item.basinId"
@@ -9,21 +9,31 @@
           :value="item.basinId">
         </el-option>
       </el-select>
+      <div class="flood-table-up-show">
+        <div>当前展示场次ID</div>
+        <el-tag style="margin-left: 5px ">{{currentDisplayId}}</el-tag>
+      </div>
     </div>
     <div class="flood-table-below">
       <el-table
         :data="tableData"
-        style="width: 100%"
+        style="width: 100%;height: 90%"
         @row-dblclick="dbClick2ChangeTableData"
-        highlight-current-row
+        ref="myTable"
       >
         <el-table-column prop="floodId" label="洪水场次" width="80"></el-table-column>
         <el-table-column prop="floodStartTime" label="起涨时间" width="150" :formatter="tableTimeFormatter"></el-table-column>
         <el-table-column prop="floodEndTime" label="退水时间" width="150" :formatter="tableTimeFormatter"></el-table-column>
         <el-table-column prop="flowStationName" label="流量站"></el-table-column>
         <el-table-column prop="rainStationName" label="雨量站"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="170">
+        <el-table-column fixed="right" label="操作" width="220">
           <template slot-scope="scope">
+            <el-button
+              @click="showFlood(scope.$index,scope.row)"
+              type="success"
+              size="small">
+              展示
+            </el-button>
             <el-button
               @click="matchFlood(scope.$index,scope.row)"
               type="danger"
@@ -45,7 +55,6 @@
                      @current-change="changePage"
       ></el-pagination>
       <!--   模态框-->
-      <!--   <match-dialog v-model:match-dialog-visible="matchDialogVisible" @close="close"></match-dialog>-->
       <el-dialog class="match-dialog" :visible.sync = 'matchDialogVisible' title="特征选取"  width="40%"
                  @close="matchDialogCancel">
         <template #default>
@@ -56,38 +65,15 @@
           </div>
 
           <!--进度条,应该嵌在模态框中-->
-          <el-dialog :visible.sync="matchInnerDialogVisible" title="历史模式库匹配" append-to-body destroy-on-close @closed="matchDialogVisible = false">
-            <el-progress :percentage="percentage" :show-text="false" :key="reRenderNum"></el-progress>
-          </el-dialog>
+          <load-progress :is-visible='progressVisible' @matchDialogCancel="matchDialogCancel"/>
         </template>
         <template #footer>
           <el-button @click="matchDialogCancel">取消</el-button>
-          <el-button @click="innerDialogVisibleControl(matchInnerDialogVisible = true)" type="primary">匹配</el-button>
+          <el-button @click="innerDialogVisibleControl" type="primary">匹配</el-button>
         </template>
       </el-dialog>
         <!--详细信息模态框-->
-      <el-dialog :visible.sync="detailVisible" title="场次详情信息">
-        <el-descriptions :column="3" size="mini" border>
-          <el-descriptions-item label="所属流域">
-            <el-tag size="small">{{detailDialogMsg.basin}}</el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="场次编号">
-            {{detailDialogMsg.floodId}}
-          </el-descriptions-item>
-          <el-descriptions-item label="起涨时间">
-            {{detailDialogMsg.floodStartTime}}
-          </el-descriptions-item>
-          <el-descriptions-item label="洪峰形态">
-            {{detailDialogMsg.peakPattern}}
-          </el-descriptions-item>
-          <el-descriptions-item label="持续时间">
-            {{detailDialogMsg.floodDuration}}
-          </el-descriptions-item>
-          <el-descriptions-item label="退水时间">
-            {{detailDialogMsg.floodEndTime}}
-          </el-descriptions-item>
-        </el-descriptions>
-      </el-dialog>
+        <flood-details-model :detail-visible="detailVisible" :flood-details="detailDialogMsg" @closeDetailModel="closeDetailModel"></flood-details-model>
     </div>
   </div>
 </template>
@@ -100,12 +86,14 @@ import { postRequest, postRequestJson, getRequest } from '../../../../api/patter
 import {Message} from "element-ui";
 import MatchModel from "./MatchModel";
 import { MyLog } from '../../../../utils/LogUtils'
-import { getAllBasins, getAllFloods, getFloodNum } from '../../../../api/pattern/floodTable'
-
+import { getAllBasins, getAllFloods, getFloodDetails, getFloodNum } from '../../../../api/pattern/floodTable'
+import loadProgress from "../../../../components/FakeProgress/progress"
+import { flaskGet } from '../../../../api/pattern/flaskApi'
+import floodDetailsModel from './FloodDetailsModel'
 
 export default {
   name: "floodTable",
-  components: {MatchModel},
+  components: {loadProgress,floodDetailsModel},
   // components: {MatchDialogWithSlider, MatchDialog},
   setup(){
     // let matchDialogVisible = ref(false);
@@ -124,28 +112,17 @@ export default {
       currentSelect:1,
       currentMatchedShouldHighLight:[2,7,10],
       matchDialogVisible:false,
-      status:0,
-      resetStatus:true,
-      reRenderNum:1,
-      percentage:0,
-      speed:500,
-      matchInnerDialogVisible:false,
-      Features:[{'name':'降雨量序列','value':1},{'name':'降雨趋势','value':1},{'name':'面降雨总量','value':1},{'name':'MaxIndex','value':1}
-        ,{'name':'降雨量级','value':1},{'name':'格点最大小时雨量','value':1},{'name':'最大格点累计雨量','value':1},{'name':'蓄水流量','value':1}],
+      Features:[{'name':'降雨量序列','value':1},{'name':'降雨趋势','value':1},{'name':'面降雨总量','value':1},{'name':'最大降雨下标','value':1}
+        ,{'name':'降雨量级','value':1},{'name':'最大雨量','value':1},{'name':'格点最大小时雨量','value':1},{'name':'流量序列','value':1},{'name':'峰值流量','value':1},
+        {'name':'总流量值','value':1}],
       basinName:[],
       selectBasin: null,
       detailVisible:false,//详情dialog是否可见
       detailDialogMsg:{//详情dialog中的内容
-        basin:"屯溪",
-        floodId:1,
-        floodStartTime:"2020-01-22 08:00:00",
-        floodEndTime:"2020-02-03 15:00:00",
-        peakPattern:"双峰",
-        floodDuration:"295h",
       },
       uploadDialogVisible:false,
-      fileList:[],//用来存放上传的文件
       totalFloodNum:0,
+      progressVisible:false,
     }
   },
   methods:{
@@ -191,74 +168,7 @@ export default {
       //利用vuex进行兄弟组件的通信
       this.changeSelectedFlood(floodID);
     },
-    close(){
-      this.matchDialogVisible = false
-    },
-    start() {
-      console.log("start", this.status)
-      if (this.resetStatus) {
-        this.status = 0
-        this.resetStatus = false
-        this.reRenderNum++
-        this.progress(0)
-      }
-
-      this.work()
-    },
-
-    mockIncrease(amount) {
-      let n = this.status
-      if (!n) {
-        this.start()
-      } else if (n > 1) {
-        return
-      } else {
-        if (typeof amount !== 'number') {
-          if (n >= 0 && n < 0.2) {
-            amount = 0.03
-          } else if (n >= 0.2 && n < 0.5) {
-            amount = 0.1
-          } else if (n >= 0.5 && n < 0.8) {
-            amount = 0.07
-          } else if (n >= 0.8 && n < 0.99) {
-            amount = 0.01
-          } else {
-            amount = 0
-          }
-        }
-      }
-      n = this.clamp(n + amount, 0, 0.994)
-      this.progress(n)
-    },
-    work() {
-      let _this = this
-      setTimeout(function () {
-        if (_this.resetStatus) return
-        _this.mockIncrease()
-        _this.work()
-        // console.log("当前进度：",status)
-      }, _this.speed)
-    },
-    clamp(n, min, max) {
-      if (n < min) return min
-      if (n > max) return max
-      return n
-    },
-    progress(n) {
-      this.status = this.clamp(n, 0.02, 1)
-      if (this.status == 1) {
-        this.resetStatus = true
-        //结束
-      }
-      //继续
-    },
-    done() {
-      this.mockIncrease(0.02 + 0.01 * Math.random())
-      this.progress(1)
-      // console.log("status.value",status)
-      //关闭窗口
-      this.innerModelFinish()
-    },
+    //
     innerDialogVisibleControl() {
       let _this = this;
       //得到当前权重
@@ -268,52 +178,61 @@ export default {
         weights.push(v)
       }
       weights = weights.toString()
-
-      this.start()
+      // this.start()
+      this.progressVisible = true
       let matchID = this.currentSelect;
       console.log(matchID)
       //请求后端拿到匹配的结果
-      postRequestJson("/match", JSON.stringify({"id": matchID, "weights": weights}))
+      flaskGet("/mdtw/match", {"flood_id": matchID, "weights": weights})
         .then((res) => {
           console.log(res.data.data)
-          let sim3 = res.data.data.sim3
-          let pre = res.data.data.pre
+          // let sim3 = res.data.data.sim3
+          // let pre = res.data.data.pre
 
           //用匹配到的数据，改变pinia中的sim3和pre数据
-          _this.changeMatchedSim3(sim3)
-          _this.changeMatchedPre(pre)
+          // _this.changeMatchedSim3(sim3)
+          // _this.changeMatchedPre(pre)
           console.log("匹配到sim3和pre")
           //结束进度条
-          _this.done()
+          _this.progressVisible = false
+          //成功弹窗
+          Message({
+            message: '匹配完成',
+            type: 'success'
+          })
+          _this.matchFinish()
         })
         .catch((err) => {
-          _this.done()
+          _this.progressVisible = false
           console.log("出错了", err)
         })
-
     },
+    //emit关闭窗口
     matchDialogCancel() {
-      this.matchInnerDialogVisible = false
-      this.$emit('close')
-      // console.log("有发射啊")
+      this.matchDialogVisible = false
     },
-    innerModelFinish() {
-      Message({
-        message: '匹配完成',
-        type: 'success'
-      })
-    },
+    //查询场次详情信息
     showFloodMsg(index,row){
-      // console.log(index,row)
-      this.detailVisible = true
-      this.detailDialogMsg.floodId = row.floodId
-      this.detailDialogMsg.floodStartTime = row.floodStartTime
-      this.detailDialogMsg.floodEndTime = row.floodEndTime
-      this.detailDialogMsg.peakPattern = row.peakPattern
-      this.detailDialogMsg.floodDuration = row.floodDurationTime
+      let _this = this
+      console.log("showFloodMsg")
+      let params = {
+        "floodId":row.floodId
+      }
+      getFloodDetails(params)
+        .then((res)=>{
+          // console.log("floodDetail",res.data.data)
+          let data = res.data.data
+          data.startTime = _this.tableTimeFormatter(0,0,data.startTime)
+          data.endTime = _this.tableTimeFormatter(0,0,data.endTime)
+          data.peakFloodTime = _this.tableTimeFormatter(0,0,data.peakFloodTime)
+          _this.detailDialogMsg = data
+          _this.detailVisible = true
+        })
+        .catch((err)=>{
+          Message(err.toString())
+        })
     },
     changeBasin(value){
-      console.log(value)
       let params = {
         "page":1,
         "size":5,
@@ -332,14 +251,21 @@ export default {
       getFloodNum({
         "basinId":this.selectBasin
       }).then((res)=>{
-        console.log("count",res.data.data)
+        // console.log("count",res.data.data)
         this.totalFloodNum = res.data.data
       })
+    },
+    showFlood(index,row){
+      console.log(index,row)
+      this.changeSelectedFlood(row.floodId)
+    },
+    closeDetailModel(){
+      this.detailVisible = false
     }
-
 
   },
   mounted() {
+    let _this = this
     getAllFloods({//这里采用的是params传参
       "page":1,
       "size":5,
@@ -366,14 +292,11 @@ export default {
       this.totalFloodNum = res.data.data
     })
   },
-  watch: {
-    status(newValue,oldValue){
-      console.log(newValue)
-      this.percentage = newValue * 100
+  computed:{
+    currentDisplayId(){
+      return this.$store.state.pattern.selectedFlood
     }
   }
-
-
 }
 </script>
 
@@ -396,5 +319,11 @@ export default {
   /*靠右显示*/
   /*justify-content: flex-end;*/
   justify-content: space-between;
+}
+.flood-table-up-show{
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
 }
 </style>

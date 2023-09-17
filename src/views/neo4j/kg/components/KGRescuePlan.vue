@@ -58,7 +58,7 @@
           <!--以上为工程险情名称的输入框-->
 
           <!--以下标签用于显示查询出来的节点名称-->
-          <el-col :span="3">
+          <el-col :span="10">
             <div class="tag-group infinite-list-wrapper" v-if="number === 0"  style="overflow: auto;height:auto; margin-top: auto; padding-left: auto" >
               <span class="tag-group__title"></span>
               <el-tag
@@ -87,11 +87,12 @@
     </div>
 
     <div style="display: flex" >
-      <el-card class="box-card" style = "width: 400px">
+    
+      <el-card class="box-card" style = "width: 200px " >
         <div slot="header" class="clearfix">
           <span>抢险方案文本</span>
         </div>
-
+       
         <el-descriptions v-for="(item,index) in this.rescuePlan.plans" class="margin-top" title="抢险方案对象" :key="index" :column="1" border  style= "margin-top: 15px">
           <el-descriptions-item label="对象名称">对象类型</el-descriptions-item>
           <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
@@ -99,13 +100,19 @@
           </el-descriptions-item>
         </el-descriptions>
 
+        
+
       </el-card>
+
+      
+
+  
 
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
           <span>抢险方案图</span>
 
-          <el-button style="float: right; padding: 3px 0; margin-right: 10px" @click="handleKGSize(1)" type="text">查看大图</el-button>
+          <el-button style="float: right; padding: 3px 0; margin-right: 0px" @click="handleKGSize(1)" type="text">查看大图</el-button>
           <br>
         </div>
 
@@ -127,13 +134,35 @@
         <el-descriptions v-for="(item,index) in nodeByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
           <el-descriptions-item label="属性名">属性值</el-descriptions-item>
           <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
-            {{proVals}}
+        
+            <div v-if="proNames=='图片1' && proVals!='无' ">
+              <img :src="require('@/assets/rescue-images/1.jpg')" alt="" width="300px" />
+            </div>
+            <div v-else-if="proNames=='图片2'&& proVals!= '无' ">
+              <img :src="require('@/assets/rescue-images/2.jpg')" alt="" width="300px" />
+            </div>
+            <div v-else-if="proNames=='图片3'&& proVals!= '无'">
+              <img :src="require('@/assets/rescue-images/3.jpg')" alt="" width="300px" />
+            </div>
+            <div v-else-if="proNames=='图片4'&& proVals!= '无'">
+              <img :src="require('@/assets/rescue-images/4(a).jpg')" alt="" width="300px" />
+            </div>
+            <div v-else-if="proNames=='图片5'&& proVals!= '无'">
+              <img :src="require('@/assets/rescue-images/5(b).jpg')" alt="" width="300px" />     
+            </div>
+            <div v-else>
+              {{proVals}}
+            </div>
+            
+           
           </el-descriptions-item>
         </el-descriptions>
+        
 
       </el-card>
 
     </div>
+
 
     <el-dialog
       title="查看大图"
@@ -158,7 +187,6 @@
 
 import aggregateApi from '@/api/neo4j/aggregate';
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
-
 import rescuePlanApi from "../../../../api/neo4j/rescuePlanApi";
 
 import KGVisiableRescuePlanNetwork from "./KGVisiableRescuePlanNetwork";
@@ -187,7 +215,8 @@ export default {
   },
   data() {
     return {
-
+      //图例显示
+      imgUrl:"",
       //记录所有知识图谱的名称
       kgNameList: [],
       //记录所有知识图谱的id和名称
@@ -412,7 +441,7 @@ export default {
       rescuePlanApi.getNodesByName(this.currentType, this.key.nodeKey, this.currentId )
         .then(({data}) => {
           let list = data.data.nodeList;
-
+          
           this.nodeNames = []
           this.nodeIdNames = []
 
@@ -447,6 +476,7 @@ export default {
       rescuePlanApi.getNodesByName(this.currentType, name, this.currentId)
         .then(({data}) => {
 
+       
           this.nodeByName = []
           this.nodeByName.push(data.data.nodeList[0].node);
 
@@ -565,7 +595,7 @@ export default {
 }
 
 .box-card-2 {
-  width: 750px;
+  width: 650px;
   height: 550px;
   margin-top: 20px;
   margin-left: 20px;

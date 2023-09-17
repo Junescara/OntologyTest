@@ -19,7 +19,7 @@
           <el-col :span="3">
           <div>
             <el-select clearable @clear="clear" @change="chooseKnowledegGraph" v-model="currentDbName" placeholder="请选择知识图谱"
-                       style= "margin-top: 15px">
+                       style= "margin-top: auto">
               <el-option
                 v-for="(item,index) in kgNameList"
                 :key=index
@@ -35,7 +35,7 @@
           <el-col :span="3">
             <div>
               <el-select clearable @clear="clear" @change="chooseEntity" v-model="currentType" placeholder="请选择类型"
-                         style= "margin-top: 15px">
+                         style= "margin-top: auto">
                 <el-option
                   v-for="(item,index) in nodeLabelList"
                   :key=index
@@ -49,7 +49,7 @@
 
           <!--以下为工程险情名称的输入框-->
           <el-col :span="3">
-            <div style="margin-top: 15px;">
+            <div style="margin-top: auto;">
               <el-input placeholder="请搜索名称" class="input-with-select" v-model="key.nodeKey">
                 <el-button slot="append" icon="el-icon-search" @click="getNodeContainsName"/>
               </el-input>
@@ -59,7 +59,7 @@
 
           <!--以下标签用于显示查询出来的节点名称-->
           <el-col :span="3">
-            <div class="tag-group infinite-list-wrapper" v-if="number === 0"  style="overflow: auto;height: calc(11vh - 72px); margin-top: 15px; padding-left: 10px" >
+            <div class="tag-group infinite-list-wrapper" v-if="number === 0"  style="overflow: auto;height:auto; margin-top: auto; padding-left: auto" >
               <span class="tag-group__title"></span>
               <el-tag
                 v-for="(item,index) in nodeNames"

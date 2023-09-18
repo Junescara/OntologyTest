@@ -9,7 +9,6 @@
   <div>
     <div>
       <el-card>
-
         <div slot="header" class="clearfix">
           <span>水利工程抢险方案查询</span>
         </div>
@@ -17,30 +16,42 @@
         <!--以下为知识图谱选择的下拉菜单-->
         <el-row>
           <el-col :span="3">
-          <div>
-            <el-select clearable @clear="clear" @change="chooseKnowledegGraph" v-model="currentDbName" placeholder="请选择知识图谱"
-                       style= "margin-top: auto">
-              <el-option
-                v-for="(item,index) in kgNameList"
-                :key=index
-                :label=item
-                :value=item
-              />
-            </el-select>
-          </div>
+            <div>
+              <el-select
+                clearable
+                @clear="clear"
+                @change="chooseKnowledegGraph"
+                v-model="currentDbName"
+                placeholder="请选择知识图谱"
+                style="margin-top: auto"
+              >
+                <el-option
+                  v-for="(item, index) in kgNameList"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </div>
           </el-col>
           <!--以上为知识图谱选择的下拉菜单-->
 
           <!--以下为抢险类型的下拉菜单-->
           <el-col :span="3">
             <div>
-              <el-select clearable @clear="clear" @change="chooseEntity" v-model="currentType" placeholder="请选择类型"
-                         style= "margin-top: auto">
+              <el-select
+                clearable
+                @clear="clear"
+                @change="chooseEntity"
+                v-model="currentType"
+                placeholder="请选择类型"
+                style="margin-top: auto"
+              >
                 <el-option
-                  v-for="(item,index) in nodeLabelList"
-                  :key=index
-                  :label=item
-                  :value=item
+                  v-for="(item, index) in nodeLabelList"
+                  :key="index"
+                  :label="item"
+                  :value="item"
                 />
               </el-select>
             </div>
@@ -50,8 +61,16 @@
           <!--以下为工程险情名称的输入框-->
           <el-col :span="3">
             <div style="margin-top: auto;">
-              <el-input placeholder="请搜索名称" class="input-with-select" v-model="key.nodeKey">
-                <el-button slot="append" icon="el-icon-search" @click="getNodeContainsName"/>
+              <el-input
+                placeholder="请搜索名称"
+                class="input-with-select"
+                v-model="key.nodeKey"
+              >
+                <el-button
+                  slot="append"
+                  icon="el-icon-search"
+                  @click="getNodeContainsName"
+                />
               </el-input>
             </div>
           </el-col>
@@ -59,14 +78,19 @@
 
           <!--以下标签用于显示查询出来的节点名称-->
           <el-col :span="10">
-            <div class="tag-group infinite-list-wrapper" v-if="number === 0"  style="overflow: auto;height:auto; margin-top: auto; padding-left: auto" >
+            <div
+              class="tag-group infinite-list-wrapper"
+              v-if="number === 0"
+              style="overflow: auto;height:auto; margin-top: auto; padding-left: auto"
+            >
               <span class="tag-group__title"></span>
               <el-tag
-                v-for="(item,index) in nodeNames"
-                :key=index
-                type=''
+                v-for="(item, index) in nodeNames"
+                :key="index"
+                type=""
                 effect="plain"
-                @click="getNodeByName(item)">
+                @click="getNodeByName(item)"
+              >
                 {{ item }}
               </el-tag>
             </div>
@@ -76,47 +100,64 @@
           <!--以下为抢险方案查询的按钮-->
           <el-col :span="3">
             <div style="margin-top: 15px; padding-left: 15px">
-              <el-button type="primary" @click="getContingencyPlan">查 询</el-button>
+              <el-button type="primary" @click="getContingencyPlan"
+                >查 询</el-button
+              >
             </div>
           </el-col>
           <!--以上为抢险方案查询的按钮-->
-
         </el-row>
-
       </el-card>
     </div>
 
-    <div style="display: flex" >
-    
-      <el-card class="box-card" style = "width: 200px " >
+    <div style="display: flex">
+      <el-card class="box-card" style="width: 200px ">
         <div slot="header" class="clearfix">
           <span>抢险方案文本</span>
         </div>
-       
-        <el-descriptions v-for="(item,index) in this.rescuePlan.plans" class="margin-top" title="抢险方案对象" :key="index" :column="1" border  style= "margin-top: 15px">
+
+        <el-descriptions
+          v-for="(item, index) in this.rescuePlan.plans"
+          class="margin-top"
+          title="抢险方案对象"
+          :key="index"
+          :column="1"
+          border
+          style="margin-top: 15px"
+        >
           <el-descriptions-item label="对象名称">对象类型</el-descriptions-item>
-          <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
-            {{proVals}}
+          <el-descriptions-item
+            v-for="(proVals, proNames) in item"
+            :label="proNames"
+            :key="proNames"
+          >
+            {{ proVals }}
           </el-descriptions-item>
         </el-descriptions>
-
-        
-
       </el-card>
-
-      
-
-  
 
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
           <span>抢险方案图</span>
 
-          <el-button style="float: right; padding: 3px 0; margin-right: 0px" @click="handleKGSize(1)" type="text">查看大图</el-button>
-          <br>
+          <el-button
+            style="float: right; padding: 3px 0; margin-right: 0px"
+            @click="handleKGSize(1)"
+            type="text"
+            >查看大图</el-button
+          >
+          <br />
         </div>
 
-        <KGVisiableRescuePlanNetwork :draw-flag="this.rescuePlan.drawFlag" :current-id="this.currentId" :current-name="this.rescuePlan.currentName" :current-node="this.nodeByName" :visible-settings="this.visibleSettings" :current-type="this.currentType" @legend="getLegend"></KGVisiableRescuePlanNetwork>
+        <KGVisiableRescuePlanNetwork
+          :draw-flag="this.rescuePlan.drawFlag"
+          :current-id="this.currentId"
+          :current-name="this.rescuePlan.currentName"
+          :current-node="this.nodeByName"
+          :visible-settings="this.visibleSettings"
+          :current-type="this.currentType"
+          @legend="getLegend"
+        ></KGVisiableRescuePlanNetwork>
       </el-card>
 
       <el-card class="box-card" style="width: 400px">
@@ -127,72 +168,99 @@
           <el-descriptions-item label="实体所属类型">
             <el-tag size="small">{{ currentType }}</el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="更新时间">2022.11.2</el-descriptions-item>
+          <el-descriptions-item label="更新时间"
+            >2022.11.2</el-descriptions-item
+          >
         </el-descriptions>
-        <el-divider/>
+        <el-divider />
         <!--以下为实体属性的表格-->
-        <el-descriptions v-for="(item,index) in nodeByName" class="margin-top" title="实体属性" :key="index" :column="1" border>
+        <el-descriptions
+          v-for="(item, index) in nodeByName"
+          class="margin-top"
+          title="实体属性"
+          :key="index"
+          :column="1"
+          border
+        >
           <el-descriptions-item label="属性名">属性值</el-descriptions-item>
-          <el-descriptions-item v-for="(proVals,proNames) in item" :label="proNames" :key="proNames">
-        
-            <div v-if="proNames=='图片1' && proVals!='无' ">
-              <img :src="require('@/assets/rescue-images/1.jpg')" alt="" width="300px" />
+          <el-descriptions-item
+            v-for="(proVals, proNames) in item"
+            v-show="proNames.includes('图片') == false"
+            :label="proNames"
+            :key="proNames"
+          >
+            <!-- <div v-if="proNames=='图片1' && proVals!='无' ">
+              <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />
             </div>
             <div v-else-if="proNames=='图片2'&& proVals!= '无' ">
-              <img :src="require('@/assets/rescue-images/2.jpg')" alt="" width="300px" />
+              <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />
             </div>
             <div v-else-if="proNames=='图片3'&& proVals!= '无'">
-              <img :src="require('@/assets/rescue-images/3.jpg')" alt="" width="300px" />
+              <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />
             </div>
             <div v-else-if="proNames=='图片4'&& proVals!= '无'">
-              <img :src="require('@/assets/rescue-images/4(a).jpg')" alt="" width="300px" />
+              <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />
             </div>
             <div v-else-if="proNames=='图片5'&& proVals!= '无'">
-              <img :src="require('@/assets/rescue-images/5(b).jpg')" alt="" width="300px" />     
+              <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />     
             </div>
             <div v-else>
               {{proVals}}
             </div>
-            
-           
+            {{proVals}} -->
+
+            <!-- 图片数组 -->
+            {{ proVals }}
+          </el-descriptions-item>
+
+          <el-descriptions-item
+            v-for="(item, index) in imgArr"
+            :key="index"
+            :label="`图片${index + 1}`"
+          >
+            <img
+              :src="require(`@/assets/rescue-images/${item}.jpg`)"
+              alt=""
+              width="300px"
+            />
           </el-descriptions-item>
         </el-descriptions>
-        
-
       </el-card>
-
     </div>
-
 
     <el-dialog
       title="查看大图"
       :fullscreen="true"
       :visible.sync="visibles.largeKGVisible"
-      >
-
+    >
       <div style="display: flex">
-        <KGVisiableRescuePlanNetworkLarge :current-id="this.currentId" :current-name="this.rescuePlan.currentName" :current-node="nodeByName" :visible-settings="visibleSettings" :current-type="this.currentType" @legend="getLegend"  style="margin: 0 auto;"></KGVisiableRescuePlanNetworkLarge>
+        <KGVisiableRescuePlanNetworkLarge
+          :current-id="this.currentId"
+          :current-name="this.rescuePlan.currentName"
+          :current-node="nodeByName"
+          :visible-settings="visibleSettings"
+          :current-type="this.currentType"
+          @legend="getLegend"
+          style="margin: 0 auto;"
+        ></KGVisiableRescuePlanNetworkLarge>
       </div>
 
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleKGSize(0)">关闭</el-button>
       </span>
     </el-dialog>
-
   </div>
-
 </template>
 
 <script>
-
-import aggregateApi from '@/api/neo4j/aggregate';
+import aggregateApi from "@/api/neo4j/aggregate";
 import KGConnectApi from "../../../../api/neo4j/KGConnectApi";
 import rescuePlanApi from "../../../../api/neo4j/rescuePlanApi";
 
 import KGVisiableRescuePlanNetwork from "./KGVisiableRescuePlanNetwork";
 import KGVisiableRescuePlanNetworkLarge from "./KGVisiableRescuePlanNetworkLarge";
 
-import KGVisible from './KGVisible'
+import KGVisible from "./KGVisible";
 import KGVisibleEcahrts from "./KGVisibleEcahrts";
 import KGUploadFile from "./KGUploadFile";
 import KGBackup from "./KGBackup";
@@ -201,22 +269,28 @@ import KGDownloadFile from "./KGDownloadFile";
 import KGVisibleVisNetworkLarge from "./KGVisibleVisNetworkLarge";
 
 export default {
-  name: 'KGInstance',
+  name: "KGInstance",
   components: {
     KGVisiableRescuePlanNetwork,
     KGVisiableRescuePlanNetworkLarge,
     KGVisibleVisNetworkLarge,
-    KGVisibleVisNetwork, KGVisibleEcahrts, KGVisible,KGUploadFile,KGBackup,KGDownloadFile},
-  props:{
-    kgConnectInfo:{
-      type:Object,
-      default:() => {}
+    KGVisibleVisNetwork,
+    KGVisibleEcahrts,
+    KGVisible,
+    KGUploadFile,
+    KGBackup,
+    KGDownloadFile
+  },
+  props: {
+    kgConnectInfo: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
       //图例显示
-      imgUrl:"",
+      imgUrl: "1.jpg",
       //记录所有知识图谱的名称
       kgNameList: [],
       //记录所有知识图谱的id和名称
@@ -224,11 +298,11 @@ export default {
       //记录选定知识图谱拥有的全部标签
       nodeLabelList: [],
       //选定知识图谱id
-      currentId:null,
+      currentId: null,
       //选定知识图谱名称
-      currentDbName:null,
+      currentDbName: null,
       //选定类型监测对象类型
-      currentType:null,
+      currentType: null,
       //记录查询出的节点名称
       nodeNames: [],
       //记录查询出的节点id和名称
@@ -243,43 +317,41 @@ export default {
         currentType: null,
         //查询出来的方案
         plans: {
-          抢险方案对象:{},
+          抢险方案对象: {}
         },
         //绘图标志
         drawFlag: false
       },
 
-      tempAtt:null,
-      labelPosition: 'right',
-      visibles:{
-        dialogVisible:false,
-        dialogVisible2:false,
-        settingsVisible:false,
-        dialogVisible3:false,
-        largeKGVisible:false
+      tempAtt: null,
+      labelPosition: "right",
+      visibles: {
+        dialogVisible: false,
+        dialogVisible2: false,
+        settingsVisible: false,
+        dialogVisible3: false,
+        largeKGVisible: false
       },
       //标记类
-      flags:{
-        relLazyCountFlag:0,
-        relLoadingFlag:false,
-        loadingFlag:false,
-        visibleTypeFlag:4,//0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
-        lengthFlag:2,
-        relTypeFlag:["位于","包含"],
+      flags: {
+        relLazyCountFlag: 0,
+        relLoadingFlag: false,
+        loadingFlag: false,
+        visibleTypeFlag: 4, //0表示只显示出边，1表示只显示入边，2表示出入边都显示，3表示显示完整的关系链,4表示流域概化图
+        lengthFlag: 2,
+        relTypeFlag: ["位于", "包含"]
       },
       //查询关键字
-      key:{
-        nodeKey:'',
-        relNodeKey:'',
+      key: {
+        nodeKey: "",
+        relNodeKey: ""
       },
-      kgInfo:{
-
-      },
+      kgInfo: {},
       //显示设置
-      visibleSettings:{
-        length:2, //关系链长度，默认为2
-        visibleTypeFlag:0,
-        relType:[],
+      visibleSettings: {
+        length: 2, //关系链长度，默认为2
+        visibleTypeFlag: 0,
+        relType: []
       },
       //记录节点的数量
       nodeCounts: 0,
@@ -292,48 +364,46 @@ export default {
       waterShed: [],
 
       //查询出来的关系组合
-      relNames:[],
+      relNames: [],
       //查询出来的关系组合及id
-      relNamesAndIds:[],
+      relNamesAndIds: [],
       //实现懒加载的relNames
-      relNamesLazy:[],
+      relNamesLazy: [],
       //记录下拉菜单索引
       number: 0,
       //记录通过名称查询出来的节点
       nodeByName: null,
-      relByName:null,
-      currentRelType:null,
-      currentOntoId:null,
-      currentRelId:null,
-      KGSize:0,
+      relByName: null,
+      currentRelType: null,
+      currentOntoId: null,
+      currentRelId: null,
+      KGSize: 0,
       //修改对话框是否开启
       editObjVisible: false,
       //增加对话框是否开启
       addObjVisible: false,
 
-      editNodeInfo:{
-        editNodeId:null,
+      editNodeInfo: {
+        editNodeId: null,
         editNodeLabels: null,
-        editNodeAtts:null
+        editNodeAtts: null
       },
-      legend:[], //需要显示的图例类型
-
-    }
+      legend: [] //需要显示的图例类型
+    };
   },
   mounted() {
-    this.handleSettings()
+    this.handleSettings();
     // this.initDbInfo()
-    this.getInstNameList()
+    this.getInstNameList();
   },
   created() {
     // this.currentDbName = this.$route.params.name
     //临时显示概化图所需内容
-
   },
   methods: {
     goBack() {
-      const data = true
-      this.$emit('goBack', data)
+      const data = true;
+      this.$emit("goBack", data);
     },
 
     //选择实体菜单
@@ -343,46 +413,43 @@ export default {
 
     //选择知识图谱下拉框改变当前知识图谱
     chooseKnowledegGraph(value) {
+      this.currentDbName = value;
 
-      this.currentDbName = value
-
-      for(const key in this.kgIdNameList){
-        if(this.kgIdNameList[key]===value){
-          this.currentId = key
+      for (const key in this.kgIdNameList) {
+        if (this.kgIdNameList[key] === value) {
+          this.currentId = key;
         }
       }
-      console.log(this.currentDbName)
-      console.log(this.currentId)
+      console.log(this.currentDbName);
+      console.log(this.currentId);
 
-      this.getNodeLabelList()
+      this.getNodeLabelList();
     },
 
     //切换下拉菜单
     change(index) {
       this.number = index;
       // this.nodeNames = null
-      this.nodeByName = null
+      this.nodeByName = null;
     },
     //清空查询出来的实体类型
     clear() {
       // this.nodeNames = null
-      this.nodeByName = null
+      this.nodeByName = null;
     },
     getRelByName(name) {
-      if (this.currentRelType === '下级行政区划') {
-
-        for(let i in this.relNamesAndIds){
-          if(this.relNamesAndIds[i].path === name){
+      if (this.currentRelType === "下级行政区划") {
+        for (let i in this.relNamesAndIds) {
+          if (this.relNamesAndIds[i].path === name) {
             this.currentRelId = this.relNamesAndIds[i].id;
             break;
           }
         }
 
-        let nameArray = name.split("->")
-        this.relByName = [nameArray]
+        let nameArray = name.split("->");
+        this.relByName = [nameArray];
       }
-      if (this.currentRelType === '关联') {
-
+      if (this.currentRelType === "关联") {
         //业务逻辑
         //TODO
       }
@@ -390,100 +457,100 @@ export default {
     //获得所有知识图谱名称
     getInstNameList() {
       KGConnectApi.getInstNameList()
-        .then((response) => {
-
-          this.kgIdNameList = response.data.data
-          for(const key in this.kgIdNameList){
-            this.kgNameList.push(this.kgIdNameList[key])
+        .then(response => {
+          this.kgIdNameList = response.data.data;
+          for (const key in this.kgIdNameList) {
+            this.kgNameList.push(this.kgIdNameList[key]);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
     },
 
     getNodeLabelList() {
       this.currentType = null;
-      console.log(this.currentId)
-      aggregateApi.getNodeLabels(this.currentId)
-        .then((response) => {
-          this.nodeLabelList = response.data.data.nodeLabels
-          console.log(this.nodeLabelList)
+      console.log(this.currentId);
+      aggregateApi
+        .getNodeLabels(this.currentId)
+        .then(response => {
+          this.nodeLabelList = response.data.data.nodeLabels;
+          console.log(this.nodeLabelList);
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
     },
 
-    load(){
-      this.flags.relLoadingFlag = true
-      this.flags.loadingFlag = true
+    load() {
+      this.flags.relLoadingFlag = true;
+      this.flags.loadingFlag = true;
       setTimeout(() => {
-        let origin = this.flags.relLazyCountFlag
-        this.flags.relLazyCountFlag = this.flags.relLazyCountFlag + 25
-        if (this.flags.relLazyCountFlag < this.relNames.length){
-          for (let i = origin; i < this.flags.relLazyCountFlag; i++){
-            this.relNamesLazy.push(this.relNames[i])
+        let origin = this.flags.relLazyCountFlag;
+        this.flags.relLazyCountFlag = this.flags.relLazyCountFlag + 25;
+        if (this.flags.relLazyCountFlag < this.relNames.length) {
+          for (let i = origin; i < this.flags.relLazyCountFlag; i++) {
+            this.relNamesLazy.push(this.relNames[i]);
           }
-        }else {
-          for (let i = origin; i < this.relNames.length; i++){
-            this.relNamesLazy.push(this.relNames[i])
+        } else {
+          for (let i = origin; i < this.relNames.length; i++) {
+            this.relNamesLazy.push(this.relNames[i]);
           }
         }
-        this.flags.relLoadingFlag = false
-        this.flags.loadingFlag = false
-      }, 1000)
+        this.flags.relLoadingFlag = false;
+        this.flags.loadingFlag = false;
+      }, 1000);
     },
 
     //根据名称进行模糊查询返回可能的节点名称
-    getNodeContainsName(){
-
-      rescuePlanApi.getNodesByName(this.currentType, this.key.nodeKey, this.currentId )
-        .then(({data}) => {
+    getNodeContainsName() {
+      rescuePlanApi
+        .getNodesByName(this.currentType, this.key.nodeKey, this.currentId)
+        .then(({ data }) => {
           let list = data.data.nodeList;
-          
-          this.nodeNames = []
-          this.nodeIdNames = []
 
-          let nodeNameKey = ""
+          this.nodeNames = [];
+          this.nodeIdNames = [];
 
+          let nodeNameKey = "";
 
-          for(let item of list){
-            let nodeType = item.nodeType
-            for(let t of nodeType){
-              console.log("t:" + t)
-              if(t!=="5084A06CAF2C4AF097DC8B2D9A75F406"){
-                nodeNameKey = t + "名称"
+          for (let item of list) {
+            let nodeType = item.nodeType;
+            for (let t of nodeType) {
+              console.log("t:" + t);
+              if (t !== "5084A06CAF2C4AF097DC8B2D9A75F406") {
+                nodeNameKey = t + "名称";
               }
             }
 
-            let map = new Map(Object.entries(item.node))
-            let id = map.get("_id")
-            let name = map.get(nodeNameKey)
-            this.nodeNames.push(name)
-            this.nodeIdNames.push(id,name)
+            let map = new Map(Object.entries(item.node));
+            let id = map.get("_id");
+            let name = map.get(nodeNameKey);
+            this.nodeNames.push(name);
+            this.nodeIdNames.push(id, name);
           }
-          console.log(this.nodeNames)
-          console.log(this.nodeIdNames)
-
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+          console.log(this.nodeNames);
+          console.log(this.nodeIdNames);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     //根据名称进行查询返回结点所有信息
-    getNodeByName(name){
-      rescuePlanApi.getNodesByName(this.currentType, name, this.currentId)
-        .then(({data}) => {
-
-       
-          this.nodeByName = []
+    getNodeByName(name) {
+      rescuePlanApi
+        .getNodesByName(this.currentType, name, this.currentId)
+        .then(({ data }) => {
+          this.nodeByName = [];
           this.nodeByName.push(data.data.nodeList[0].node);
 
-          const att = new Map(Object.entries(this.nodeByName[0]))
-          att.delete("_id")
+          for (let key in this.nodeByName[0])
+            if (key.includes("图片")) delete this.nodeByName[0][key];
 
-          this.rescuePlan.attNameList = Array.from(att.keys())
+          const att = new Map(Object.entries(this.nodeByName[0]));
+          att.delete("_id");
+
+          this.rescuePlan.attNameList = Array.from(att.keys());
 
           let properties = JSON.stringify(this.nodeByName[0]);
           this.editNodeInfo.editNodeAtts = JSON.parse(properties);
@@ -494,87 +561,114 @@ export default {
 
           console.log("当前水利对象： " + this.rescuePlan.currentName);
           this.key.nodeKey = this.rescuePlan.currentName;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     //应急预案查询
-    getContingencyPlan(){
+    getContingencyPlan() {
+      this.rescuePlan.plans.抢险方案对象 = {};
 
-      this.rescuePlan.plans.抢险方案对象 = {}
-
-      rescuePlanApi.getRescuePlanNode(this.rescuePlan.currentName, this.currentType, this.currentId)
-       .then(({data}) => {
-         let map = new Map(Object.entries(data.data));
-         let keys = map.keys()
-         for(let key of keys){
-           console.log("key",key)
-           console.log("key",map.get(key))
-           this.rescuePlan.plans.抢险方案对象[key]=map.get(key)
-         }
-         console.log(this.rescuePlan.plans);
+      rescuePlanApi
+        .getRescuePlanNode(
+          this.rescuePlan.currentName,
+          this.currentType,
+          this.currentId
+        )
+        .then(({ data }) => {
+          let map = new Map(Object.entries(data.data));
+          let keys = map.keys();
+          for (let key of keys) {
+            console.log("key", key);
+            console.log("key", map.get(key));
+            this.rescuePlan.plans.抢险方案对象[key] = map.get(key);
+          }
+          console.log(this.rescuePlan.plans);
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
 
-      this.getNodeContainsName()
+      this.getNodeContainsName();
 
-      this.rescuePlan.drawFlag = !this.rescuePlan.drawFlag
+      this.rescuePlan.drawFlag = !this.rescuePlan.drawFlag;
 
-      alert("查询已完成！")
-
+      alert("查询已完成！");
     },
 
-    handleSettings(){
-      this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag
-      this.visibleSettings.length = this.flags.lengthFlag
-      this.visibleSettings.relType = this.flags.relTypeFlag
-      this.visibles.settingsVisible = false
+    handleSettings() {
+      this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag;
+      this.visibleSettings.length = this.flags.lengthFlag;
+      this.visibleSettings.relType = this.flags.relTypeFlag;
+      this.visibles.settingsVisible = false;
     },
 
-    getLegend(data){
-      this.legend = data
+    getLegend(data) {
+      this.legend = data;
     },
 
-    handleKGSize(value){
-      if (value == 1){
-        this.visibles.largeKGVisible = true
-      }else {
-        this.visibles.largeKGVisible = false
+    handleKGSize(value) {
+      if (value == 1) {
+        this.visibles.largeKGVisible = true;
+      } else {
+        this.visibles.largeKGVisible = false;
       }
 
       this.KGSize = value;
     }
   },
-  computed:{
-    disabled (){
-      return this.flags.relLoadingFlag || this.noMore
+  computed: {
+    disabled() {
+      return this.flags.relLoadingFlag || this.noMore;
     },
-    noMore () {
-      return this.flags.relLazyCountFlag >= this.relNames.length
+    noMore() {
+      return this.flags.relLazyCountFlag >= this.relNames.length;
     },
+    imgArr() {
+      if (this.key.nodeKey === "临水截渗") {
+        return ["1", "2", "3", "4(a)", "4(b)"];
+      } else if (this.key.nodeKey === "背水反滤导渗") {
+        return ["5(a)", "5(b)", "6", "7"];
+      } else if (this.key.nodeKey === "缓流消浪") {
+        return ["9", "10", "11"];
+      } else if (this.key.nodeKey === "土袋子埝") {
+        return ["13"];
+      } else if (this.key.nodeKey === "桩梢子埝") {
+        return ["14"];
+      } else if (this.key.nodeKey === "枕石（土）子埝") {
+        return ["15"];
+      } else if (this.key.nodeKey === "合龙") {
+        return ["17", "18"];
+      } else if (this.key.nodeKey === "开挖回填") {
+        return ["21"];
+      } else if (this.key.nodeKey === "横墙隔断") {
+        return ["22"];
+      } else if (this.key.nodeKey === "土料子堤") {
+        return ["23"];
+      } else if (this.key.nodeKey === "利用防浪墙抢筑子堤") {
+        return ["24"];
+      } else return [];
+    }
   },
-  watch:{
-    relNames:{
+  watch: {
+    relNames: {
       handler(newValue, oldValue) {
-        if (oldValue.length > 0){
-          this.relNamesLazy = []
-          this.flags.relLazyCountFlag = 0
-          this.load()
+        if (oldValue.length > 0) {
+          this.relNamesLazy = [];
+          this.flags.relLazyCountFlag = 0;
+          this.load();
         }
       },
       deep: true
-    },
+    }
   }
-}
+};
 </script>
 
 <style scoped>
 。clearfix {
-  background-color: #4AB7BD;
+  background-color: #4ab7bd;
 }
 
 .clearfix:before,
@@ -584,7 +678,7 @@ export default {
 }
 
 .clearfix:after {
-  clear: both
+  clear: both;
 }
 
 .box-card {

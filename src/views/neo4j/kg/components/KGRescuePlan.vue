@@ -630,9 +630,13 @@ export default {
         return ["1", "2", "3", "4(a)", "4(b)"];
       } else if (this.key.nodeKey === "背水反滤导渗") {
         return ["5(a)", "5(b)", "6", "7"];
-      } else if (this.key.nodeKey === "缓流消浪") {
+      } 
+      else if (this.key.nodeKey === "渗漏抢险") {
+        return ["8(a)", "8(b)", "8(c)"]; 
+      }else if (this.key.nodeKey === "缓流消浪") {
         return ["9", "10", "11"];
-      } else if (this.key.nodeKey === "土袋子埝") {
+      }
+       else if (this.key.nodeKey === "土袋子埝") {
         return ["13"];
       } else if (this.key.nodeKey === "桩梢子埝") {
         return ["14"];

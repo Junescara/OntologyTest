@@ -160,13 +160,13 @@
           </el-col>
 
           <!--以下为抢险方案查询的按钮-->
-          <el-col :span="3">
+          <!-- <el-col :span="3">
             <div style="margin-top: auto; padding-left: auto">
               <el-button type="primary" @click="getContingencyPlan"
                 >更新图谱</el-button
               >
             </div>
-          </el-col>
+          </el-col> -->
           <!--以上为抢险方案查询的按钮-->
         </el-row>
       </el-card>
@@ -564,10 +564,17 @@ export default {
       this.$emit("goBack", data);
     },
     changnode(){
+      this.currentType="工程险情";
+      
        this.getNodeByDangerName(this.DangerId);
        this.methodList=[];
        this.getDangerLink;
-       this.currentType="工程险情";
+       this.getContingencyPlan();
+       
+    },
+    changitem(){
+      this.getNodeByName(this.item);
+      // this.getContingencyPlan();
     },
     //选择实体菜单
     clearData() {
@@ -715,6 +722,7 @@ export default {
 
           console.log("当前水利对象： " + this.rescuePlan.currentName);
           this.key.nodeKey = this.rescuePlan.currentName;
+          this.getContingencyPlan()
         })
         .catch(error => {
           console.log(error);
@@ -722,7 +730,7 @@ export default {
     },
     getNodeByDangerName(name) {
       rescuePlanApi
-        .getNodesByName("工程险情", name, "5084A06CAF2C4AF097DC8B2D9A75F406")
+        .getNodesByName(this.currentType, name, "5084A06CAF2C4AF097DC8B2D9A75F406")
         .then(({ data }) => {
           this.nodeByName = [];
           this.nodeByName.push(data.data.nodeList[0].node);
@@ -745,6 +753,7 @@ export default {
 
            console.log("当前水利对象： " + this.rescuePlan.currentName);
            this.key.nodeKey = this.rescuePlan.currentName;
+           this.getContingencyPlan();
         })
         .catch(error => {
           console.log(error);
@@ -756,7 +765,7 @@ export default {
 
       rescuePlanApi
         .getRescuePlanNode(
-          this.rescuePlan.currentName,"抢护方法","5084A06CAF2C4AF097DC8B2D9A75F406")
+          this.rescuePlan.currentName,this.currentType,"5084A06CAF2C4AF097DC8B2D9A75F406")
         .then(({ data }) => {
           let map = new Map(Object.entries(data.data));
           let keys = map.keys();
@@ -774,7 +783,7 @@ export default {
 
       this.rescuePlan.drawFlag = !this.rescuePlan.drawFlag;
 
-      alert("查询已完成！");
+      console.log("查询已完成！");
     },
 
     handleSettings() {

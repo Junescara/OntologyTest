@@ -103,7 +103,7 @@
               <el-select
                 clearable
                 @clear="clear"
-                @change="getNodeByDangerName(DangerId),clearData"
+                @change="changnode($event,DangerId)"
                 placeholder="请选择工程险情"
                 v-model="DangerId"
                 style="margin-top: auto"
@@ -161,9 +161,9 @@
 
           <!--以下为抢险方案查询的按钮-->
           <el-col :span="3">
-            <div style="margin-top: 15px; padding-left: 15px">
+            <div style="margin-top: auto; padding-left: auto">
               <el-button type="primary" @click="getContingencyPlan"
-                >查 询</el-button
+                >更新图谱</el-button
               >
             </div>
           </el-col>
@@ -563,11 +563,17 @@ export default {
       const data = true;
       this.$emit("goBack", data);
     },
-
+    changnode(){
+       this.getNodeByDangerName(this.DangerId);
+       this.methodList=[];
+       this.getDangerLink;
+       this.currentType="工程险情";
+    },
     //选择实体菜单
     clearData() {
      this.methodList=[];
      this.getDangerLink;
+     
     },
 
     //选择知识图谱下拉框改变当前知识图谱
@@ -685,6 +691,7 @@ export default {
     },
     //根据名称进行查询返回结点所有信息
     getNodeByName(name) {
+      this.currentType="抢护方法";
       rescuePlanApi
         .getNodesByName("抢护方法", name, "5084A06CAF2C4AF097DC8B2D9A75F406")
         .then(({ data }) => {
@@ -727,16 +734,17 @@ export default {
           att.delete("_id");
 
           this.rescuePlan.attNameList = Array.from(att.keys());
+          
 
-          let properties = JSON.stringify(this.nodeByName[0]);
-          this.editNodeInfo.editNodeAtts = JSON.parse(properties);
-          this.editNodeInfo.editNodeId = data.data.nodeList[0].node._id;
-          this.editNodeInfo.editNodeLabels = data.data.nodeList[0].nodeType;
+           let properties = JSON.stringify(this.nodeByName[0]);
+           this.editNodeInfo.editNodeAtts = JSON.parse(properties);
+           this.editNodeInfo.editNodeId = data.data.nodeList[0].node._id;
+           this.editNodeInfo.editNodeLabels = data.data.nodeList[0].nodeType;
 
-          this.rescuePlan.currentName = name;
+           this.rescuePlan.currentName = name;
 
-          console.log("当前水利对象： " + this.rescuePlan.currentName);
-          this.key.nodeKey = this.rescuePlan.currentName;
+           console.log("当前水利对象： " + this.rescuePlan.currentName);
+           this.key.nodeKey = this.rescuePlan.currentName;
         })
         .catch(error => {
           console.log(error);
@@ -748,10 +756,7 @@ export default {
 
       rescuePlanApi
         .getRescuePlanNode(
-          this.rescuePlan.currentName,
-          this.currentType,
-          this.currentId
-        )
+          this.rescuePlan.currentName,"抢护方法","5084A06CAF2C4AF097DC8B2D9A75F406")
         .then(({ data }) => {
           let map = new Map(Object.entries(data.data));
           let keys = map.keys();
@@ -766,7 +771,6 @@ export default {
           console.log(error);
         });
 
-      this.getNodeContainsName();
 
       this.rescuePlan.drawFlag = !this.rescuePlan.drawFlag;
 
@@ -816,9 +820,7 @@ export default {
         return ["13"];
       } else if (this.key.nodeKey === "桩梢子埝") {
         return ["14"];
-      } else if (this.key.nodeKey === "枕石（土）子埝") {
-        return ["15"];
-      } else if (this.key.nodeKey === "合龙") {
+      }  else if (this.key.nodeKey === "合龙") {
         return ["17", "18"];
       } else if (this.key.nodeKey === "开挖回填") {
         return ["21"];

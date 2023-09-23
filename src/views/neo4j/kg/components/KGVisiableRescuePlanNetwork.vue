@@ -117,7 +117,7 @@ export default {
     initKG() {
       this.loading = true
       let _this = this
-      rescuePlanApi.getRescuePlanLink(this.currentName,this.currentType,this.currentId)
+      rescuePlanApi.getRescuePlanLink(this.currentName,this.currentType,"5084A06CAF2C4AF097DC8B2D9A75F406")
         .then(({data}) => {
           console.log("initKG-->data:",data)
           this.finalNodeVos = data.data.finalNodeVos;

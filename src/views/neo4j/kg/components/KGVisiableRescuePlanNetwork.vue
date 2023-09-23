@@ -33,6 +33,7 @@ export default {
       currentNodeType:[],//当前的结点类型，用作图例显示
       currentDbId:null,
       currentDbName:null,
+      finalNodeVos:null,//记录当前查找的图谱所有显示节点的信息
       KGSize:{
         width:800,
         height:500,
@@ -116,18 +117,39 @@ export default {
     initKG() {
       this.loading = true
       let _this = this
-
       rescuePlanApi.getRescuePlanLink(this.currentName,this.currentType,this.currentId)
         .then(({data}) => {
+          console.log("initKG-->data:",data)
+          this.finalNodeVos = data.data.finalNodeVos;
+          //console.log("initKG-->finalNodeVos:",this.finalNodeVos)
           const datas = VisUtils.handleRelLinkVisiblesHashNode3(data)
-
           _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
           _this.options = VisUtils.setVisibleOption(4)
           _this.network = new Vis.Network(container, datas, _this.options);
           _this.setLoading()
+          _this.network.on('click',function(properties){
+            let selectedNodeId = properties.nodes[0];
+            _this.sendMessage(selectedNodeId);
+          })
+
         })
 
+    },
+    sendMessage(selectedNodeId){
+      let selectedNodeName = null;
+      let nodeType = null;
+
+      //console.log("initKG-->finalNodeVos:",this.finalNodeVos)
+      for (let item of this.finalNodeVos){
+        if(item.node._id == selectedNodeId){
+          selectedNodeName = item.node.抢护方法名称;
+          nodeType = item.nodeType;
+          break
+        }
+      }
+      if(selectedNodeName!=null)
+        this.$emit("selectedNodeName", selectedNodeName,nodeType)
     },
     setLoading(){
       const _this = this
@@ -236,6 +258,11 @@ export default {
     drawFlag: {
       handler(newValue,oldValue) {
         this.initKG()
+      }
+    },
+    currentName: {
+      handler(newValue, oldValue) {
+        console.log(newValue)
       }
     }
   }

@@ -15,7 +15,7 @@
 
         <!--以下为知识图谱选择的下拉菜单-->
         <el-row>
-          <!-- <el-col :span="3">
+          <el-col :span="3">
             <div>
               <el-select
                 clearable
@@ -33,11 +33,11 @@
                 />
               </el-select>
             </div>
-          </el-col>  -->
+          </el-col>
           <!--以上为知识图谱选择的下拉菜单-->
 
           <!--以下为抢险类型的下拉菜单-->
-          <!-- <el-col :span="3">
+          <el-col :span="3">
             <div>
               <el-select
                 clearable
@@ -55,11 +55,11 @@
                 />
               </el-select>
             </div>
-          </el-col> -->
+          </el-col>
           <!--以上为抢险类型的下拉菜单-->
 
           <!--以下为工程险情名称的输入框-->
-          <!-- <el-col :span="3">
+          <el-col :span="3">
             <div style="margin-top: auto;">
               <el-input
                 placeholder="请搜索名称"
@@ -73,11 +73,11 @@
                 />
               </el-input>
             </div>
-          </el-col> -->
+          </el-col>
           <!--以上为工程险情名称的输入框-->
 
           <!--以下标签用于显示查询出来的节点名称-->
-          <!-- <el-col :span="10">
+          <el-col :span="10">
             <div
               class="tag-group infinite-list-wrapper"
               v-if="number === 0"
@@ -94,75 +94,13 @@
                 {{ item }}
               </el-tag>
             </div>
-          </el-col> -->
+          </el-col>
           <!--以上标签用于显示查询出来的节点名称-->
-         
-          <!-- 以下是工程险情查询 -->
-          <el-col :span="3">
-            <div>
-              <el-select
-                clearable
-                @clear="clear"
-                @change="getNodeByDangerName(DangerId),clearData"
-                placeholder="请选择工程险情"
-                v-model="DangerId"
-                style="margin-top: auto"
-              >
-                <el-option
-                  v-for="(item, index) in DangerList"
-                  :key="index"
-                  :label="item"
-                  :value="item"
-                />
-              </el-select>
-            </div>
-          </el-col>
-          <!--以上为抢险类型的下拉菜单-->
-
-          <!--以下为工程险情名称的输入框-->
-          <el-col :span="5">
-            <div style="margin-top: auto;">
-              <el-input
-                placeholder="搜索相应的抢险方法"
-                class="input-with-select"
-                v-model="key.nodeKey"
-              >
-                <el-button
-                  slot="append"
-                  icon="el-icon-search"
-                  @click.once="fn1"
-                  @click="getDangerLink"
-                />
-              </el-input>
-            </div>
-          </el-col>
-          <!--以上为工程险情名称的输入框-->
-
-          <!--以下标签用于显示查询出来的节点名称-->
-          <el-col :span="10">
-            <div
-              class="tag-group infinite-list-wrapper"
-              v-if="number === 0"
-              style="overflow: auto;height:auto; margin-top: auto; padding-left: auto"
-            >
-              <span class="tag-group__title"></span>
-              <el-tag
-                v-for="(item, index) in methodList"
-                :key="index"
-                type=""
-                effect="plain"
-                size="middle"
-                @click="getNodeByName(item)"
-              >
-                {{ item }}
-              </el-tag>
-            </div>
-          </el-col>
 
           <!--以下为抢险方案查询的按钮-->
           <el-col :span="3">
             <div style="margin-top: 15px; padding-left: 15px">
-              <el-button type="primary" @click="getContingencyPlan"
+              <el-button type="primary" @click="getContingencyPlan"  icon="el-icon-search"
                 >查 询</el-button
               >
             </div>
@@ -200,15 +138,12 @@
 
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
-          <span>抢险方案图</span>
-
-          <el-button
-            style="float: right; padding: 3px 0; margin-right: 0px"
-            @click="handleKGSize(1)"
-            type="text"
-            >查看大图</el-button
-          >
-          <br />
+          <span style="float: left; padding: 3px 0; margin-top: 10px">抢险方案图</span>
+          <el-row style="float: right; padding: 3px 0; margin-right: 0px">
+            <el-button type="text" icon="el-icon-back" @click="handleReturn">返回</el-button>
+            <el-button type="text" icon="el-icon-house" @click="handleTop">首页</el-button>
+            <el-button type="text"  @click="handleKGSize(1)" icon="el-icon-zoom-in">查看大图</el-button>
+          </el-row>
         </div>
 
         <KGVisiableRescuePlanNetwork
@@ -219,6 +154,7 @@
           :visible-settings="this.visibleSettings"
           :current-type="this.currentType"
           @legend="getLegend"
+          @selectedNodeName="getSelectedNodeName"
         ></KGVisiableRescuePlanNetwork>
       </el-card>
 
@@ -264,7 +200,7 @@
               <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />
             </div>
             <div v-else-if="proNames=='图片5'&& proVals!= '无'">
-              <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />     
+              <img :src="require('@/assets/rescue-images/'+imgUrl)" alt="" width="300px" />
             </div>
             <div v-else>
               {{proVals}}
@@ -304,6 +240,7 @@
           :current-type="this.currentType"
           @legend="getLegend"
           style="margin: 0 auto;"
+
         ></KGVisiableRescuePlanNetworkLarge>
       </div>
 
@@ -311,6 +248,8 @@
         <el-button type="primary" @click="handleKGSize(0)">关闭</el-button>
       </span>
     </el-dialog>
+
+
   </div>
 </template>
 
@@ -355,10 +294,6 @@ export default {
       imgUrl: "1.jpg",
       //记录所有知识图谱的名称
       kgNameList: [],
-      //记录所有的工程险情
-      DangerList:[],
-      DangerId:null,
-      methodList:[],
       //记录所有知识图谱的id和名称
       kgIdNameList: [],
       //记录选定知识图谱拥有的全部标签
@@ -461,113 +396,21 @@ export default {
     this.handleSettings();
     // this.initDbInfo()
     this.getInstNameList();
-    this.getInstDangerList();
-    
+
   },
-  
   created() {
     // this.currentDbName = this.$route.params.name
     //临时显示概化图所需内容
-   
   },
   methods: {
-
-    load() {
-      this.flags.relLoadingFlag = true;
-      this.flags.loadingFlag = true;
-      setTimeout(() => {
-        let origin = this.flags.relLazyCountFlag;
-        this.flags.relLazyCountFlag = this.flags.relLazyCountFlag + 25;
-        if (this.flags.relLazyCountFlag < this.relNames.length) {
-          for (let i = origin; i < this.flags.relLazyCountFlag; i++) {
-            this.relNamesLazy.push(this.relNames[i]);
-          }
-        } else {
-          for (let i = origin; i < this.relNames.length; i++) {
-            this.relNamesLazy.push(this.relNames[i]);
-          }
-        }
-        this.flags.relLoadingFlag = false;
-        this.flags.loadingFlag = false;
-      }, 1000);
-
-   
-    },
-    getInstDangerList(){
-      console.log("接口已调用");
-      rescuePlanApi.getNodesByName("工程险情", "", "5084A06CAF2C4AF097DC8B2D9A75F406").then( response  => {
-        console.log("数据已调用");
-          let list = response.data.data.nodeList;
-
-          let nodeNameKey = "";
-
-          for (let item of list) {
-            let nodeType = item.nodeType;
-            for (let t of nodeType) {
-              console.log("t:" + t);
-              if (t !== "5084A06CAF2C4AF097DC8B2D9A75F406") {
-                nodeNameKey = t + "名称";
-              }
-            }
-
-            let map = new Map(Object.entries(item.node));
-            let name = map.get(nodeNameKey);
-            this.DangerList.push(name);
-          }
-         
-        }).catch(error => {
-          console.log(error);
-        });
-    },
-
-    getDangerLink(){
-    
-      console.log(114514);
-      rescuePlanApi.getRescuePlanNode(this.DangerId,"工程险情","5084A06CAF2C4AF097DC8B2D9A75F406").then(({data})=>{
-      console.log(1919810);
-      console.log(this.DangerId);
-     
-
-        let name = "";
-          let map = new Map(Object.entries(data.data));
-          let keys = map.keys();
-          for (let key of keys) {
-            console.log("key", key);
-            console.log("key", map.get(key));
-            if(map.get(key).includes("险"))
-            continue;
-            name=key;
-            console.log(name);
-            this.methodList.push(name);
-            
-          }
-          console.log(this.methodList);
-        
-          
-        })
-        .catch(error => {
-          console.log(error);
-        });
-
-  
-
-
-      
-
-      
-
-      },
-    
-    
     goBack() {
       const data = true;
       this.$emit("goBack", data);
     },
 
     //选择实体菜单
-    clearData() {
-     this.methodList=[];
-     this.getDangerLink;
+    chooseEntity(value) {
+      this.currentType = value;
     },
 
     //选择知识图谱下拉框改变当前知识图谱
@@ -579,8 +422,8 @@ export default {
           this.currentId = key;
         }
       }
-      console.log(this.currentDbName);
-      console.log(this.currentId);
+      console.log("currentDbName",this.currentDbName);
+      console.log("currentId",this.currentId);
 
       this.getNodeLabelList();
     },
@@ -634,27 +477,39 @@ export default {
         .getNodeLabels(this.currentId)
         .then(response => {
           this.nodeLabelList = response.data.data.nodeLabels;
-          console.log(this.nodeLabelList);
+          console.log("nodeLabelList",this.nodeLabelList);
         })
         .catch(error => {
           console.log(error);
         });
     },
 
-    
-       
-    
+    load() {
+      this.flags.relLoadingFlag = true;
+      this.flags.loadingFlag = true;
+      setTimeout(() => {
+        let origin = this.flags.relLazyCountFlag;
+        this.flags.relLazyCountFlag = this.flags.relLazyCountFlag + 25;
+        if (this.flags.relLazyCountFlag < this.relNames.length) {
+          for (let i = origin; i < this.flags.relLazyCountFlag; i++) {
+            this.relNamesLazy.push(this.relNames[i]);
+          }
+        } else {
+          for (let i = origin; i < this.relNames.length; i++) {
+            this.relNamesLazy.push(this.relNames[i]);
+          }
+        }
+        this.flags.relLoadingFlag = false;
+        this.flags.loadingFlag = false;
+      }, 1000);
+    },
 
     //根据名称进行模糊查询返回可能的节点名称
     getNodeContainsName() {
-    
       rescuePlanApi
         .getNodesByName(this.currentType, this.key.nodeKey, this.currentId)
-        
         .then(({ data }) => {
-          
           let list = data.data.nodeList;
-
           this.nodeNames = [];
           this.nodeIdNames = [];
 
@@ -675,9 +530,6 @@ export default {
             this.nodeNames.push(name);
             this.nodeIdNames.push(id, name);
           }
-          
-          console.log(this.nodeNames);
-          console.log(this.nodeIdNames);
         })
         .catch(error => {
           console.log(error);
@@ -686,7 +538,7 @@ export default {
     //根据名称进行查询返回结点所有信息
     getNodeByName(name) {
       rescuePlanApi
-        .getNodesByName("抢护方法", name, "5084A06CAF2C4AF097DC8B2D9A75F406")
+        .getNodesByName(this.currentType, name, this.currentId)
         .then(({ data }) => {
           this.nodeByName = [];
           this.nodeByName.push(data.data.nodeList[0].node);
@@ -708,39 +560,12 @@ export default {
 
           console.log("当前水利对象： " + this.rescuePlan.currentName);
           this.key.nodeKey = this.rescuePlan.currentName;
+          this.getContingencyPlan();
         })
         .catch(error => {
           console.log(error);
         });
-    },
-    getNodeByDangerName(name) {
-      rescuePlanApi
-        .getNodesByName("工程险情", name, "5084A06CAF2C4AF097DC8B2D9A75F406")
-        .then(({ data }) => {
-          this.nodeByName = [];
-          this.nodeByName.push(data.data.nodeList[0].node);
 
-          for (let key in this.nodeByName[0])
-            if (key.includes("图片")) delete this.nodeByName[0][key];
-
-          const att = new Map(Object.entries(this.nodeByName[0]));
-          att.delete("_id");
-
-          this.rescuePlan.attNameList = Array.from(att.keys());
-
-          let properties = JSON.stringify(this.nodeByName[0]);
-          this.editNodeInfo.editNodeAtts = JSON.parse(properties);
-          this.editNodeInfo.editNodeId = data.data.nodeList[0].node._id;
-          this.editNodeInfo.editNodeLabels = data.data.nodeList[0].nodeType;
-
-          this.rescuePlan.currentName = name;
-
-          console.log("当前水利对象： " + this.rescuePlan.currentName);
-          this.key.nodeKey = this.rescuePlan.currentName;
-        })
-        .catch(error => {
-          console.log(error);
-        });
     },
     //应急预案查询
     getContingencyPlan() {
@@ -754,13 +579,13 @@ export default {
         )
         .then(({ data }) => {
           let map = new Map(Object.entries(data.data));
+          console.log("data", data);
           let keys = map.keys();
           for (let key of keys) {
-            console.log("key", key);
-            console.log("key", map.get(key));
+
             this.rescuePlan.plans.抢险方案对象[key] = map.get(key);
           }
-          console.log(this.rescuePlan.plans);
+          console.log("this.rescuePlan.plans",this.rescuePlan.plans);
         })
         .catch(error => {
           console.log(error);
@@ -770,7 +595,7 @@ export default {
 
       this.rescuePlan.drawFlag = !this.rescuePlan.drawFlag;
 
-      alert("查询已完成！");
+      //alert("查询已完成！");
     },
 
     handleSettings() {
@@ -779,10 +604,33 @@ export default {
       this.visibleSettings.relType = this.flags.relTypeFlag;
       this.visibles.settingsVisible = false;
     },
+    handleTop(){
+      this.rescuePlan.currentName = "";
+      this.key.nodeKey = ""
+      this.currentType = "工程险情";
+      this.getNodeByName(this.rescuePlan.currentName);
+      //this.getContingencyPlan();
+    },
+    handleReturn(){
 
+    },
     getLegend(data) {
       this.legend = data;
     },
+
+    getSelectedNodeName(selectedNodeName,nodeType){
+        console.log("returnSelectedNodeName:",selectedNodeName);
+        this.rescuePlan.currentName = selectedNodeName;
+        this.key.nodeKey = selectedNodeName;
+        if(nodeType[1] == "抢护方法"){
+          this.currentType = "抢护方法";
+        }else{
+          this.currentType = "工程险情";
+        }
+        this.getNodeByName(selectedNodeName);
+        //this.getContingencyPlan();
+    },
+
 
     handleKGSize(value) {
       if (value == 1) {
@@ -806,9 +654,9 @@ export default {
         return ["1", "2", "3", "4(a)", "4(b)"];
       } else if (this.key.nodeKey === "背水反滤导渗") {
         return ["5(a)", "5(b)", "6", "7"];
-      } 
+      }
       else if (this.key.nodeKey === "渗漏抢险") {
-        return ["8(a)", "8(b)", "8(c)"]; 
+        return ["8(a)", "8(b)", "8(c)"];
       }else if (this.key.nodeKey === "缓流消浪") {
         return ["9", "10", "11"];
       }

@@ -120,30 +120,31 @@
           <!--以上为抢险类型的下拉菜单-->
 
           <!--以下为工程险情名称的输入框-->
-          <el-col :span="5">
+          <el-col :span="1">
             <div style="margin-top: auto;">
-              <el-input
+              <!-- <el-input
                 placeholder="搜索相应的抢险方法"
                 class="input-with-select"
-                v-model="key.nodeKey"
-              >
+                v-model="searchkey" -->
+              <!-- > -->
                 <el-button
                   slot="append"
                   icon="el-icon-search"
                   @click.once="fn1"
                   @click="getDangerLink"
                 />
-              </el-input>
+              <!-- </el-input> -->
             </div>
           </el-col>
           <!--以上为工程险情名称的输入框-->
 
           <!--以下标签用于显示查询出来的节点名称-->
           <el-col :span="10">
+           
             <div
               class="tag-group infinite-list-wrapper"
               v-if="number === 0"
-              style="overflow: auto;height:auto; margin-top: auto; padding-left: auto"
+              style="overflow: auto;height:auto; margin-top: auto; padding-left: 10px"
             >
               <span class="tag-group__title"></span>
               <el-tag
@@ -173,7 +174,7 @@
     </div>
 
     <div style="display: flex">
-      <el-card class="box-card" style="width: 200px ">
+      <!-- <el-card class="box-card" style="width: 200px ">
         <div slot="header" class="clearfix">
           <span>抢险方案文本</span>
         </div>
@@ -196,11 +197,11 @@
             {{ proVals }}
           </el-descriptions-item>
         </el-descriptions>
-      </el-card>
+      </el-card> -->
 
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
-          <span>抢险方案图</span>
+          <span>知识图谱</span>
 
           <el-button
             style="float: right; padding: 3px 0; margin-right: 0px"
@@ -222,7 +223,7 @@
         ></KGVisiableRescuePlanNetwork>
       </el-card>
 
-      <el-card class="box-card" style="width: 400px">
+      <el-card class="box-card" >
         <div slot="header" class="clearfix">
           <span>实体类信息</span>
         </div>
@@ -236,7 +237,10 @@
         </el-descriptions>
         <el-divider />
         <!--以下为实体属性的表格-->
-        <el-descriptions
+        <!-- 设置滚动条 -->
+        <div   :style="{'max-height': this.timeLineHeight + 'px' }"
+                style="overflow-y:scroll;">
+          <el-descriptions
           v-for="(item, index) in nodeByName"
           class="margin-top"
           title="实体属性"
@@ -287,6 +291,8 @@
             />
           </el-descriptions-item>
         </el-descriptions>
+        </div>
+        
       </el-card>
     </div>
 
@@ -351,6 +357,8 @@ export default {
   },
   data() {
     return {
+      // 滚动条显示
+      timeLineHeight: "",
       //图例显示
       imgUrl: "1.jpg",
       //记录所有知识图谱的名称
@@ -412,6 +420,8 @@ export default {
         nodeKey: "",
         relNodeKey: ""
       },
+      //搜索关键词
+      searchkey:"",
       kgInfo: {},
       //显示设置
       visibleSettings: {
@@ -458,6 +468,11 @@ export default {
     };
   },
   mounted() {
+    this.timeLineHeight = document.documentElement.clientHeight - 210;
+    window.onresize = () => {
+      this.timeLineHeight = document.documentElement.clientHeight - 210;
+    };
+
     this.handleSettings();
     // this.initDbInfo()
     this.getInstNameList();
@@ -873,15 +888,15 @@ export default {
 }
 
 .box-card {
-  width: 300px;
-  height: 100%;
+  width: 700px;
+  height: auto;
   margin-top: 20px;
   margin-left: 20px;
 }
 
 .box-card-2 {
-  width: 650px;
-  height: 550px;
+  width: 600px;
+  height: 650px;
   margin-top: 20px;
   margin-left: 20px;
 }

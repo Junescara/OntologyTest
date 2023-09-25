@@ -115,6 +115,27 @@ export default {
   },
   methods: {
     initKG() {
+      if(this.currentName=="工程险情"){
+        this.loading = true
+      let _this = this
+      rescuePlanApi.getRescueInitLink(this.currentName,this.currentType,"5084A06CAF2C4AF097DC8B2D9A75F406")
+        .then(({data}) => {
+          console.log("initKG-->data:",data)
+          this.finalNodeVos = data.data.finalNodeVos;
+          //console.log("initKG-->finalNodeVos:",this.finalNodeVos)
+          const datas = VisUtils.handleRelLinkVisiblesHashNode3(data)
+          _this.getCurrentNodeType(data.data)
+          const container = this.$refs.KGNetwork;
+          _this.options = VisUtils.setVisibleOption(4)
+          _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
+          _this.network.on('click',function(properties){
+            let selectedNodeId = properties.nodes[0];
+            _this.sendMessage(selectedNodeId);
+          })
+
+        })
+      }
       this.loading = true
       let _this = this
       rescuePlanApi.getRescuePlanLink(this.currentName,this.currentType,"5084A06CAF2C4AF097DC8B2D9A75F406")

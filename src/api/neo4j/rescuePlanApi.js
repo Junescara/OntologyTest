@@ -24,5 +24,19 @@ export default {
       params: {name: name, type: type, database: database}
     })
   },
+  getRescueInitNode(name, type, database) {
+    return request({
+      url: `/kg/analyze/rescuePlan/getRescueInitNode`,
+      method: 'get',
+      params: {name: name, type: type, database: database}
+    })
+  },
+  getRescueInitLink(name, type, database) {
+    return request({
+      url: `/kg/analyze/rescuePlan/getRescueInitLink`,
+      method: 'get',
+      params: {name: name, type: type, database: database}
+    })
+  },
 
 }

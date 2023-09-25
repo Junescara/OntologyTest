@@ -477,6 +477,9 @@ export default {
     // this.initDbInfo()
     this.getInstNameList();
     this.getInstDangerList();
+    this.rescuePlan.currentName="工程险情";
+    this.currentType="工程险情";
+    this.getContingencyPlanTwo();
     
   },
   
@@ -519,15 +522,21 @@ export default {
           for (let item of list) {
             let nodeType = item.nodeType;
             for (let t of nodeType) {
+            
               console.log("t:" + t);
               if (t !== "5084A06CAF2C4AF097DC8B2D9A75F406") {
                 nodeNameKey = t + "名称";
               }
             }
-
-            let map = new Map(Object.entries(item.node));
-            let name = map.get(nodeNameKey);
-            this.DangerList.push(name);
+             
+              let map = new Map(Object.entries(item.node));
+              let name = map.get(nodeNameKey);
+              if(name!="工程险情"){
+               this.DangerList.push(name);
+              }
+            
+             
+           
           }
          
         }).catch(error => {
@@ -801,6 +810,34 @@ export default {
       console.log("查询已完成！");
     },
 
+    //工程险情-工程险情查询
+    getContingencyPlanTwo() {
+      this.rescuePlan.plans.抢险方案对象 = {};
+      console.log("Init接口调用了哦");
+      rescuePlanApi
+        .getRescueInitNode(
+          
+          this.rescuePlan.currentName,this.currentType,"5084A06CAF2C4AF097DC8B2D9A75F406")
+        .then(({ data }) => {
+          console.log("Init接口调用第二次了哦");
+          let map = new Map(Object.entries(data.data));
+          let keys = map.keys();
+          for (let key of keys) {
+            console.log("key", key);
+            console.log("key", map.get(key));
+            this.rescuePlan.plans.抢险方案对象[key] = map.get(key);
+          }
+          console.log(this.rescuePlan.plans);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+
+      this.rescuePlan.drawFlag = !this.rescuePlan.drawFlag;
+
+      console.log("查询已完成！");
+    },
     handleSettings() {
       this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag;
       this.visibleSettings.length = this.flags.lengthFlag;

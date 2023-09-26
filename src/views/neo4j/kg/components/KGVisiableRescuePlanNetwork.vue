@@ -161,12 +161,19 @@ export default {
       let selectedNodeName = null;
       let nodeType = null;
 
-      //console.log("initKG-->finalNodeVos:",this.finalNodeVos)
+      console.log("initKG-->finalNodeVos:",this.finalNodeVos)
       for (let item of this.finalNodeVos){
         if(item.node._id == selectedNodeId){
-          selectedNodeName = item.node.抢护方法名称;
-          nodeType = item.nodeType;
-          break
+
+          if(item.nodeType[1] == "抢护方法"){
+            selectedNodeName = item.node.抢护方法名称;
+            nodeType = "抢护方法";
+            break
+          }else{
+            selectedNodeName = item.node.工程险情名称;
+            nodeType = "工程险情";
+            break
+          }
         }
       }
       if(selectedNodeName!=null)

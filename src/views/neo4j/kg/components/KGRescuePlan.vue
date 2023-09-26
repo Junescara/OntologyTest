@@ -202,13 +202,12 @@
       <el-card class="box-card-2">
         <div slot="header" class="clearfix">
           <span>知识图谱</span>
+          <el-row style="float: right; padding: 3px 0; margin-right: 0px">
+            <el-button type="text" icon="el-icon-back" @click="handleReturn">返回</el-button>
+            <el-button type="text" icon="el-icon-house" @click="handleTop">首页</el-button>
+            <el-button  @click="handleKGSize(1)" type="text" icon="el-icon-zoom-in">查看大图</el-button>
+          </el-row>
 
-          <el-button
-            style="float: right; padding: 3px 0; margin-right: 0px"
-            @click="handleKGSize(1)"
-            type="text"
-            >查看大图</el-button
-          >
           <br />
         </div>
 
@@ -220,6 +219,7 @@
           :visible-settings="this.visibleSettings"
           :current-type="this.currentType"
           @legend="getLegend"
+          @selectedNodeName="getSelectedNodeName"
         ></KGVisiableRescuePlanNetwork>
       </el-card>
 
@@ -377,6 +377,10 @@ export default {
       currentDbName: null,
       //选定类型监测对象类型
       currentType: null,
+      //当前查询所处的层次,,默认第0层首页层
+      currentLevel:0,
+      //上一次查询第二层的险情名.用于返回
+      lastDangerName:null,
       //记录查询出的节点名称
       nodeNames: [],
       //记录查询出的节点id和名称
@@ -472,15 +476,13 @@ export default {
     window.onresize = () => {
       this.timeLineHeight = document.documentElement.clientHeight - 210;
     };
-
+    this.currentLevel = 0;
     this.handleSettings();
     // this.initDbInfo()
     this.getInstNameList();
     this.getInstDangerList();
-    this.rescuePlan.currentName="工程险情";
-    this.currentType="工程险情";
-    this.getContingencyPlanTwo();
-    
+    //显示首页图谱
+    this.handleTop();
   },
   
   created() {
@@ -588,11 +590,14 @@ export default {
       this.$emit("goBack", data);
     },
     changnode(){
+      //跳转第二层时记录险情名
+      this.currentLevel = 1;
+      this.lastDangerName = this.DangerId;
+
       this.currentType="工程险情";
-      
        this.getNodeByDangerName(this.DangerId);
        this.methodList=[];
-       this.getDangerLink;
+       this.getDangerLink();
        this.getContingencyPlan();
        
     },
@@ -602,6 +607,8 @@ export default {
     },
     //选择实体菜单
     clearData() {
+      this.currentLevel = 0;
+      this.lastDangerName = null;
      this.methodList=[];
      this.getDangerLink;
      
@@ -632,6 +639,7 @@ export default {
     clear() {
       // this.nodeNames = null
       this.nodeByName = null;
+      this.handleTop();
     },
     getRelByName(name) {
       if (this.currentRelType === "下级行政区划") {
@@ -838,6 +846,31 @@ export default {
 
       console.log("查询已完成！");
     },
+
+    //捕获图谱点击事件,查询并展示详细图谱
+    getSelectedNodeName(selectedNodeName,nodeType){
+      console.log("returnSelectedNodeName:",selectedNodeName,"return nodeType:" ,nodeType);
+      if(nodeType == "抢护方法"){
+        this.currentLevel = 2;
+        this.rescuePlan.currentName = selectedNodeName;
+        this.key.nodeKey = selectedNodeName;
+        this.currentType = nodeType;
+        this.getNodeByName(selectedNodeName);
+      }else{
+        this.currentLevel = 1;
+        this.lastDangerName = selectedNodeName;
+        this.rescuePlan.currentName = "工程险情"
+        this.currentType="工程险情";
+
+        this.getNodeByDangerName(selectedNodeName);
+        this.methodList=[];
+        this.getDangerLink();
+        this.getContingencyPlan();
+      }
+
+
+      //this.getContingencyPlan();
+    },
     handleSettings() {
       this.visibleSettings.visibleTypeFlag = this.flags.visibleTypeFlag;
       this.visibleSettings.length = this.flags.lengthFlag;
@@ -857,7 +890,36 @@ export default {
       }
 
       this.KGSize = value;
+    },
+    handleTop(){
+      this.DangerId = null;
+      this.currentLevel = 0;
+      this.lastDangerName = null;
+      this.rescuePlan.currentName="工程险情";
+      this.currentType="工程险情";
+      this.getContingencyPlanTwo();
+    },
+    handleReturn(){
+      //从第三层返回第二层
+      if(this.currentLevel == 2){
+        this.currentLevel = 1;
+        this.rescuePlan.currentName = "工程险情"
+        this.currentType="工程险情";
+        this.getNodeByDangerName(this.lastDangerName);
+        this.methodList=[];
+        this.getDangerLink();
+        this.getContingencyPlan();
+      }else if(this.currentLevel == 1){
+        //从第二层返回首页
+        this.currentLevel = 0;
+        this.lastDangerName = null;
+        this.handleTop();
+      }else{
+        this.lastDangerName = null;
+      }
+
     }
+
   },
   computed: {
     disabled() {

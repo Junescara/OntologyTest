@@ -678,6 +678,7 @@ export default {
       aggregateApi
         .getNodeLabels(this.currentId)
         .then(response => {
+
           this.nodeLabelList = response.data.data.nodeLabels;
           console.log(this.nodeLabelList);
         })

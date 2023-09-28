@@ -1257,11 +1257,7 @@ export default {
           // },
           // size: 40, // 节点大小
           physics: false, // 关闭物理引擎
-          title: `
-                  实时水位：1000m
-                  警戒水位：1050m
-                  保证水位：1080m
-                  `, // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
+          //title: "", // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
           widthConstraint: { // 节点的最小宽度与最大宽度
             // maximum: 100,
           }

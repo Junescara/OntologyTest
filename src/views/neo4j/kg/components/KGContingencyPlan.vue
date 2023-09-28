@@ -532,7 +532,7 @@ export default {
       this.currentType = null;
       aggregateApi.getNodeLabels(this.currentId)
         .then((response) => {
-          this.nodeLabelList = response.data.data.nodeLabels
+          //this.nodeLabelList = response.data.data.nodeLabels
           console.log(this.nodeLabelList)
         })
         .catch((error) => {

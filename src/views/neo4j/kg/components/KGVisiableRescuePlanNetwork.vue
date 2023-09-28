@@ -108,7 +108,7 @@ export default {
       {from: 2, to: 5},
       {from: 5, to: 6},
       {from: 6, to: 7},
-    ]);
+    ])
   },
   mounted() {
 
@@ -146,6 +146,7 @@ export default {
           const datas = VisUtils.handleRelLinkVisiblesHashNode3(data)
           _this.getCurrentNodeType(data.data)
           const container = this.$refs.KGNetwork;
+          //为了去除结点悬停事件,删除了options中的title属性
           _this.options = VisUtils.setVisibleOption(4)
           _this.network = new Vis.Network(container, datas, _this.options);
           _this.setLoading()
@@ -255,7 +256,7 @@ export default {
     }
   },
   watch:{
-    visibleSettings:{
+    /*visibleSettings:{
       handler(newValue,oldValue) {
         this.settings.visibleTypeFlag = newValue.visibleTypeFlag
         this.settings.length = newValue.length
@@ -264,7 +265,7 @@ export default {
         // this.initKG()
       },
       deep:true
-    },
+    },*/
     currentNodeType:{
       handler(newValue,oldValue) {
         this.$emit("legend",this.currentNodeType)

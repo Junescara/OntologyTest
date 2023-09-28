@@ -205,7 +205,7 @@
           <el-row style="float: right; padding: 3px 0; margin-right: 0px">
             <el-button type="text" icon="el-icon-back" @click="handleReturn">返回</el-button>
             <el-button type="text" icon="el-icon-house" @click="handleTop">首页</el-button>
-            <el-button  @click="handleKGSize(1)" type="text" icon="el-icon-zoom-in">查看大图</el-button>
+            <!-- <el-button  @click="handleKGSize(1)" type="text" icon="el-icon-zoom-in">查看大图</el-button> -->
           </el-row>
 
           <br />

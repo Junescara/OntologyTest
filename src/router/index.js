@@ -105,6 +105,35 @@ const routes = [
           menu: false,
           visByUrl: false,
         },
+      },  {
+        path: "InstanceView",
+        name: "InstanceView",
+        component: () => import("@/views/system/InstanceView.vue"),
+        meta: {
+          title: "本体查看",
+          menu: false,
+          visByUrl: false,
+        },
+      },
+      {
+        path: "InstanceAdd",
+        name: "InstanceAdd",
+        component: () => import("@/views/system/InstanceAdd.vue"),
+        meta: {
+          title: "本体查看",
+          menu: false,
+          visByUrl: false,
+        },
+      },
+      {
+        path: "InstanceWatch",
+        name: "InstanceWatch",
+        component: () => import("@/views/system/InstanceWatch.vue"),
+        meta: {
+          title: "本体查看",
+          menu: false,
+          visByUrl: false,
+        },
       },
     ],
   },

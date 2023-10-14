@@ -37,10 +37,27 @@
       <el-col :span="8">
         <el-card>
           <el-descriptions column="1" title="实例管理">
-            <template>  <div>    <slot name="extra"></slot>  </div></template>
+            <template> <div> <slot name="extra"></slot> </div></template>
             <template v-slot:extra>
-              <el-button type="primary" size="small" @click="toKGHistoryCase">查看详情</el-button>
+              
+        <el-button  type="primary" size="small"  @click="router.push('InstanceView')">
+          查看
+        </el-button>
+
+   
+        <el-button type="primary" size="small" @click="router.push('InstanceAdd')">
+         新增
+        </el-button>
+   
+   
+        <el-button type="primary"  size="small" @click="router.push('InstanceWatch')">
+         浏览
+        </el-button>
+    
+             
+            
             </template>
+           
             <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
             <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
           </el-descriptions>

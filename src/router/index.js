@@ -110,7 +110,7 @@ const routes = [
         name: "InstanceView",
         component: () => import("@/views/system/InstanceView.vue"),
         meta: {
-          title: "本体查看",
+          title: "实例查看",
           menu: false,
           visByUrl: false,
         },
@@ -120,7 +120,7 @@ const routes = [
         name: "InstanceAdd",
         component: () => import("@/views/system/InstanceAdd.vue"),
         meta: {
-          title: "本体查看",
+          title: "实例添加",
           menu: false,
           visByUrl: false,
         },
@@ -130,7 +130,7 @@ const routes = [
         name: "InstanceWatch",
         component: () => import("@/views/system/InstanceWatch.vue"),
         meta: {
-          title: "本体查看",
+          title: "实例浏览",
           menu: false,
           visByUrl: false,
         },

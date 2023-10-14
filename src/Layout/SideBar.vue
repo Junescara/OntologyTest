@@ -13,6 +13,7 @@
       <el-icon>
         <House />
       </el-icon>
+     
       <span>首页</span>
     </el-menu-item>
     <!-- 子菜单 -->
@@ -30,6 +31,8 @@
         :index="`/${subItem.path}`"
         >{{ subItem.meta.title }}</el-menu-item
       >
+      
+      
     </el-sub-menu>
     <!-- 菜单伸缩按钮 -->
     <el-button

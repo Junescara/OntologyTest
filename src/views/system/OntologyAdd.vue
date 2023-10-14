@@ -1,110 +1,57 @@
-<template  >
+<template>
 
- <div>
+
    
   
 
-<span>
- <div>
-  <el-form label-width="200px" inline label-position="left"  align="right">
- 
-   <el-form-item left-padding="300px">
-     <el-button  type="primary"  @click="OntoView">
-       查看
-     </el-button>
-   </el-form-item>
-   <el-form-item  >
-     <el-button type="primary"  @click="OntoAdd">
-      新增
-     </el-button>
-   </el-form-item>
-   <el-form-item >
-     <el-button type="primary"  @click="OntoWatch">
-      浏览
-     </el-button>
-   </el-form-item>
- </el-form>
- </div>
- 
-</span>
- 
-<el-divider></el-divider>
-<br>
-
-<el-form label-width="120px" inline align="left"><el-form-item>
-        <el-input align="left"
-          placeholder="请输入实例名"
-          clearable
-          v-model="searchContent"
-          width="auto"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" :icon="Search" @click="searchInst"
-          >搜索</el-button
-        >
-      </el-form-item></el-form>
-
-<el-table :data="tableData1.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
-    <el-table-column prop="name" label="本体名称" width="auto" align="left" />
-    <el-table-column  prop="labels" label="标签" width="auto" align="left">
-    </el-table-column>
-    <el-table-column  prop="neoId" label="编号" width="auto" align="left"></el-table-column>
-    <el-table-column label="操作" width="180">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            size="small"
-            @click="
-              this.$router.push({
-                path: 'ontology-result',
-                query: { neoId: scope.row.neoId },
-              })
-            "
-            >查看结点</el-button
-          >
-        </template>
-      </el-table-column>
-   
-  </el-table>
- 
-  <el-pagination align='center' 
-  @size-change="handleSizeChange1"
-              @current-change="handleCurrentChange1"
-              :current-page="pageNum"
-              :page-sizes="[2, 5, 10, 20]"
-              :page-size="pageSize1"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="tableData1.length">
-</el-pagination>
- 
-
-
-<br><br><br><br><br><br><br>
-<div class="top-content">
-    <h5>构建本体</h5>
-  </div>
-<div style="width: 200px;height: 100px;">
-    
-    <el-form-item label="本体名称">
+   <span>
+    <div>
+     <el-form label-width="200px" inline label-position="left"  align="left">
+        <el-form-item >
       <el-input  v-model="insName" placeholder="请输入本体名" clearable >
       </el-input>
     </el-form-item>
- </div>
+    <el-form-item>
+       
+    <el-button type="success" @click="create" >提交</el-button>
+
+    </el-form-item>
+    <el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item>
+      <el-form-item left-padding="300px">
+        <el-button  type="primary"  @click="OntoView">
+          查看
+        </el-button>
+      </el-form-item>
+      <el-form-item  >
+        <el-button type="primary"  @click="OntoAdd">
+         新增
+        </el-button>
+      </el-form-item>
+      <el-form-item >
+        <el-button type="primary"  @click="OntoWatch">
+         浏览
+        </el-button>
+      </el-form-item>
+    </el-form>
+    </div>
+    
+   </span>
+
+    
+   <el-divider></el-divider>
+
 <div align="left">请选择此本体应有的属性：</div>
  <div align-items: center>
   <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto" border stripe :header-cell-class-name="headerBg"  @selection-change="handleSelectionChange">
-    <el-table-column type="selection" width="auto" align="left" />
-    <el-table-column  prop="code" label="属性编号" width="auto" align="left">
-    </el-table-column>
+    <el-table-column type="selection" width="auto" align="left" /> 
     <el-table-column  prop="name" label="属性名" width="auto" align="left"></el-table-column>
     <el-table-column  prop="rangeItem.range1,rangeItem.range2" width="auto" align="left" label="范围" >
 <template #default="scope" >
 <div v-if="scope.row.rangeItem"><el-tag size="medium">{{ scope.row.rangeItem.range1 }}~{{ scope.row.rangeItem.range2 }}</el-tag></div>
 </template>
 </el-table-column>
-<el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column> 
+<el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
+
    
   </el-table>
 
@@ -123,11 +70,7 @@
  </div>
 
 <br>
- <el-row class="mb-6" justify="end">
-    <el-button type="success" @click="create" >提交</el-button>
-  </el-row>
 
-  </div>
 </template>
 
 
@@ -202,15 +145,6 @@ export default {
       )
 
     },
-    OntoView(){
-      this.$router.push("OntoView");
-    },
-    OntoAdd(){
-      this.$router.push("OntoAdd");
-    },
-    OntoWatch(){
-      this.$router.push("OntoWatch");
-    },
                 //每页条数改变时触发 选择一页显示多少行
                 handleSizeChange(val) {
                   console.log(`每页 ${val} 条`);
@@ -263,6 +197,15 @@ export default {
         });
       });
 },
+OntoView(){
+      this.$router.push("OntoView");
+    },
+    OntoAdd(){
+      this.$router.push("OntoAdd");
+    },
+    OntoWatch(){
+      this.$router.push("OntoWatch");
+    },
 
 searchInst(){
   Ontolist({name:this.searchContent}).then(res=>{

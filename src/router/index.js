@@ -76,6 +76,36 @@ const routes = [
           visByUrl: false,
         },
       },
+      {
+        path: "OntoView",
+        name: "OntoView",
+        component: () => import("@/views/system/OntologyView.vue"),
+        meta: {
+          title: "本体查看",
+          menu: false,
+          visByUrl: false,
+        },
+      },
+      {
+        path: "OntoAdd",
+        name: "OntoAdd",
+        component: () => import("@/views/system/OntologyAdd.vue"),
+        meta: {
+          title: "本体查看",
+          menu: false,
+          visByUrl: false,
+        },
+      },
+      {
+        path: "OntoWatch",
+        name: "OntoWatch",
+        component: () => import("@/views/system/OntologyWatch.vue"),
+        meta: {
+          title: "本体查看",
+          menu: false,
+          visByUrl: false,
+        },
+      },
     ],
   },
 ];

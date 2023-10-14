@@ -1,13 +1,13 @@
 <template>
   <div class="container">
-    <p>本体-实例构建平台</p>
+    <p>流域水循环关系平台</p>
     <br>
     <div><el-row :gutter="15">
       <el-col :span="8">
         <el-card class="box-card" style="width: 100%">
           <el-descriptions column="1" title="本体管理">
           
-            <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
+            <el-descriptions-item label="所属分类">流域水循环关系对象本体库</el-descriptions-item>
             <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
             <template> <div> <slot name="extra"></slot> </div></template>
             <template v-slot:extra>
@@ -58,7 +58,7 @@
             
             </template>
            
-            <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
+            <el-descriptions-item label="所属分类">流域水循环关系对象本体库</el-descriptions-item>
             <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
           </el-descriptions>
          </el-card></el-col>

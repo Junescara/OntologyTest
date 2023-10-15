@@ -19,8 +19,16 @@
         </el-button>
       </el-form-item>
     </el-form>
+
     </div>
-    
+    <div style="display: flex">
+            <KGVisibleVisNetwork>
+                :currentNode = ""
+                :visibleSettings = {}
+                :kgType = "0"
+
+            </KGVisibleVisNetwork>
+        </div>
    </span>
 
     
@@ -28,7 +36,11 @@
 </template>
 
 <script>
+    import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
 export default {
+    components:{
+        KGVisibleVisNetwork
+    },
     methods:{
         OntoView(){
       this.$router.push("OntoView");

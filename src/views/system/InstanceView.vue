@@ -52,7 +52,7 @@
 
 
 
-  <el-table :data="tableData1.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
+  <el-table :data="tableData.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
     <el-table-column  prop="labels" label="所属本体类型" width="auto" align="left">
     </el-table-column>
     <el-table-column prop="name" label="所属本体名称" width="auto" align="left" />
@@ -99,6 +99,7 @@ import { ElMessageBox, ElMessage } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { Ontolist } from "../../api/module/ontology";
+import {inslist, queryInsList} from "@/api/module/instance.js";
 
 const router = useRouter();
 
@@ -112,7 +113,7 @@ export default {
       ontoName:"啊啊啊",
       insName:"",
       ontoId:["a","b"],
-      searchContent:"",
+      searchContent:"啊啊啊啊",
       rangeItem:[],
       time:"2023-1-1",
       creater:"竹子",
@@ -139,7 +140,6 @@ export default {
     // 请求分页查询数据
     this.load()
     this.load1()
-
   },
 
 
@@ -148,9 +148,10 @@ export default {
   methods: {
 
     load() {
-      listbasic({ type:"p"}).then(res => {
+      queryInsList(["水利实例", "实例主节点"]).then(res => {
         this.tableData.time="2023-1-1";
         this.tableData = res.data;
+        console.log("2423525"+res.data)
         this.total = res.total;
       })
 
@@ -221,13 +222,13 @@ export default {
       });
     },
 
-    // searchInst(){
-    //   inslist({name:this.searchContent}).then(res=>{
-    //
-    //     this.tableData1=res.data;
-    //     this.total=res.total;
-    //   })
-    // },
+    searchInst(){
+      inslist({name:this.searchContent}).then(res=>{
+
+        this.tableData1=res.data;
+        this.total=res.total;
+      })
+    },
 
 
 
@@ -248,12 +249,12 @@ import {ref} from "vue";
 
 let ontoId = ref(null); //当前选择本体源neoid
 // 搜索实例
-const searchInst = () => {
-  queryInsList([], searchContent.value).then(({ data }) => {
-    insList.length = 0;
-    insList.push(...data);
-  });
-};
+// const searchInst = () => {
+//   queryInsList([], searchContent.value).then(({ data }) => {
+//     insList.length = 0;
+//     insList.push(...data);
+//   });
+// };
 </script>
 
 <style lang="less" scoped>

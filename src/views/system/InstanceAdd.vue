@@ -171,7 +171,8 @@ const initData = () => {
     ontoList.push(...data);
   });
   // 获取实例列表
-  queryInsList().then(({ data }) => {
+  const labels = [ "水利实例", "实例主节点"];
+  queryInsList(labels).then(({ data }) => {
     insList.length = 0;
     insList.push(...data);
   });
@@ -194,7 +195,8 @@ const handleInsCreate = () => {
       return;
     }
 
-    createIns(ontoId.value, insName.value, []).then(({ data }) => {
+    createIns(ontoId.value, insName.value).then(({ data }) => {
+      console.log("ontoId.value是",ontoId.value);
       console.log(data);
       initData();
       router.push({ path: "/entity-result", query: { neoId: data.neoId } });

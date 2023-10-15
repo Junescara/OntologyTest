@@ -9,7 +9,7 @@ const headers = {
  * @param name  实例名称
  * @returns
  */
-export function createIns(neoId, name) {
+export function createIns(neoId,name) {
   return request({
     url: `${baseURL}/instantiate-instance`,
     method: "post",
@@ -57,7 +57,7 @@ export function udpateInst(neoId, value) {
  * @param {*} name
  * @returns
  */
-export function queryInsList(labels, name) {
+export function queryInsList(labels) {
   return request({
     url: `${baseURL}/list-main-inst`,
     method: "post",
@@ -66,5 +66,19 @@ export function queryInsList(labels, name) {
       labels,
       name,
     },
+  });
+}
+
+/*
+* 查询实例
+* */
+export function inslist( name) {
+  return request({
+    url: `${baseURL}/list-onto-inst`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: name,
   });
 }

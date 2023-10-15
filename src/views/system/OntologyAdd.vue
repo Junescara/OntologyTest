@@ -45,9 +45,9 @@
   <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto" border stripe :header-cell-class-name="headerBg"  @selection-change="handleSelectionChange">
     <el-table-column type="selection" width="auto" align="left" /> 
     <el-table-column  prop="name" label="属性名" width="auto" align="left"></el-table-column>
-    <el-table-column  prop="rangeItem.range1,rangeItem.range2" width="auto" align="left" label="范围" >
+    <el-table-column  prop="rangeItem.lowerBound,rangeItem.upperBound" width="auto" align="left" label="范围" >
 <template #default="scope" >
-<div v-if="scope.row.rangeItem"><el-tag size="medium">{{ scope.row.rangeItem.range1 }}~{{ scope.row.rangeItem.range2 }}</el-tag></div>
+<div v-if="scope.row.rangeItem"><el-tag size="medium">{{ scope.row.rangeItem.lowerBound }}~{{ scope.row.rangeItem.upperBound }}</el-tag></div>
 </template>
 </el-table-column>
 <el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>

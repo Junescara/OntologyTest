@@ -1,21 +1,45 @@
 <template>
 
 
-   
-  
+
+
 
    <span>
-    <div>
+    <div >
      <el-form label-width="200px" inline label-position="left"  align="left">
+      <el-form-item >
+            <el-select
+          v-model="ontoType"
+          @change="changeType($event,ontoType)"
+          placeholder="请选择添加的本体类型"
+          clearable
+          filterable
+        >
+        <el-option label="对象本体" value="object" selected></el-option>
+      <el-option label="关系本体" value="relation"></el-option>
+      <el-option label="属性本体" value="attribute"></el-option>
+        </el-select>
+        </el-form-item>
         <el-form-item >
-      <el-input  v-model="insName" placeholder="请输入本体名" clearable >
+      <el-input  v-model="name" placeholder="请输入本体名" clearable >
       </el-input>
     </el-form-item>
     <el-form-item>
        
-    <el-button type="success" @click="create" >提交</el-button>
+    <el-button v-show="object"  type="success" @click="create" >提交</el-button>
 
     </el-form-item>
+    <el-form-item>
+       
+       <el-button v-show="attribute"  type="success" @click="Attcreate" >提交</el-button>
+   
+       </el-form-item>
+
+       <el-form-item>
+       
+       <el-button v-show="relation"  type="success" @click="Recreate" >提交</el-button>
+   
+       </el-form-item>
     <el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item>
       <el-form-item left-padding="300px">
         <el-button  type="primary"  @click="OntoView">
@@ -37,17 +61,42 @@
     
    </span>
 
-    
-   <el-divider></el-divider>
+   <div v-show="attribute" >
 
-<div align="left">请选择此本体应有的属性：</div>
+    
+<el-form label-width="100px" label-position="left" align="left" inline >
+<el-form-item>
+  <el-input  v-model="dimension" placeholder="请输入单位" clearable >
+      </el-input>
+</el-form-item>
+<el-form-item>
+  <el-input  v-model="lowerBound" placeholder="请输入下限" clearable >
+      </el-input>
+</el-form-item>
+<el-form-item>
+  <el-input  v-model="upperBound" placeholder="请输入上限" clearable >
+      </el-input>
+</el-form-item>
+</el-form>
+</div>
+
+
+<div v-show="object">
+  <el-divider ></el-divider>
+</div>
+   
+   <div v-show="attribute">
+
+  </div>
+<div v-show="object">
+  <div align="left">请选择此本体应有的属性：</div>
  <div align-items: center>
   <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto" border stripe :header-cell-class-name="headerBg"  @selection-change="handleSelectionChange">
     <el-table-column type="selection" width="auto" align="left" /> 
     <el-table-column  prop="name" label="属性名" width="auto" align="left"></el-table-column>
-    <el-table-column  prop="rangeItem.range1,rangeItem.range2" width="auto" align="left" label="范围" >
+    <el-table-column  prop="rangeItem.lowerBound,rangeItem.upperBound" width="auto" align="left" label="范围" >
 <template #default="scope" >
-<div v-if="scope.row.rangeItem"><el-tag size="medium">{{ scope.row.rangeItem.range1 }}~{{ scope.row.rangeItem.range2 }}</el-tag></div>
+<div v-if="scope.row.rangeItem"><el-tag size="medium">{{ scope.row.rangeItem.lowerBound }}~{{ scope.row.rangeItem.upperBound }}</el-tag></div>
 </template>
 </el-table-column>
 <el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
@@ -69,6 +118,77 @@
  
  </div>
 
+ 
+</div>
+
+<div v-show="attribute">
+  <div align="left">现有属性：</div>
+ <div align-items: center>
+  <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto" border stripe :header-cell-class-name="headerBg"  @selection-change="handleSelectionChange">
+    <el-table-column  prop="name" label="属性名" width="auto" align="left"></el-table-column>
+    <el-table-column  prop="rangeItem.lowerBound,rangeItem.upperBound" width="auto" align="left" label="范围" >
+<template #default="scope" >
+<div v-if="scope.row.rangeItem"><el-tag size="medium">{{ scope.row.rangeItem.lowerBound }}~{{ scope.row.rangeItem.upperBound }}</el-tag></div>
+</template>
+</el-table-column>
+<el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
+
+   
+  </el-table>
+
+  <el-pagination align='center' 
+  @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="pageNum"
+              :page-sizes="[2, 5, 10, 20]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="tableData.length">
+</el-pagination>
+</div>
+<br>
+ 
+ </div>
+
+ <div v-show="relation">
+  <el-form  label-width="100px" label-position="left" align="left" inline >
+<el-form-item>
+  <el-select
+          v-model="AId"
+          placeholder="请选择A本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList1"
+            :key="index"
+            :label="item.name "
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+
+<el-form-item>
+  <el-select
+          v-model="BId"
+          placeholder="请选择B本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList2"
+            :key="index"
+            :label="item.name"
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+  </el-form>
+  
+</div>
+<br>
+ 
+
 <br>
 
 </template>
@@ -78,10 +198,12 @@
 import {createOnto} from "@/api/module/ontology.js";
 import { listbasic } from "@/api/module/ontology.js";
 import {loadOntoInfo} from "@/api/module/ontology.js";
-import { ElMessageBox, ElMessage } from "element-plus";
+import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { Ontolist } from "../../api/module/ontology";
+import { createRel, Ontolist, ontoprop } from "../../api/module/ontology";
+const ontoList = reactive([]); //本体源列表
+
 
 const router = useRouter();
 
@@ -92,7 +214,7 @@ export default {
                 return {
                     tableData:  [],
                     tableData1:  [],
-      insName:"",
+      name:"",
       searchContent:"",
       rangeItem:[],
       multipleSelection: [],
@@ -101,6 +223,18 @@ export default {
       isCollapse: false,
       sideWidth: 200,
       logoTextShow: true,
+      ontoType:"",
+      dimmension:"",
+      lowerBound:"",
+      upperBound:"",
+      object:false,
+      attribute:false,
+      relation:false,
+      AId:"",
+      BId:"",
+      ontoList1:[],
+      ontoList2:[],
+      OntoName:"",
       headerBg: 'headerBg',
       headerBg1:'headerBg',
       currentPage: 1, // 当前页码
@@ -137,12 +271,38 @@ export default {
     },
     load1() {
       Ontolist({name:""}).then(res=>{
+        this.ontoList1 = [];
+        for(let i = 0 ; i<res.data.length; i++){
+          this.ontoList1.push(res.data[i]);
+        }
+        console.log(this.ontoList1);
 
-        this.tableData1=res.data;
-        this.total=res.total;
+        this.ontoList2 = [];
+        for(let i = 0 ; i<res.data.length; i++){
+          this.ontoList2.push(res.data[i]);
+        }
+        console.log(this.ontoList2);
+        
+
       }
 
       )
+
+    },
+    changeType(ontoType){
+      if(ontoType=="object")
+       this.object=true;
+      else{
+        this.object=false;
+      } if(ontoType=="relation")
+       this.relation=true;
+      else{
+        this.relation=false;
+      }if(ontoType=="attribute")
+       this.attribute=true;
+      else{
+        this.attribute=false;
+      }
 
     },
                 //每页条数改变时触发 选择一页显示多少行
@@ -177,9 +337,20 @@ export default {
                     console.log(val)
                    this.multipleSelection = val
             },
-            
+            Attcreate(){
+            ontoprop({type:"1",name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
+              ElMessage.success("构建成功");
+              this.$router.go(0);
+            });
+            },
+            Recreate(){
+             createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
+              ElMessage.success("构建成功");
+              this.$router.go(0);
+            });
+            },
             create() {
-      let insName = ref("");
+      let name = ref("");
       let propsClzs = this.multipleSelection.map((v) => v.code);
       ElMessageBox.confirm("确定创建该本体吗？", "warning", {
         confirmButtonText: "确认",
@@ -187,7 +358,7 @@ export default {
         type: "warning",
         title: "创建确认",
       }).then(() => {
-        createOnto({ propsClzs, name: this.insName }).then(({ data }) => {
+        createOnto({ propsClzs, name: this.name }).then(({ data }) => {
           // console.log(data);
           ElMessage.success("构建成功");
           this.$router.push({

@@ -1,5 +1,5 @@
 import request from "@/api/request";
-const baseURL = "/dbtest";
+const baseURL = "/db";
 /**
  * 添加本体
  * @param {*} propsClzs
@@ -14,7 +14,7 @@ export function createOnto(propsClzs, name) {
     headers: {
       "Content-Type": "application/json",
     },
-    data: propsClzs,
+    data: propsClzs,name
   });
 }
 
@@ -59,5 +59,32 @@ export function Ontolist( name) {
       "Content-Type": "application/json",
     },
     data: name,
+  });
+}
+
+/**
+ * 创建属性
+ * @param {*} name
+ * @returns
+ */
+export function ontoprop(type,name,dimension,lowerBound,upperBound) {
+  return request({
+    url: `${baseURL}/insert-onto-prop`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: type,name,dimension,lowerBound,upperBound
+  });
+}
+
+export function createRel(from,to,name) {
+  return request({
+    url: `${baseURL}/create-common-rel`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: from,to,name
   });
 }

@@ -165,7 +165,7 @@ export default {
           //    (this.nodesArray[i].color = { background: "pink" });
           this.nodesArray.push({
             id: res.data.propObjList[i - 1].neoId,
-            label: res.data.propObjList[i - 1].label,
+            label: res.data.propObjList[i - 1].name,
             color: "pink",
           });
         }

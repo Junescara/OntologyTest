@@ -183,8 +183,16 @@
           />
         </el-select>
 </el-form-item>
+<el-divider></el-divider>
   </el-form>
-  
+  <div style="display: flex">
+            <KGVisibleVisNetwork>
+                :currentNode = ""
+                :visibleSettings = {}
+                :kgType = "0"
+
+            </KGVisibleVisNetwork>
+        </div>
 </div>
 <br>
  
@@ -204,12 +212,15 @@ import { useRouter } from "vue-router";
 import { createRel, Ontolist, ontoprop } from "../../api/module/ontology";
 const ontoList = reactive([]); //本体源列表
 
-
+import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
 const router = useRouter();
 
 
 
 export default {
+  components:{
+        KGVisibleVisNetwork
+    },
             data() {
                 return {
                     tableData:  [],

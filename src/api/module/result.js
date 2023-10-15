@@ -1,5 +1,5 @@
 import server from "@/api/request";
-const baseURL = "/dbtest";
+const baseURL = "/db";
 
 //获取本体
 export function getOntology(neoId) {

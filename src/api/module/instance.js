@@ -1,5 +1,5 @@
 import request from "@/api/request";
-const baseURL = "/dbtest";
+const baseURL = "/db";
 const headers = {
   "Content-Type": "application/json",
 };

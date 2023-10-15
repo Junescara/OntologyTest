@@ -5,7 +5,7 @@
   
 
    <span>
-    <div>
+    <div >
      <el-form label-width="200px" inline label-position="left"  align="left">
       <el-form-item >
             <el-select
@@ -15,7 +15,7 @@
           clearable
           filterable
         >
-        <el-option label="对象本体" value="object"></el-option>
+        <el-option label="对象本体" value="object" selected></el-option>
       <el-option label="关系本体" value="relation"></el-option>
       <el-option label="属性本体" value="attribute"></el-option>
         </el-select>
@@ -32,6 +32,12 @@
     <el-form-item>
        
        <el-button v-show="attribute"  type="success" @click="Attcreate" >提交</el-button>
+   
+       </el-form-item>
+
+       <el-form-item>
+       
+       <el-button v-show="relation"  type="success" @click="Recreate" >提交</el-button>
    
        </el-form-item>
     <el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item>
@@ -75,7 +81,7 @@
 </div>
 
 
-<div v-show="!attribute">
+<div v-show="object">
   <el-divider ></el-divider>
 </div>
    
@@ -143,6 +149,46 @@
 <br>
  
  </div>
+
+ <div v-show="relation">
+  <el-form  label-width="100px" label-position="left" align="left" inline >
+<el-form-item>
+  <el-select
+          v-model="AId"
+          placeholder="请选择A本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList1"
+            :key="index"
+            :label="item.name "
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+
+<el-form-item>
+  <el-select
+          v-model="BId"
+          placeholder="请选择B本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList2"
+            :key="index"
+            :label="item.name"
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+  </el-form>
+  
+</div>
+<br>
+ 
+
 <br>
 
 </template>
@@ -155,7 +201,8 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { Ontolist, ontoprop } from "../../api/module/ontology";
+import { createRel, Ontolist, ontoprop } from "../../api/module/ontology";
+const ontoList = reactive([]); //本体源列表
 
 
 const router = useRouter();
@@ -182,6 +229,12 @@ export default {
       upperBound:"",
       object:false,
       attribute:false,
+      relation:false,
+      AId:"",
+      BId:"",
+      ontoList1:[],
+      ontoList2:[],
+      OntoName:"",
       headerBg: 'headerBg',
       headerBg1:'headerBg',
       currentPage: 1, // 当前页码
@@ -218,9 +271,19 @@ export default {
     },
     load1() {
       Ontolist({name:""}).then(res=>{
+        this.ontoList1 = [];
+        for(let i = 0 ; i<res.data.length; i++){
+          this.ontoList1.push(res.data[i]);
+        }
+        console.log(this.ontoList1);
 
-        this.tableData1=res.data;
-        this.total=res.total;
+        this.ontoList2 = [];
+        for(let i = 0 ; i<res.data.length; i++){
+          this.ontoList2.push(res.data[i]);
+        }
+        console.log(this.ontoList2);
+        
+
       }
 
       )
@@ -277,6 +340,13 @@ export default {
             Attcreate(){
             ontoprop({type:"1",name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
               ElMessage.success("构建成功");
+              this.$router.go(0);
+            });
+            },
+            Recreate(){
+             createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
+              ElMessage.success("构建成功");
+              this.$router.go(0);
             });
             },
             create() {

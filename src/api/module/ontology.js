@@ -77,3 +77,14 @@ export function ontoprop(type,name,dimension,lowerBound,upperBound) {
     data: type,name,dimension,lowerBound,upperBound
   });
 }
+
+export function createRel(from,to,name) {
+  return request({
+    url: `${baseURL}/create-common-rel`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: from,to,name
+  });
+}

@@ -41,7 +41,7 @@ const routes = [
       {
         path: "ontology",
         rule: "ontology",
-        component: () => import("@/views/system/Ontology.vue"),
+        component: () => import("@/views/system/OntologyView.vue"),
         meta: {
           menu: true,
           title: "本体构建",
@@ -50,7 +50,7 @@ const routes = [
       {
         path: "instance",
         name: "instance",
-        component: () => import("@/views/system/Instance.vue"),
+        component: () => import("@/views/system/InstanceView.vue"),
         meta: {
           menu: true,
           title: "实例构建",

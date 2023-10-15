@@ -205,10 +205,11 @@ export default {
           //    this.codeConversion(this.nodesArray[i].label),
           //    (this.nodesArray[i].color = { background: "pink" });
           this.nodesArray.push({
-            id: res.data.propClzList[i - 1],
-            label: this.codeConversion(res.data.propClzList[i - 1]),
+            id: res.data.propClzList[i - 1].neoId,
+            label: res.data.propClzList[i - 1].name,
             color: "pink",
           });
+          console.log(this.nodesArray);
         }
         this.edgesArray = [];
         //给edgesArray数组赋值

@@ -1,14 +1,14 @@
 <template>
   <div class="container">
-    <p>本体-实例构建平台</p>
+    <p>流域水循环关系平台</p>
     <br>
-    <div><el-row :gutter="15">
-      <el-col :span="8">
+    <div><el-row :gutter="80">
+      <el-col :span="12">
         <el-card class="box-card" style="width: 100%">
           <el-descriptions column="1" title="本体管理">
           
-            <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
-            <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
+            <el-descriptions-item label="所属分类">流域水循环关系对象本体库</el-descriptions-item>
+            <el-descriptions-item label="用途">用于规范水利对象属性定义及对象间空间、水流等基础语义关系</el-descriptions-item>
             <template> <div> <slot name="extra"></slot> </div></template>
             <template v-slot:extra>
               
@@ -30,11 +30,17 @@
             
             </template>
           </el-descriptions>
+          <div>
+            <div></div>
+              <el-avatar size="medium" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
+              <div style="display: inline-block "  class="text item">竹子</div>
+              <div style="display: inline-block;padding-left: 200px; "  class="text item"> 2022-11-2 12:00:00</div>
+            </div>
       </el-card>
       </el-col>
     
 
-      <el-col :span="8">
+      <el-col :span="12">
         <el-card>
           <el-descriptions column="1" title="实例管理">
             <template> <div> <slot name="extra"></slot> </div></template>
@@ -58,23 +64,19 @@
             
             </template>
            
-            <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
-            <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
+            <el-descriptions-item label="所属分类">流域水循环关系对象本体库</el-descriptions-item>
+            <el-descriptions-item label="用途">对水循环图谱中的实例进行管理</el-descriptions-item>
+            
           </el-descriptions>
+          <div>
+              <el-avatar size="medium" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
+              <div style="display: inline-block "  class="text item">竹子</div>
+              <div style="display: inline-block;padding-left: 200px; "  class="text item"> 2022-11-2 12:00:00</div>
+            </div>
          </el-card></el-col>
 
 
-         <el-col :span="8">
-        <el-card>
-          <el-descriptions column="1" title="流域管理">
-            <template>  <div>    <slot name="extra"></slot>  </div></template>
-            <template v-slot:extra>
-              <el-button type="primary" size="small" @click="toKGHistoryCase">查看详情</el-button>
-            </template>
-            <el-descriptions-item label="所属分类">图探索</el-descriptions-item>
-            <el-descriptions-item label="用途">这是一段描述这是一段描述这是一段描述</el-descriptions-item>
-          </el-descriptions>
-         </el-card></el-col>
+         
     
     </el-row></div>
    

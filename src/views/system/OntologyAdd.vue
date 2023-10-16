@@ -186,10 +186,8 @@
 <el-divider></el-divider>
   </el-form>
   <div style="display: flex">
-            <KGVisibleVisNetwork>
-                :currentNode = ""
-                :visibleSettings = {}
-                :kgType = "0"
+            <KGVisibleVisNetwork  :kgType = "1">
+
 
             </KGVisibleVisNetwork>
         </div>

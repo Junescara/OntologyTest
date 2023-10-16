@@ -160,7 +160,7 @@ let currentPage = ref(1);
 let total = computed(() => {
   return insList.length;
 });
-let pageSize = ref(5);
+let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
 
 // 初始化数据

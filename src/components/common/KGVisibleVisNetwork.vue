@@ -113,43 +113,92 @@ export default {
   },
   methods: {
     initKG() {
-      this.loading = true
-      let _this = this
-      //默认显示图，用于页面初始化时候的显示
-      relationApi.getDefaultRelLinks().then(({data}) => {
-        console.log(data);
-          let nodeVos = [];
-          let relVos = [];
-
-          for (let item of data.nodeVos)
-          {
-              let nodeItem = {
-                  id: item.neoId,
-                  label: item.name,
-              }
-              nodeVos.push(nodeItem)
-          }
-
-          for (let item of data.relVos)
-          {
-              let linkItem = {
-                  from: item.from,
-                  to: item.to,
-                  label: item.name
-              }
-              relVos.push(linkItem)
-          }
-        const datas = {
-              nodes:nodeVos,
-              edges:relVos
-        };
-          console.log(datas);
-        const container = this.$refs.KGNetwork;
-        _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
-        _this.network = new Vis.Network(container, datas, _this.options);
-        _this.setLoading()
-      })
+        console.log("kgType"+this.kgType);
+      if(this.kgType == 1)
+          this.getOntologyKG();
+      else if(this.kgType == 2)
+          this.getInstanceKG();
     },
+
+
+      getOntologyKG(){
+          this.loading = true
+          let _this = this
+          //默认显示图，用于页面初始化时候的显示
+          relationApi.getOntologyKGLinks().then(({data}) => {
+              console.log(data);
+              let nodeVos = [];
+              let relVos = [];
+
+              for (let item of data.nodeVos)
+              {
+                  let nodeItem = {
+                      id: item.neoId,
+                      label: item.name,
+                  }
+                  nodeVos.push(nodeItem)
+              }
+
+              for (let item of data.relVos)
+              {
+                  let linkItem = {
+                      from: item.from,
+                      to: item.to,
+                      label: item.name
+                  }
+                  relVos.push(linkItem)
+              }
+              const datas = {
+                  nodes:nodeVos,
+                  edges:relVos
+              };
+              console.log(datas);
+              const container = this.$refs.KGNetwork;
+              _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
+              _this.network = new Vis.Network(container, datas, _this.options);
+              _this.setLoading()
+          })
+      },
+
+      getInstanceKG(){
+          this.loading = true
+          let _this = this
+          //默认显示图，用于页面初始化时候的显示
+          relationApi.getInstanceKGLinks().then(({data}) => {
+              console.log(data);
+              let nodeVos = [];
+              let relVos = [];
+
+              for (let item of data.nodeVos)
+              {
+                  let nodeItem = {
+                      id: item.neoId,
+                      label: item.name,
+                  }
+                  nodeVos.push(nodeItem)
+              }
+
+              for (let item of data.relVos)
+              {
+                  let linkItem = {
+                      from: item.from,
+                      to: item.to,
+                      label: item.name
+                  }
+                  relVos.push(linkItem)
+              }
+              const datas = {
+                  nodes:nodeVos,
+                  edges:relVos
+              };
+              console.log(datas);
+              const container = this.$refs.KGNetwork;
+              _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
+              _this.network = new Vis.Network(container, datas, _this.options);
+              _this.setLoading()
+          })
+      },
+
     setLoading(){
       const _this = this
       this.network.once('afterDrawing',() => {
@@ -196,7 +245,13 @@ export default {
           this.KGSize.height = 800
         }
       },
-    }
+    },
+      kgType: {
+          handler(newValue, oldValue) {
+              //this.initKG();
+          },
+          deep: true
+      }
   }
 }
 </script>

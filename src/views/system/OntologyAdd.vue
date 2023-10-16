@@ -355,7 +355,7 @@ export default {
             Recreate(){
              createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
               ElMessage.success("构建成功");
-              this.$router.go(0);
+              this.$router.push("OntoWatch");
             });
             },
             create() {
@@ -377,7 +377,7 @@ export default {
         });
       });
 },
-OntoView(){
+    OntoView(){
       this.$router.push("OntoView");
     },
     OntoAdd(){

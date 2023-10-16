@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div >
     <p>流域水循环关系平台</p>
     <br>
     <div><el-row :gutter="80">

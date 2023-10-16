@@ -127,11 +127,11 @@ export default {
       headerBg1:'headerBg',
       currentPage: 1, // 当前页码
       //total: 20, // 总条数
-      pageSize: 2 // 每页的数据条数
+      pageSize: 10 // 每页的数据条数
       ,
       currentPage1: 1, // 当前页码
       total: 20, // 总条数
-      pageSize1: 2 // 每页的数据条数
+      pageSize1: 10 // 每页的数据条数
 
 
     }

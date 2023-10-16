@@ -235,7 +235,7 @@ export default {
       sideWidth: 200,
       logoTextShow: true,
       ontoType:"",
-      dimmension:"",
+      dimension:"",
       lowerBound:"",
       upperBound:"",
       object:false,

@@ -2,7 +2,11 @@
    <span>
     <div>
      <el-form label-width="200px" inline label-position="left"  align="right">
-
+         <el-form-item left-padding="300px">
+        <el-button  type="primary"  @click="handelReturn">
+          返回
+        </el-button>
+      </el-form-item>
       <el-form-item left-padding="300px">
         <el-button  type="primary"  @click="InstanceView">
           查看
@@ -23,7 +27,7 @@
     </div>
 
        <div style="display: flex">
-            <KGVisibleVisNetwork :kgType = "2">
+            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "2">
 
             </KGVisibleVisNetwork>
         </div>
@@ -39,6 +43,9 @@ export default {
         KGVisibleVisNetwork
     },
   methods:{
+      handelReturn(){
+          this.$refs.KGVisibleVisNetwork.handleReturn();
+      },
     InstanceView(){
       this.$router.push("InstanceView");
     },

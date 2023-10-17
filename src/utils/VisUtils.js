@@ -1014,7 +1014,7 @@ export default {
           font: {
             align: 'center',
             color: '#000000',
-            size: 20,
+            size: 15,
             // vadjust: 10, // 标签文本的垂直位置，值越大离节点越远
           },
           labelHighlightBold: false,
@@ -1024,8 +1024,9 @@ export default {
           //   unselected: '/static/images/icon_normal.svg',
           //   selected: '/static/images/icon_selected.svg',
           // },
-          size: 20, // 节点大小
-          physics: false, // 关闭物理引擎
+          size: 15, // 节点大小
+          physics: true, // 关闭物理引擎
+          mass:0.12,
           title: '实体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
           widthConstraint: { // 节点的最小宽度与最大宽度
             maximum: 100,
@@ -1078,7 +1079,7 @@ export default {
           // physics: false,
           font: {
             //字体配置
-            size: 20
+            size: 15
           },
           shadow: true,
           smooth: {
@@ -1119,6 +1120,9 @@ export default {
         // 物理引擎
         physics: {
           enabled: true,
+            hierarchicalRepulsion: {
+                nodeDistance: 300,
+            },
           barnesHut: {
             gravitationalConstant: -12000, //斥力
             centralGravity: 0.1,
@@ -1138,7 +1142,7 @@ export default {
         },
         // 布局
         layout: {
-          randomSeed: 20000,
+          randomSeed: 1,
         //   hierarchical: {
         //     enabled: true,
         //     levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字
@@ -1337,7 +1341,7 @@ export default {
         },
         // 布局
         layout: {
-          randomSeed: 1000,
+          randomSeed: 1,
           // hierarchical: {
           //   enabled: true,
           //   levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字

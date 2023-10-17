@@ -31,5 +31,21 @@ export default {
             }
         )
     },
+    getOntologyNodeById(NodeId){
+        return request({
+                url: `/db/load-ontology`,
+                method: 'get',
+                params: {neoId: NodeId}
+            }
+        )
+    },
+    getInstanceNodeById(NodeId){
+        return request({
+                url: `/db/load-instance`,
+                method: 'post',
+            params: {neoId: NodeId}
+            }
+        )
+    }
 
 }

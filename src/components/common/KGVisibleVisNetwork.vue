@@ -28,11 +28,18 @@ export default {
   name: "KGVisibleVisNetwork",
   data() {
     return {
-      nodes: null,//顶点集
-      edges: null,//边集
+
+      datas:{},  //图谱数据集.包含边集合与点集合
+      arrtibuteDatas:{},//属性层图谱数据集
       options: null,//图谱配置
 
-      network: null,
+        network:null,
+        KGLevel:0,
+
+        //nodes:null,
+        //edges:null,
+
+      //network: null,
       currentNodeId:null,
       settings:{
         visibleTypeFlag: 5,
@@ -44,8 +51,8 @@ export default {
       currentDbId:null,
       currentDbName:null,
       KGSize:{
-        width:950,
-        height:700,
+        width:1200,
+        height:800,
       },
       visibles:{
         nullVisible:false
@@ -66,8 +73,7 @@ export default {
     kgType: {
         type:Number,
         default:0
-    }
-      ,
+    },
   },
   created() {
     this.currentDbId = localStorage.getItem('instanceId')
@@ -84,128 +90,304 @@ export default {
 
 
 
-    this.nodes = new Vis.DataSet([  // nodes是节点
-      {id: 1, label: 'Node 1',level: 1},
-      {id: 2, label: 'Node 2',level: 2},
-      {id: 8, label: 'Node 8',level: 2},
-      {id: 9, label: 'Node 9',level: 2},
-      {id: 10, label: 'Node 10',level: 2},
-      {id: 3, label: 'Node 3',level: 2},
-      {id: 4, label: 'Node 4',level: 3},
-      {id: 5, label: 'Node 5',level: 3},
-      {id: 6, label: 'Node 6',level: 4},
-      {id: 7, label: 'Node 7',level: 5},
-    ]);
-    this.edges = new Vis.DataSet([  // edges是线
-      {from: 1, to: 2},  // 决定了节点从左往右的顺序
-      {from: 1, to: 3},
-      {from: 1, to: 8},
-      {from: 1, to: 9},
-      {from: 1, to: 10},
-      {from: 2, to: 4},
-      {from: 2, to: 5},
-      {from: 5, to: 6},
-      {from: 6, to: 7},
-    ]);
+
   },
   mounted() {
+      //this.KGLevel = 0
     this.initKG()
   },
   methods: {
+
     initKG() {
         console.log("kgType"+this.kgType);
-      if(this.kgType == 1)
+      if(this.kgType == 1)//本体图
           this.getOntologyKG();
-      else if(this.kgType == 2)
+      else if(this.kgType == 2)//实例图
           this.getInstanceKG();
     },
 
 
+      /**
+       * 获取并显示本体图谱
+       */
       getOntologyKG(){
           this.loading = true
-          let _this = this
+
           //默认显示图，用于页面初始化时候的显示
           relationApi.getOntologyKGLinks().then(({data}) => {
-              console.log(data);
-              let nodeVos = [];
-              let relVos = [];
-
-              for (let item of data.nodeVos)
-              {
-                  let nodeItem = {
-                      id: item.neoId,
-                      label: item.name,
-                  }
-                  nodeVos.push(nodeItem)
-              }
-
-              for (let item of data.relVos)
-              {
-                  let linkItem = {
-                      from: item.from,
-                      to: item.to,
-                      label: item.name
-                  }
-                  relVos.push(linkItem)
-              }
-              const datas = {
-                  nodes:nodeVos,
-                  edges:relVos
-              };
-              console.log(datas);
-              const container = this.$refs.KGNetwork;
-              _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
-              _this.network = new Vis.Network(container, datas, _this.options);
-              _this.setLoading()
+              this.handleKGData(data)
           })
       },
 
+      /**
+       * 获取并显示实例图谱
+       */
       getInstanceKG(){
           this.loading = true
-          let _this = this
+
           //默认显示图，用于页面初始化时候的显示
           relationApi.getInstanceKGLinks().then(({data}) => {
-              console.log(data);
-              let nodeVos = [];
-              let relVos = [];
-
-              for (let item of data.nodeVos)
-              {
-                  let nodeItem = {
-                      id: item.neoId,
-                      label: item.name,
-                  }
-                  nodeVos.push(nodeItem)
-              }
-
-              for (let item of data.relVos)
-              {
-                  let linkItem = {
-                      from: item.from,
-                      to: item.to,
-                      label: item.name
-                  }
-                  relVos.push(linkItem)
-              }
-              const datas = {
-                  nodes:nodeVos,
-                  edges:relVos
-              };
-              console.log(datas);
-              const container = this.$refs.KGNetwork;
-              _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
-              _this.network = new Vis.Network(container, datas, _this.options);
-              _this.setLoading()
+              this.handleKGData(data)
           })
       },
 
+      /**
+       * 对http请求获得的data数据进行处理,并且显示
+       * @param data
+       */
+      handleKGData(data){
+          console.log("handleKGData ==> data",data);
+          let _this = this
+          let nodes = [];
+          let edges = [];
+
+          for (let item of data.nodeVos)
+          {
+              let nodeItem = {
+                  id: item.neoId,
+                  label: item.name,
+                  /*parentNode:"",
+                  foldState:1//1是折叠状态,0是非折叠状态,2是附属结点,不需要折叠*/
+              }
+              nodes.push(nodeItem)
+          }
+
+          for (let item of data.relVos)
+          {
+              let linkItem = {
+                  from: item.from,
+                  to: item.to,
+                  label: item.name,
+                  /*parentNode:""*/
+              }
+              edges.push(linkItem)
+          }
+          this.datas = {
+              nodes:nodes,
+              edges:edges,
+          };
+          console.log("handleKGData",this.datas);
+          const container = this.$refs.KGNetwork;
+          _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
+          this.network = new Vis.Network(container, this.datas, _this.options);;
+
+          this.network.on('click',function(properties){
+              console.log(properties);
+              _this.handleKGClick(properties);
+          })
+
+          _this.setLoading()
+      },
     setLoading(){
       const _this = this
-      this.network.once('afterDrawing',() => {
+        this.network.once('afterDrawing',() => {
         console.log("图像加载完成")
         _this.loading = false
       })
     },
+
+      /**
+       * 处理图谱结点的点击事件
+       */
+      handleKGClick (properties){
+          let _this = this
+
+          if(this.KGLevel == 1)
+              return;
+
+          console.log("properties",properties)
+          if(properties.edges.length!=0){
+              //处理边的点击事件
+
+          }
+          if(properties.nodes.length!=0){
+              //处理顶点结点的点击事件
+
+              if(this.kgType==1){
+                  //处理图谱是本体图的情况
+
+
+                  relationApi.getOntologyNodeById(properties.nodes[0]).then(({data}) => {
+                      console.log("getOntologyNodeById", data)
+                      this.handleClickData(data,this.kgType);
+
+
+                      /*//查看该结点是否是折叠状态
+                  var isFloded = true;
+
+
+                  this.nodes.forEach((index, item) => {
+                      if(item.parentNode == properties.nodes[0]){
+                          isFloded = false;
+                      }
+                  });
+
+
+                  console.log("isFloded",isFloded)
+                  if(isFloded){
+                      //被点击的结点无附属结点,则需要查询属性,有属性时添加结点
+                      relationApi.getNodeById(properties.nodes[0]).then(({data}) => {
+                          console.log("getNodeById",data)
+                          data.propClzList.forEach((index, item) => {
+
+                              let nodeItem = {
+                                  id: item.neoId,
+                                  label: item.name,
+                                  parentNode:properties.nodes[0],
+                                  foldState:2
+                              }
+                              _this.nodes.add(nodeItem)
+                          });
+
+                          data.propClzList.forEach((index, item) => {
+
+                              let linkItem = {
+                                  from: item.mainNeoId,
+                                  to: item.neoId,
+                                  label: "拥有",
+                                  parentNode:properties.nodes[0]
+                              }
+                              _this.edges.add(linkItem)
+                          });
+                          /!*for (let item of data.propClzList)
+                          {
+                              let linkItem = {
+                                  from: item.mainNeoId,
+                                  to: item.neoId,
+                                  label: "拥有",
+                                  parentNode:properties.nodes[0]
+                              }
+                              _this.edges.add(linkItem)
+                          }*!/
+
+                          console.log("getNodeById===>this.datas",_this.datas)
+                          window.network.redraw();
+                          //window.network.getSeed();
+                          window.network.setData(_this.datas);
+
+                      })
+
+                  }else{
+                      //sub_nodes.length!=0,则去除该结点的下属结点
+                      var newNodeList = [];
+                      var newEdgeList = [];
+
+                      this.nodes.forEach((index, item) => {
+                          if(item.parentNode != properties.nodes[0]){
+                              newNodeList.push(item);
+                          }
+                      })
+                      /!*for (let item of this.datas.nodes){
+                          if(item.parentNode != properties.nodes[0]){
+                              newNodeList.push(item);
+                          }
+                      }*!/
+                      this.edges.forEach((index, item) => {
+                          if(item.parentNode != properties.nodes[0]){
+                              newEdgeList.push(item);
+                          }
+                      })
+                      for (let item of this.datas.edges){
+                          if(item.parentNode != properties.nodes[0]){
+                              newEdgeList.push(item);
+                          }
+                      }
+                      _this.nodeList = newNodeList;
+                      _this.edgeList = newEdgeList;
+
+                      _this.datas = {
+                          nodes:_this.nodeList,
+                          edges:_this.edgeList
+                      }
+                      //window.network.redraw();
+                      console.log("setData",_this.datas);
+                      window.network.getSeed();
+                      window.network.setData(_this.datas);
+
+                  }
+                  }*/
+
+
+                  })
+              }else if(this.kgType == 2){
+
+                  relationApi.getInstanceNodeById(properties.nodes[0]).then(({data}) => {
+                      console.log("getInstanceNodeById", data)
+                      this.handleClickData(data,this.kgType);
+                  })
+              }
+
+          }
+      },
+      handleClickData(data,kgType){
+          console.log("handleClickData ==> this.KGLevel ", this.KGLevel )
+          let dataList =  [];
+          if(kgType == 1){
+              dataList = data.propClzList;
+          }else if(kgType == 2){
+              dataList = data.propObjList;
+          }
+          if (dataList.length == 0) {
+              this.$message.info('未查询到属性。')
+          } else {
+
+              this.KGLevel = 1;
+              let arrtibuteNodes =[];
+              let arrtibuteEdges = [];
+              arrtibuteNodes.push({
+                  id: data.neoId,
+                  label: data.name,
+                  /*parentNode:properties.nodes[0],
+                  foldState:2*/
+              })
+
+              for(var item of dataList){
+
+                  let nodeItem = {
+                      id: item.neoId,
+                      label: item.name,
+                      /*parentNode:properties.nodes[0],
+                      foldState:2*/
+                  }
+                  let edgeItem = {
+                      from: data.neoId,
+                      to: item.neoId,
+                      label: "拥有",
+                  }
+                  arrtibuteNodes.push(nodeItem);
+                  arrtibuteEdges.push(edgeItem);
+
+              }
+              console.log("handleClickData ==> arrtibuteNodes", arrtibuteNodes)
+              console.log("handleClickData ==> arrtibuteEdges", arrtibuteEdges)
+
+              //使用setData方法更新数据会报错,使用window.network会有其他问题,直接new新的network
+              const container = this.$refs.KGNetwork;
+              this.network = new Vis.Network(container, {nodes: arrtibuteNodes, edges: arrtibuteEdges}, this.options);
+              //this.network.setData({nodes: arrtibuteNodes, edges: arrtibuteEdges});
+              let _this = this
+              this.network.on('click',function(properties){
+                  console.log(properties);
+                  _this.handleKGClick(properties);
+              })
+          }
+      },
+      handleReturn(){
+          console.log("handleReturn ==> this.KGLevel ", this.KGLevel )
+          if(this.KGLevel == 1){
+              this.KGLevel = 0;
+              const container = this.$refs.KGNetwork;
+              this.network = new Vis.Network(container, this.datas, this.options);;
+              //this.network.setData(this.datas);
+              let _this = this
+              this.network.on('click',function(properties){
+                  console.log(properties);
+                  _this.handleKGClick(properties);
+              })
+          }
+      },
+
+
 
   },
   watch:{

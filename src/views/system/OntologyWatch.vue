@@ -2,7 +2,11 @@
    <span>
     <div>
      <el-form label-width="200px" inline label-position="left"  align="right">
-    
+    <el-form-item left-padding="300px">
+        <el-button  type="primary"  @click="handelReturn">
+          返回
+        </el-button>
+      </el-form-item>
       <el-form-item left-padding="300px">
         <el-button  type="primary"  @click="OntoView">
           查看
@@ -22,7 +26,7 @@
 
     </div>
     <div style="display: flex">
-            <KGVisibleVisNetwork :kgType = "1">
+            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1"  >
 
             </KGVisibleVisNetwork>
         </div>
@@ -35,10 +39,20 @@
 <script>
     import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
 export default {
+    data() {
+        return {
+        level:0,
+    }},
+    mounted() {
+
+    },
     components:{
         KGVisibleVisNetwork
     },
     methods:{
+        handelReturn(){
+            this.$refs.KGVisibleVisNetwork.handleReturn();
+        },
         OntoView(){
       this.$router.push("OntoView");
     },

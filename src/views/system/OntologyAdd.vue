@@ -8,7 +8,7 @@
     <div >
      <el-form inline label-position="left"  align="left">
       <el-form-item>
-        <el-text>本体类型选择：</el-text>
+        <el-text>本体选择：</el-text>
       </el-form-item>
       <el-form-item >
             <el-select
@@ -36,9 +36,7 @@
     <el-button v-show="objectrel"  type="success" @click="ObjectRel" >提交</el-button>
     </el-form-item>
       <el-form-item >
-        <el-button  type="primary"  @click="handelReturn">
-          返回
-        </el-button>
+      
       </el-form-item>
       <el-form-item >
         <el-button  type="primary"  @click="OntoView">
@@ -191,11 +189,26 @@
           />
         </el-select>
 </el-form-item>
+<el-form-item>
+  <el-button  type="primary"  @click="handelReturn" aria-placeholder="">
+          返回
+        </el-button>
+</el-form-item>
 <el-divider></el-divider>
   </el-form>
-  <div style="display: flex;overflow:auto" >
+  
+  <div style="display: flex;overflow:auto" align="right">
+    
             <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1">
+              
             </KGVisibleVisNetwork>
+            <div>
+              
+            </div>
+            
+        </div>
+        <div>
+
         </div>
 </div>
 
@@ -242,7 +255,7 @@
   <el-table :data="tableData1.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto" border stripe :header-cell-class-name="headerBg"  @selection-change="handleSelectionChange">
     <el-table-column  prop="startList" label="开始本体" width="auto" align="left"></el-table-column>
     <el-table-column  prop="endList" label="结束本体" width="auto" align="left" ></el-table-column>
-<el-table-column  prop="name" label="名称" width="auto" align="left"></el-table-column>
+<el-table-column  prop="name" label="关系名称" width="auto" align="left"></el-table-column>
 <el-table-column label="操作" width="180">
            <template #default="scope">
              <el-button

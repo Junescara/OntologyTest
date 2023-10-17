@@ -1,28 +1,28 @@
 <template >
     <span>
     <div>
-     <el-form label-width="200px" inline label-position="left"  align="left">
-        <el-form-item>
-            <el-select
-                v-model="ontoId"
-                placeholder="请选择本体类型"
-                clearable
-                filterable
-            >
-            </el-select>
-            <el-option
-                        v-for="(item, index) in ontoList"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.neoId"
-            />
-        </el-form-item>
+     <el-form label-width="300px" inline label-position="left"  align="left">
+<!--        <el-form-item>-->
+<!--            <el-select-->
+<!--                v-model="ontoId"-->
+<!--                placeholder="请选择本体类型"-->
+<!--                clearable-->
+<!--                filterable-->
+<!--            >-->
+<!--            </el-select>-->
+<!--            <el-option-->
+<!--                        v-for="(item, index) in ontoList"-->
+<!--                        :key="index"-->
+<!--                        :label="item.name"-->
+<!--                        :value="item.neoId"-->
+<!--            />-->
+<!--        </el-form-item>-->
               <el-form-item>
            <el-input align="left"
-                     placeholder="请输入实例名进行搜索"
+                     placeholder="请输入对象本体实例名进行搜索"
                      clearable
                      v-model="searchContent"
-                     width="auto"
+                     style="width: 250px;"
            />
          </el-form-item>
          <el-form-item>
@@ -35,7 +35,7 @@
        <el-form-item  >
         <el-button type="primary" :icon="Plus" @click="
                  this.$router.push({
-                   path: 'instanceAdd',
+                   path: 'instanc eAdd',
                  })
                ">
          新增实例
@@ -53,13 +53,12 @@
 
 
   <el-table :data="tableData.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
-    <el-table-column  prop="labels" label="所属本体类型" width="auto" align="left">
-    </el-table-column>
-    <el-table-column prop="name" label="所属本体名称" width="auto" align="left" />
+
+    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
 
     <el-table-column  prop="name" label="实例名称" width="auto" align="left"></el-table-column>
-    <el-table-column  prop="time" label="创建时间" width="auto" align="left"></el-table-column>
-    <el-table-column  prop="creater" label="创建人" width="auto" align="left"></el-table-column>\
+    <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
+    <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>\
     <el-table-column label="浏览" width="180">
       <template #default="scope">
         <el-button
@@ -86,7 +85,7 @@
                  :page-sizes="[2, 5, 10, 20]"
                  :page-size="pageSize1"
                  layout="total, sizes, prev, pager, next, jumper"
-                 :total="tableData1.length">
+                 :total="tableData.length">
   </el-pagination>
 </template>
 
@@ -110,10 +109,10 @@ export default {
     return {
       tableData:  [],
       tableData1:  [],
-      ontoName:"啊啊啊",
+      ontoName:"",
       insName:"",
       ontoId:["a","b"],
-      searchContent:"啊啊啊啊",
+      searchContent:"",
       rangeItem:[],
       time:"2023-1-1",
       creater:"竹子",
@@ -127,48 +126,51 @@ export default {
       headerBg1:'headerBg',
       currentPage: 1, // 当前页码
       //total: 20, // 总条数
-      pageSize: 2 // 每页的数据条数
+      pageSize: 10 // 每页的数据条数
       ,
       currentPage1: 1, // 当前页码
       total: 20, // 总条数
-      pageSize1: 2 // 每页的数据条数
-
+      pageSize1: 10 ,// 每页的数据条数
+      labels:[
+        "水利对象", "实例主节点"
+      ]
 
     }
   },
   created() {
     // 请求分页查询数据
     this.load()
-    this.load1()
+    //this.load1()
   },
-
-
-
 //方法
   methods: {
 
+
+
+
+    //加载实例（查询所有实例主节点）
     load() {
-      queryInsList(["水利实例", "实例主节点"]).then(res => {
+      queryInsList(this.labels).then(res => {
         this.tableData.time="2023-1-1";
         this.tableData = res.data;
-        console.log("2423525"+res.data)
-        this.total = res.total;
+        console.log("res.total是"+res.total)
+        //this.total = res.total;
       })
 
 
 
     },
-    load1() {
-      Ontolist({name:""}).then(res=>{
-            console.log("res.data是");
-            console.log(res.data);
-            this.tableData1=res.data;
-            this.total=res.total;
-          }
-
-      )
-
-    },
+    // load1() {
+    //   Ontolist({name:""}).then(res=>{
+    //         console.log("res.data是");
+    //         console.log(res.data);
+    //         this.tableData1=res.data;
+    //         //this.total=res.total;
+    //       }
+    //
+    //   )
+    //
+    // },
     //每页条数改变时触发 选择一页显示多少行
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
@@ -223,10 +225,11 @@ export default {
     },
 
     searchInst(){
-      inslist({name:this.searchContent}).then(res=>{
+      inslist(["水利对象"],this.searchContent).then(res=>{
 
-        this.tableData1=res.data;
+        this.tableData=res.data;
         this.total=res.total;
+        this.created();
       })
     },
 

@@ -1,8 +1,45 @@
 <template >
     <span>
     <div>
+
 <el-form label-width="200px" inline label-position="left"  align="left">
 
+        <el-form-item >
+            <el-select
+                v-model="ontoType"
+                @change="changeType($event,ontoType)"
+                placeholder="请选择实例的本体类型"
+                clearable
+                filterable
+            >
+        <el-option label="对象本体" value="object" ></el-option>
+      <el-option label="关系本体" value="relation"></el-option>
+        </el-select>
+<!--        </el-form-item>-->
+
+<!--        <el-form-item >-->
+<!--        <el-select-->
+<!--            v-model="ontoId"-->
+<!--            placeholder="请选择实例所属本体"-->
+<!--            clearable-->
+<!--            filterable-->
+<!--        >-->
+<!--          <el-option-->
+<!--              v-for="(item, index) in ontoList"-->
+<!--              :key="index"-->
+<!--              :label="item.name"-->
+<!--              :value="item.neoId"-->
+<!--          />-->
+<!--        </el-select>-->
+<!--        </el-form-item>-->
+<!--      <el-form-item label="">-->
+<!--        <el-input v-model="insName" placeholder="请输入实例名称进行创建" clearable />-->
+   </el-form-item>-->
+      <!-- 提交按钮 -->
+      <el-form-item>
+
+     <div v-show="object">
+      <el-form-item>
         <el-select
             v-model="ontoId"
             placeholder="请选择实例所属本体"
@@ -16,12 +53,71 @@
               :value="item.neoId"
           />
         </el-select>
-      <el-form-item label="实例名称">
+        </el-form-item>
+      <el-form-item label="">
         <el-input v-model="insName" placeholder="请输入实例名称进行创建" clearable />
       </el-form-item>
-      <!-- 提交按钮 -->
+        <el-button v-show="object"  type="success" @click="handleInsCreate" >创建对象实例</el-button>
+      </div>
+
+         <div v-show="relation">
+        <el-form  label-width="100px" label-position="left" align="left" inline >
       <el-form-item>
-        <el-button type="primary" @click="handleInsCreate" :icon="Plus">创建实例</el-button>
+        <el-select
+            v-model="AId"
+            placeholder="请选择实例A"
+            clearable
+            filterable
+        >
+                <el-option
+                    v-for="(item, index) in insList"
+                    :key="index"
+                    :label="item.name "
+                    :value="item.neoId"
+                />
+              </el-select>
+      </el-form-item>
+
+      <el-forom-item>
+        <el-select
+            v-model="insRelation"
+            placeholder="请选择关系"
+            clearable
+            filterable
+        >
+                <el-option
+                    v-for="(item, index) in insRelList"
+                    :key="index"
+                    :label="item.name "
+                    :value="item.neoId"
+                />
+              </el-select>
+
+      </el-forom-item>
+
+      <el-form-item>
+        <el-select
+            v-model="BId"
+            placeholder="请选择实例B"
+            clearable
+            filterable
+        >
+                <el-option
+                    v-for="(item, index) in insList"
+                    :key="index"
+                    :label="item.name"
+                    :value="item.neoId"
+                />
+              </el-select>
+      </el-form-item>
+
+              </el-form>
+         </div>
+
+    </el-form-item>
+
+       <el-form-item>
+       <el-button v-show="relation"  type="success" @click="Recreate" >创建关系实例</el-button>
       </el-form-item>
 
       <el-form-item>
@@ -29,8 +125,10 @@
             placeholder="请输入实例名称进行搜索"
             clearable
             v-model="searchContent"
+            @keyup.enter="searchInst"
         />
       </el-form-item>
+
       <el-form-item>
         <el-button type="primary" :icon="Search" @click="searchInst"
         >搜索</el-button
@@ -46,25 +144,23 @@
         style="width: 70%; text-align: left"
         empty-text="暂无实例"
     >
-      <el-table-column  prop="labels" label="所属本体类型" width="auto" align="left"></el-table-column>
-    <el-table-column prop="name" label="所属本体名称" width="auto" align="left" />
+    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
       <el-table-column prop="neoId" label="实例编号" width="auto" />
       <el-table-column prop="name" label="实例名称" width="auto" />
-    <el-table-column  prop="time" label="创建时间" width="auto" align="left"></el-table-column>
-    <el-table-column  prop="creater" label="创建人" width="auto" align="left"></el-table-column>
+    <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
+    <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
 
 <!--      <el-table-column label="实例标签" width="240">-->
 <!--        <template v-slot="scope"> {{ scope.row.labels.toString() }} </template>-->
 <!--      </el-table-column>-->
-      <el-table-column label="操作" width="180">
+      <el-table-column label="操作" width="300">
         <template #default="scope">
           <el-button
               link
               type="primary"
               size="small"
               @click="openUpdateDialog(scope.row)"
-          >修改属性</el-button
-          >
+          >修改属性</el-button>
           <el-button
               link
               type="primary"
@@ -89,6 +185,9 @@
         style="margin-left: -100px"
     />
   </div>
+
+
+
       <!-- 属性修改对话框 -->
   <el-dialog
       v-model="dialogVisible"
@@ -125,7 +224,7 @@ import {
   createIns,
   queryOntoList,
   queryInsList,
-  udpateInst,
+  udpateInst, inslist, createRelIns,
 } from "@/api/module/instance.js";
 import { getEntity as getInstance } from "@/api/module/result.js";
 import { reactive, ref, computed } from "vue";
@@ -133,11 +232,18 @@ import { Search, Plus } from "@element-plus/icons-vue";
 import MyPagination from "@/components/common/MyPagination.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
+import {createRel} from "@/api/module/ontology.js";
 
 const router = useRouter();
 
+
 let ontoId = ref(null); //当前选择本体源neoid
 let insName = ref(""); //创建实例名称
+let ontoType = ref("");
+let object = ref(false);
+let relation = ref(false);
+let AId = ref(null);
+let BId = ref(null);
 
 const ontoList = reactive([]); //本体源列表
 const insList = reactive([
@@ -160,7 +266,7 @@ let currentPage = ref(1);
 let total = computed(() => {
   return insList.length;
 });
-let pageSize = ref(5);
+let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
 
 // 初始化数据
@@ -178,7 +284,8 @@ const initData = () => {
   });
 };
 initData();
-// 创建实例
+
+// 创建对象实例
 const handleInsCreate = () => {
   ElMessageBox.confirm("确定创建该本体的实例吗？", "warning", {
     confirmButtonText: "确认",
@@ -203,9 +310,41 @@ const handleInsCreate = () => {
     });
   });
 };
+
+//创建关系实例
+const Recreate = () => {
+  createRelIns({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
+    ElMessage.success("构建成功");
+    this.$router.go(0);
+  });
+};
+
+const  changeType = (ontoType) => {
+
+  if(ontoType=="object"){
+    object.value=true;
+
+    console.log("this.object="+object);
+    console.log("this.relation =" + relation );
+  }
+  else{
+    object.value=false;
+  }
+
+   if (ontoType=="relation"){
+
+    relation.value=true;
+    console.log("this.object="+object);
+    console.log("this.relation =" + relation );
+  }else{relation.value=false;}
+
+};
+
 // 打开修改属性窗口
 const openUpdateDialog = (instance) => {
   getInstance(instance.neoId).then(({ data }) => {
+    console.log("本次修改属性的实例ID"+instance.neoId);
+    console.log("本次修改属性返回的data"+data);
     attrList.length = 0;
     attrList.push(...data.propObjList);
     for (let i in attrList)
@@ -227,9 +366,11 @@ const pageFunc = (pageData) => {
 };
 // 搜索实例
 const searchInst = () => {
-  queryInsList([], searchContent.value).then(({ data }) => {
+  inslist(["水利对象"], searchContent.value).then(({ data }) => {
     insList.length = 0;
     insList.push(...data);
+    console.log("object="+object);
+    console.log("relation =" + relation );
   });
 };
 </script>

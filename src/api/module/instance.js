@@ -1,10 +1,11 @@
 import request from "@/api/request";
 const baseURL = "/db";
+
 const headers = {
   "Content-Type": "application/json",
 };
 /**
- * 添加实例
+ * 添加对象实例
  * @param neoId  节点id
  * @param name  实例名称
  * @returns
@@ -20,6 +21,24 @@ export function createIns(neoId,name) {
     },
   });
 }
+
+/**
+ * 添加关系实例
+ * @param neoId  节点id
+ * @param name  实例名称
+ * @returns
+ */
+export function createRelIns(from,to,name) {
+  return request({
+    url: `${baseURL}/insert-inst-rel`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: from,to,name
+  });
+}
+
 
 /**
  * 查询本体列表
@@ -70,15 +89,18 @@ export function queryInsList(labels) {
 }
 
 /*
-* 查询实例
+* 根据实例名查询实例
 * */
-export function inslist( name) {
+export function inslist(labels,name) {
   return request({
-    url: `${baseURL}/list-onto-inst`,
+    url: `${baseURL}/list-main-inst`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
     },
-    data: name,
+    data: {
+      labels ,name
+    }
   });
 }
+

@@ -15,13 +15,7 @@
       </el-icon>
      
       <span>首页</span>
-      <el-button
-      type="primary"
-      :icon="buttonIcon"
-      plain
-      class="collapse"
-      @click="isCollapse = !isCollapse"
-    />
+     
     </el-menu-item>
     <!-- 子菜单 -->
     <el-sub-menu v-for="item in routes" index="/">
@@ -41,6 +35,13 @@
       
       
     </el-sub-menu>
+    <el-button
+      type="primary"
+      :icon="buttonIcon"
+      plain
+      class="collapse"
+      @click="isCollapse = !isCollapse"
+    />
     <!-- 菜单伸缩按钮 -->
     
   </el-menu>

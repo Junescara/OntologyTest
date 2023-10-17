@@ -6,9 +6,9 @@
 
    <span>
     <div >
-     <el-form label-width="150px" inline label-position="left"  align="left">
+     <el-form inline label-position="left"  align="left">
       <el-form-item>
-        <el-text>请选择构建类型：</el-text>
+        <el-text>本体类型选择：</el-text>
       </el-form-item>
       <el-form-item >
             <el-select
@@ -36,10 +36,7 @@
     <el-button v-show="objectrel"  type="success" @click="ObjectRel" >提交</el-button>
     </el-form-item>
    
-    <el-form-item>
-      
-    </el-form-item>
-      <el-form-item left-padding="200px">
+      <el-form-item >
         <el-button  type="primary"  @click="OntoView">
           查看
         </el-button>
@@ -84,9 +81,6 @@
   <el-divider ></el-divider>
 </div>
    
-   <div v-show="attribute">
-
-  </div>
 <div v-show="object">
   <div align="left">请选择此本体应有的属性：</div>
  <div align-items: center>
@@ -184,10 +178,8 @@
 </el-form-item>
 <el-divider></el-divider>
   </el-form>
-  <div style="display: flex">
+  <div style="display: flex;overflow:auto" >
             <KGVisibleVisNetwork  :kgType = "1">
-
-
             </KGVisibleVisNetwork>
         </div>
 </div>

@@ -109,3 +109,19 @@ export function Relonto(startList,endList,name,strategy,scope) {
     data: startList,endList,name,strategy,scope
   });
 }
+
+/**
+ * 删除本体
+ * @param {*} name
+ * @returns
+ */
+export function DeleteOnto(neoId) {
+  return request({
+    url: `${baseURL}/delete-onto`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: neoId
+  });
+}

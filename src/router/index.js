@@ -24,7 +24,7 @@ const routes = [
     path: "",
     component: Layout,
     name: "layout",
-    meta: { menuName: "平台功能" },
+    meta: { menuName: "流域水循环关系平台" },
     redirect: "index",
     // 页面主体部分组件
     children: [

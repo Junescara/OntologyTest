@@ -15,26 +15,7 @@
         <el-option label="对象本体" value="object" ></el-option>
       <el-option label="关系本体" value="relation"></el-option>
         </el-select>
-<!--        </el-form-item>-->
-
-<!--        <el-form-item >-->
-<!--        <el-select-->
-<!--            v-model="ontoId"-->
-<!--            placeholder="请选择实例所属本体"-->
-<!--            clearable-->
-<!--            filterable-->
-<!--        >-->
-<!--          <el-option-->
-<!--              v-for="(item, index) in ontoList"-->
-<!--              :key="index"-->
-<!--              :label="item.name"-->
-<!--              :value="item.neoId"-->
-<!--          />-->
-<!--        </el-select>-->
-<!--        </el-form-item>-->
-<!--      <el-form-item label="">-->
-<!--        <el-input v-model="insName" placeholder="请输入实例名称进行创建" clearable />-->
-   </el-form-item>-->
+   </el-form-item>
       <!-- 提交按钮 -->
       <el-form-item>
 
@@ -60,6 +41,7 @@
         <el-button v-show="object"  type="success" @click="handleInsCreate" >创建对象实例</el-button>
       </div>
 
+<!--        创建关系实例  -->
          <div v-show="relation">
         <el-form  label-width="100px" label-position="left" align="left" inline >
       <el-form-item>
@@ -88,8 +70,8 @@
                 <el-option
                     v-for="(item, index) in insRelList"
                     :key="index"
-                    :label="item.name "
-                    :value="item.neoId"
+                    :label="item.name"
+                    :value="item.name"
                 />
               </el-select>
 
@@ -113,13 +95,14 @@
 
               </el-form>
          </div>
-
+<!--        创建关系实例 结束-->
     </el-form-item>
 
        <el-form-item>
        <el-button v-show="relation"  type="success" @click="Recreate" >创建关系实例</el-button>
       </el-form-item>
 
+<br/>
       <el-form-item>
         <el-input
             placeholder="请输入实例名称进行搜索"
@@ -150,9 +133,7 @@
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
     <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
 
-<!--      <el-table-column label="实例标签" width="240">-->
-<!--        <template v-slot="scope"> {{ scope.row.labels.toString() }} </template>-->
-<!--      </el-table-column>-->
+
       <el-table-column label="操作" width="300">
         <template #default="scope">
           <el-button
@@ -224,6 +205,7 @@ import {
   createIns,
   queryOntoList,
   queryInsList,
+  queryRelList,
   udpateInst, inslist, createRelIns,
 } from "@/api/module/instance.js";
 import { getEntity as getInstance } from "@/api/module/result.js";
@@ -236,7 +218,6 @@ import {createRel} from "@/api/module/ontology.js";
 
 const router = useRouter();
 
-
 let ontoId = ref(null); //当前选择本体源neoid
 let insName = ref(""); //创建实例名称
 let ontoType = ref("");
@@ -244,6 +225,7 @@ let object = ref(false);
 let relation = ref(false);
 let AId = ref(null);
 let BId = ref(null);
+let insRelation = ref(null);
 
 const ontoList = reactive([]); //本体源列表
 const insList = reactive([
@@ -256,6 +238,18 @@ const insList = reactive([
     propObjList: null,
   },
 ]); //实例列表
+const insRelList = reactive([{
+  "startList": [
+    "A"
+  ],
+  "endList": [
+    "B"
+  ],
+  "name": "关系11",
+  "strategy": "NAME_CONSTRAINT",
+  "neoId": "c108a370-9665-4a33-a0cf-0e1edd8be248",
+  "scope": "INST_RELATION"
+}]);//关系本体列表
 const attrList = reactive([]); //当前实例属性列表
 let searchContent = ref("");
 
@@ -282,6 +276,12 @@ const initData = () => {
     insList.length = 0;
     insList.push(...data);
   });
+  queryRelList().then(({ data }) => {
+    insRelList.length = 0;
+    insRelList.push(...data);
+    console.log(insRelList);
+  });
+
 };
 initData();
 
@@ -313,9 +313,13 @@ const handleInsCreate = () => {
 
 //创建关系实例
 const Recreate = () => {
-  createRelIns({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
+  console.log("AID.value:"+AId.value);
+  console.log("BID.value:"+BId.value);
+  console.log("insRelation.value"+insRelation.value);
+  var that = this;
+  createRelIns(AId.value,BId.value,insRelation.value).then(({ data })=>{
     ElMessage.success("构建成功");
-    this.$router.go(0);
+    router.push({ path: "/InstanceWatch"});
   });
 };
 

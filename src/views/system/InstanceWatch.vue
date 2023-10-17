@@ -21,13 +21,23 @@
       </el-form-item>
     </el-form>
     </div>
+
+       <div style="display: flex">
+            <KGVisibleVisNetwork :kgType = "2">
+
+            </KGVisibleVisNetwork>
+        </div>
    </span>
 
   <el-divider></el-divider>
 </template>
 
 <script>
+    import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
 export default {
+    components:{
+        KGVisibleVisNetwork
+    },
   methods:{
     InstanceView(){
       this.$router.push("InstanceView");

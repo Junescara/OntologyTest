@@ -25,8 +25,8 @@ import SideBar from "./SideBar.vue";
 .el-header {
   padding: 0;
   width: 100%;
-  margin-bottom: 30px;
-  margin-left: 1px;
+  margin-bottom: 0px;
+  margin-left: 0px;
 }
 .el-aside {
   transition: width 0.25s;
@@ -38,8 +38,8 @@ import SideBar from "./SideBar.vue";
 }
 .el-main {
   height: 100px;
-  margin: 30px 0 0 30px;
+  margin: 3px 0 0 0px;
   background-color: #fff;
-  box-shadow: 0px -2px 5px 3px #c1c1c1;
+  box-shadow: 0px 0px 0px 0px #c1c1c1;
 }
 </style>

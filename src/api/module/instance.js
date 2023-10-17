@@ -1,10 +1,11 @@
 import request from "@/api/request";
 const baseURL = "/db";
+
 const headers = {
   "Content-Type": "application/json",
 };
 /**
- * 添加实例
+ * 添加对象实例
  * @param neoId  节点id
  * @param name  实例名称
  * @returns
@@ -22,11 +23,39 @@ export function createIns(neoId,name) {
 }
 
 /**
+ * 添加关系实例
+ * @param neoId  节点id
+ * @param name  实例名称
+ * @returns
+ */
+// export function createRelIns(from,to,name) {
+//   return request({
+//     url: `${baseURL}/insert-inst-rel`,
+//     method: "post",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     data: from,to,name
+//   });
+// }
+export function createRelIns(from,to,name)  {
+  return request({
+    url: `${baseURL}/insert-inst-rel`,
+    method: "post",
+    headers,
+    data: {
+      from,to,name
+    },
+  });
+}
+
+
+/**
  * 查询本体列表
  * @param {*} name
  * @returns
  */
-export function queryOntoList(name) {
+export function queryOntoList() {
   return request({
     url: `${baseURL}/list-onto-inst`,
     method: "post",
@@ -69,16 +98,52 @@ export function queryInsList(labels) {
   });
 }
 
-/*
-* 查询实例
-* */
-export function inslist( name) {
+/**
+ * 查询关系本体列表
+ * @param
+ * @returns 关系本体的名称
+ */
+export function queryRelList(){
   return request({
-    url: `${baseURL}/list-onto-inst`,
+    url: `${baseURL}/query-rel-onto`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
     },
-    data: name,
+    data: {
+      name,
+    },
   });
 }
+
+export function queryRelListByName(name){
+  return request({
+    url: `${baseURL}/list-rel-inst`,
+    method: "post",
+    headers,
+    data: {
+      name,
+    },
+  });
+}
+
+export function queryRelListByNameAndLabels(name,labels){
+}
+
+
+/*
+* 根据实例名查询实例
+* */
+export function inslist(labels,name) {
+  return request({
+    url: `${baseURL}/list-main-inst`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: {
+      labels ,name
+    }
+  });
+}
+

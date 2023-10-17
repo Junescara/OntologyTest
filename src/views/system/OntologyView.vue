@@ -77,6 +77,18 @@
              >
            </template>
          </el-table-column>
+
+         <el-table-column label="操作" width="180">
+           <template #default="scope">
+             <el-button
+               link
+               type="danger"
+               size="small"
+               @click="DeleteObject($event,scope.row.neoId)"
+               >删除</el-button
+             >
+           </template>
+         </el-table-column>
       
      </el-table>
     
@@ -99,7 +111,7 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { Ontolist } from "../../api/module/ontology";
+import { DeleteOnto, Ontolist } from "../../api/module/ontology";
 
 const router = useRouter();
 
@@ -113,6 +125,7 @@ export default {
       insName:"",
       searchContent:"",
       rangeItem:[],
+      neoId:"",
       time:"2023-1-1",
       creater:"竹子",
       ontoType:["水利对象本体","流域本体"],
@@ -218,6 +231,22 @@ export default {
           });
         });
       });
+},
+DeleteObject(){
+  ElMessageBox.confirm("确定删除该本体吗？", "warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        title: "删除确认",
+      }).then(()=>{
+        DeleteOnto({neoId:this.neoId}).then(({ data }) => {
+          // console.log(data);
+          ElMessage.success("删除成功");
+        });
+      });
+
+     
+  
 },
 OntoView(){
       this.$router.push("OntoView");

@@ -6,18 +6,22 @@
 
    <span>
     <div >
-     <el-form label-width="200px" inline label-position="left"  align="left">
+     <el-form inline label-position="left"  align="left">
+      <el-form-item>
+        <el-text>本体类型选择：</el-text>
+      </el-form-item>
       <el-form-item >
             <el-select
           v-model="ontoType"
           @change="changeType($event,ontoType)"
-          placeholder="请选择添加的本体类型"
+          placeholder="请选择添加的类型"
           clearable
           filterable
         >
         <el-option label="对象本体" value="object" selected></el-option>
-      <el-option label="关系本体" value="relation"></el-option>
       <el-option label="属性本体" value="attribute"></el-option>
+      <el-option label="关系本体" value="objectrel"></el-option>
+      <el-option label="本体间的关系" value="relation"></el-option>
         </el-select>
         </el-form-item>
         <el-form-item >
@@ -25,23 +29,14 @@
       </el-input>
     </el-form-item>
     <el-form-item>
-       
+       <!-- 提交按你 -->
     <el-button v-show="object"  type="success" @click="create" >提交</el-button>
-
+    <el-button v-show="attribute"  type="success" @click="Attcreate" >提交</el-button>
+    <el-button v-show="relation"  type="success" @click="Recreate" >提交</el-button>
+    <el-button v-show="objectrel"  type="success" @click="ObjectRel" >提交</el-button>
     </el-form-item>
-    <el-form-item>
-       
-       <el-button v-show="attribute"  type="success" @click="Attcreate" >提交</el-button>
    
-       </el-form-item>
-
-       <el-form-item>
-       
-       <el-button v-show="relation"  type="success" @click="Recreate" >提交</el-button>
-   
-       </el-form-item>
-    <el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item><el-form-item></el-form-item>
-      <el-form-item left-padding="300px">
+      <el-form-item >
         <el-button  type="primary"  @click="OntoView">
           查看
         </el-button>
@@ -61,6 +56,7 @@
     
    </span>
 
+   <!-- 属性本体页面 -->
    <div v-show="attribute" >
 
     
@@ -85,9 +81,6 @@
   <el-divider ></el-divider>
 </div>
    
-   <div v-show="attribute">
-
-  </div>
 <div v-show="object">
   <div align="left">请选择此本体应有的属性：</div>
  <div align-items: center>
@@ -149,7 +142,7 @@
 <br>
  
  </div>
-
+<!-- 本体间的关系页面 -->
  <div v-show="relation">
   <el-form  label-width="100px" label-position="left" align="left" inline >
 <el-form-item>
@@ -185,12 +178,50 @@
 </el-form-item>
 <el-divider></el-divider>
   </el-form>
-  <div style="display: flex">
+  <div style="display: flex;overflow:auto" >
             <KGVisibleVisNetwork  :kgType = "1">
-
-
             </KGVisibleVisNetwork>
         </div>
+</div>
+
+
+<!-- 关系本体页面 -->
+<div v-show="objectrel">
+  <el-form  label-width="100px" label-position="left" align="left" inline >
+<el-form-item>
+  <el-select
+          v-model="SId"
+          placeholder="请选择A本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList1"
+            :key="index"
+            :label="item.name "
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+
+<el-form-item>
+  <el-select
+          v-model="EId"
+          placeholder="请选择B本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList2"
+            :key="index"
+            :label="item.name"
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+<el-divider></el-divider>
+  </el-form>
+ 
 </div>
 <br>
  
@@ -207,7 +238,7 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { createRel, Ontolist, ontoprop } from "../../api/module/ontology";
+import { createRel, Ontolist, ontoprop, Relonto } from "../../api/module/ontology";
 const ontoList = reactive([]); //本体源列表
 
 import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
@@ -233,14 +264,17 @@ export default {
       sideWidth: 200,
       logoTextShow: true,
       ontoType:"",
-      dimmension:"",
+      dimension:"",
       lowerBound:"",
       upperBound:"",
       object:false,
       attribute:false,
       relation:false,
+      objectrel:false,
       AId:"",
       BId:"",
+      SId:[],
+      EId:[],
       ontoList1:[],
       ontoList2:[],
       OntoName:"",
@@ -312,6 +346,11 @@ export default {
       else{
         this.attribute=false;
       }
+      if(ontoType=="objectrel"){
+        this.objectrel=true;
+      }else{
+        this.objectrel=false;
+      }
 
     },
                 //每页条数改变时触发 选择一页显示多少行
@@ -355,9 +394,15 @@ export default {
             Recreate(){
              createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
               ElMessage.success("构建成功");
-              this.$router.go(0);
+              this.$router.push("OntoWatch");
             });
             },
+            ObjectRel(){
+               Relonto({startList:[this.SId],endList:[this.EId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
+              ElMessage.success("构建成功");
+              this.$router.go(0);
+            });
+          },
             create() {
       let name = ref("");
       let propsClzs = this.multipleSelection.map((v) => v.code);
@@ -377,7 +422,7 @@ export default {
         });
       });
 },
-OntoView(){
+    OntoView(){
       this.$router.push("OntoView");
     },
     OntoAdd(){

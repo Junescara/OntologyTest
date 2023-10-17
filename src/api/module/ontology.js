@@ -78,6 +78,11 @@ export function ontoprop(type,name,dimension,lowerBound,upperBound) {
   });
 }
 
+/**
+ * 创建本体间关系
+ * @param {*} name
+ * @returns
+ */
 export function createRel(from,to,name) {
   return request({
     url: `${baseURL}/create-common-rel`,
@@ -86,5 +91,37 @@ export function createRel(from,to,name) {
       "Content-Type": "application/json",
     },
     data: from,to,name
+  });
+}
+
+/**
+ * 创建关系本体
+ * @param {*} name
+ * @returns
+ */
+export function Relonto(startList,endList,name,strategy,scope) {
+  return request({
+    url: `${baseURL}/insert-rel-onto`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: startList,endList,name,strategy,scope
+  });
+}
+
+/**
+ * 删除本体
+ * @param {*} name
+ * @returns
+ */
+export function DeleteOnto(neoId) {
+  return request({
+    url: `${baseURL}/delete-onto`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: neoId
   });
 }

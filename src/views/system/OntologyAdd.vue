@@ -125,6 +125,17 @@
 </template>
 </el-table-column>
 <el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
+<el-table-column label="操作" width="180">
+           <template #default="scope">
+             <el-button
+               link
+               type="danger"
+               size="small"
+               @click="DeleteObject($event,scope.row.neoId)"
+               >删除</el-button
+             >
+           </template>
+         </el-table-column>
 
    
   </el-table>
@@ -219,9 +230,42 @@
           />
         </el-select>
 </el-form-item>
-<el-divider></el-divider>
   </el-form>
+  
+  <el-divider></el-divider>
+  <div align="left">现有关系：</div>
+ <div align-items: center>
+  <el-table :data="tableData1.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto" border stripe :header-cell-class-name="headerBg"  @selection-change="handleSelectionChange">
+    <el-table-column  prop="startList" label="开始本体" width="auto" align="left"></el-table-column>
+    <el-table-column  prop="endList" label="结束本体" width="auto" align="left" ></el-table-column>
+<el-table-column  prop="name" label="名称" width="auto" align="left"></el-table-column>
+<el-table-column label="操作" width="180">
+           <template #default="scope">
+             <el-button
+               link
+               type="danger"
+               size="small"
+               @click="DeleteObject($event,scope.row.neoId)"
+               >删除</el-button
+             >
+           </template>
+         </el-table-column>
+
+   
+  </el-table>
+
+  <el-pagination align='center' 
+  @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="pageNum"
+              :page-sizes="[2, 5, 10, 20]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="tableData1.length">
+</el-pagination>
+
  
+</div>
 </div>
 <br>
  
@@ -238,7 +282,7 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { createRel, Ontolist, ontoprop, Relonto } from "../../api/module/ontology";
+import { createRel, Ontolist, ontoprop, queryRelList, Relonto } from "../../api/module/ontology";
 const ontoList = reactive([]); //本体源列表
 
 import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
@@ -263,6 +307,7 @@ export default {
       isCollapse: false,
       sideWidth: 200,
       logoTextShow: true,
+      neoId:"",
       ontoType:"",
       dimension:"",
       lowerBound:"",
@@ -295,6 +340,7 @@ export default {
     // 请求分页查询数据
     this.load()
     this.load1()
+    this.load3()
     
   },
 
@@ -332,6 +378,32 @@ export default {
       )
 
     },
+    load3(){
+      queryRelList({}).then(res=>{
+        this.tableData1 = res.data;
+        this.total1 = res.total1;
+        
+
+      }
+
+      )
+    },
+    DeleteObject(){
+  ElMessageBox.confirm("确定删除该本体吗？", "warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        title: "删除确认",
+      }).then(()=>{
+        DeleteOnto({neoId:this.neoId}).then(({ data }) => {
+          // console.log(data);
+          ElMessage.success("删除成功");
+        });
+      });
+
+     
+  
+},
     changeType(ontoType){
       if(ontoType=="object")
        this.object=true;
@@ -432,17 +504,7 @@ export default {
       this.$router.push("OntoWatch");
     },
 
-searchInst(){
-  Ontolist({name:this.searchContent}).then(res=>{
-
-this.tableData1=res.data;
-this.total=res.total;
-})
-
-},
-            
-                 
-          
+   
                 
         }
       }

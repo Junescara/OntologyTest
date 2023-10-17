@@ -125,3 +125,20 @@ export function DeleteOnto(neoId) {
     data: neoId
   });
 }
+
+/**
+ * 查询关系本体列表
+ * @param
+ * @returns 关系本体的名称
+ */
+export function queryRelList(){
+  return request({
+    url: `${baseURL}/query-rel-onto`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: {
+    },
+  });
+}

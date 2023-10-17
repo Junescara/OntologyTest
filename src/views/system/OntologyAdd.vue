@@ -299,7 +299,7 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { createRel, Ontolist, ontoprop, queryRelList, Relonto } from "../../api/module/ontology";
+import { createRel, DeleteOnto, Ontolist, ontoprop, queryRelList, Relonto } from "../../api/module/ontology";
 const ontoList = reactive([]); //本体源列表
 
 import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";

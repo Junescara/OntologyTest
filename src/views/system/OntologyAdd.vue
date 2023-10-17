@@ -35,7 +35,11 @@
     <el-button v-show="relation"  type="success" @click="Recreate" >提交</el-button>
     <el-button v-show="objectrel"  type="success" @click="ObjectRel" >提交</el-button>
     </el-form-item>
-   
+      <el-form-item >
+        <el-button  type="primary"  @click="handelReturn">
+          返回
+        </el-button>
+      </el-form-item>
       <el-form-item >
         <el-button  type="primary"  @click="OntoView">
           查看
@@ -179,7 +183,7 @@
 <el-divider></el-divider>
   </el-form>
   <div style="display: flex;overflow:auto" >
-            <KGVisibleVisNetwork  :kgType = "1">
+            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1">
             </KGVisibleVisNetwork>
         </div>
 </div>
@@ -302,6 +306,9 @@ export default {
 
 //方法
   methods: {
+      handelReturn(){
+          this.$refs.KGVisibleVisNetwork.handleReturn();
+      },
     
  load() {
       listbasic({ type:"p"}).then(res => {

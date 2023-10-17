@@ -126,6 +126,23 @@ export function DeleteOnto(neoId) {
   });
 }
 
+
+/**
+ * 删除属性
+ * @param {*} name
+ * @returns
+ */
+export function DeleteProp(neoId) {
+  return request({
+    url: `${baseURL}/logic-delete-onto-prop`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: neoId
+  });
+}
+
 /**
  * 查询关系本体列表
  * @param

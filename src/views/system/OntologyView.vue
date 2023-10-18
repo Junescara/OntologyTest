@@ -361,9 +361,9 @@ Deleteprop(neoId){
           this.DeleteFlag = fasle;
           
         });
-        
+        this.$router.go(0);
       });
-      
+
       
 },
 DeleteObject(neoId){

@@ -125,14 +125,28 @@ export function DeleteOnto(neoId) {
     data: neoId
   });
 }
-
-
 /**
  * 删除属性
  * @param {*} name
  * @returns
  */
 export function DeleteProp(neoId) {
+  return request({
+    url: `${baseURL}/logic-delete-prop`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: neoId
+  });
+}
+
+/**
+ * 删除属性
+ * @param {*} name
+ * @returns
+ */
+export function DeleteOntoProp(neoId) {
   return request({
     url: `${baseURL}/logic-delete-onto-prop`,
     method: "post",

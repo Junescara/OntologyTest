@@ -337,6 +337,7 @@ export default {
       }).then(()=>{
         DeleteProp({neoId:this.neoId}).then(({ data }) => {
           // console.log(data);
+          this.load();
         });
       });
 
@@ -399,7 +400,7 @@ export default {
             Attcreate(){
             ontoprop({type:"1",name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
               ElMessage.success("构建成功");
-              this.$router.go(0);
+              this.load();
             });
             },
             Recreate(){
@@ -408,6 +409,7 @@ export default {
             });
              createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
               ElMessage.success("构建成功");
+              
               this.$router.push("OntoWatch");
             });
            

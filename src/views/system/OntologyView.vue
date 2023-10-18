@@ -261,10 +261,11 @@ DeleteObject(neoId){
          console.log(this.tableData1);
         DeleteOnto({neoId:this.neoId}).then(({ data }) => {
           // console.log(data);
+          this.load1();
         });
       });
 
-     this.created();
+
   
 },
 OntoView(){

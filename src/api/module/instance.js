@@ -6,7 +6,7 @@ const headers = {
 };
 /**
  * 添加对象实例
- * @param neoId  节点id
+ * @param neoId  实例id
  * @param name  实例名称
  * @returns
  */
@@ -76,7 +76,7 @@ export function udpateInst(neoId, value) {
     headers,
     data: {
       neoId,
-      value,
+      value
     },
   });
 }
@@ -99,7 +99,7 @@ export function queryInsList(labels) {
 }
 
 /**
- * 查询关系本体列表
+ * 查询所有关系本体列表
  * @param
  * @returns 关系本体的名称
  */
@@ -134,7 +134,7 @@ export function queryRelListByNameAndLabels(name,labels){
 /*
 * 根据实例名查询实例
 * */
-export function inslist(labels,name) {
+export function inslist(labels,name){
   return request({
     url: `${baseURL}/list-main-inst`,
     method: "post",
@@ -143,6 +143,73 @@ export function inslist(labels,name) {
     },
     data: {
       labels ,name
+    }
+  });
+}
+
+/**
+ *  删除实例
+ * @param neoId
+ * @returns {*}
+ */
+export function deleteIns(neoId){
+  return request({
+    url: `${baseURL}/logic-delete-inst`,
+    method: "post",
+    headers,
+    data: {
+      neoId
+    },
+  });
+}
+
+// export function deleteIns(neoId) {
+//   return request({
+//     url: `${baseURL}/logic-delete-inst`,
+//     method: "post",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     data: {
+//       neoId
+//     }
+//   });
+// }
+
+/**
+ * 获得该本体的所有属性
+ * @param 本体id  neoId
+ * @returns {*}
+ */
+export function getontoProp(neoId){
+  console.log("getontoProp中的"+neoId);
+  return request({
+    url: `${baseURL}/load-ontology`,
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: {
+      neoId
+    }
+  });
+}
+
+/**
+ * 加载实例，可获取该实例的属性列表
+ * @param neoId
+ * @returns {*}
+ */
+export function getInsProp(neoId){
+  console.log("getInsProp中的实例id是"+neoId);
+  return request({
+    url: `${baseURL}/load-instance`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    params: {
+      neoId
     }
   });
 }

@@ -2,21 +2,6 @@
     <span>
     <div>
      <el-form label-width="200px" inline label-position="left"  align="left">
-<!--        <el-form-item>-->
-<!--            <el-select-->
-<!--                v-model="ontoId"-->
-<!--                placeholder="请选择本体类型"-->
-<!--                clearable-->
-<!--                filterable-->
-<!--            >-->
-<!--            </el-select>-->
-<!--            <el-option-->
-<!--                        v-for="(item, index) in ontoList"-->
-<!--                        :key="index"-->
-<!--                        :label="item.name"-->
-<!--                        :value="item.neoId"-->
-<!--            />-->
-<!--        </el-form-item>-->
               <el-form-item>
            <el-input align="left"
                      placeholder="请输入实例名进行搜索"
@@ -37,9 +22,14 @@
                  this.$router.push({
                    path: 'instanceAdd',
                  })
-               ">
-         新增实例
-        </el-button>
+               ">新增实例</el-button>
+      </el-form-item>
+       <el-form-item>
+        <el-button type="primary"  @click="
+                 this.$router.push({
+                   path: 'instanceWatch',
+                 })
+               ">浏览实例图谱</el-button>
       </el-form-item>
     </el-form>
     </div>
@@ -61,22 +51,50 @@
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
     <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
 
-    <el-table-column label="浏览" width="180">
+<!--    <el-table-column label="浏览" width="180">-->
+<!--      <template #default="scope">-->
+<!--        <el-button-->
+<!--            link-->
+<!--            type="primary"-->
+<!--            size="small"-->
+<!--            @click="-->
+<!--                 this.$router.push({-->
+<!--                   path: 'entity-result',-->
+<!--                   query: { neoId: scope.row.neoId },-->
+<!--                 })-->
+<!--               "-->
+<!--        >查看结点</el-button-->
+<!--        >-->
+<!--      </template>-->
+
+<!--      <template #default="scope_1">-->
+<!--        <el-button-->
+<!--            link-->
+<!--            type="danger"-->
+<!--            size="small"-->
+<!--            @click="deleteObject($event,scope_1.row.neoId)"-->
+<!--        >删除</el-button-->
+<!--        >-->
+<!--      </template>-->
+
+<!--    </el-table-column>-->
+    <el-table-column label="操作" width="180">
       <template #default="scope">
         <el-button
             link
             type="primary"
             size="small"
-            @click="
-                 this.$router.push({
-                   path: 'entity-result',
-                   query: { neoId: scope.row.neoId },
-                 })
-               "
-        >查看结点</el-button
-        >
+            @click="this.$router.push({ path: 'entity-result', query: { neoId: scope.row.neoId } })"
+        >查看结点</el-button>
+        <el-button
+            link
+            type="danger"
+            size="small"
+            @click="deleteObject(scope.row.neoId)"
+        >删除实例</el-button>
       </template>
     </el-table-column>
+
 
   </el-table>
 
@@ -93,14 +111,14 @@
 
 
 <script >
-import {createOnto} from "@/api/module/ontology.js";
+import {createOnto, DeleteOnto} from "@/api/module/ontology.js";
 import { listbasic } from "@/api/module/ontology.js";
 import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { Ontolist } from "../../api/module/ontology";
-import {inslist, queryInsList} from "@/api/module/instance.js";
+import {deleteIns, inslist, queryInsList} from "@/api/module/instance.js";
 
 const router = useRouter();
 
@@ -126,11 +144,11 @@ export default {
       headerBg1:'headerBg',
       currentPage: 1, // 当前页码
       //total: 20, // 总条数
-      pageSize: 2 // 每页的数据条数
+      pageSize: 10// 每页的数据条数
       ,
       currentPage1: 1, // 当前页码
       total: 20, // 总条数
-      pageSize1: 2 // 每页的数据条数
+      pageSize1: 10 // 每页的数据条数
 
 
     }
@@ -154,8 +172,6 @@ export default {
         console.log("res.total"+res.total)
         this.total = res.total;
       })
-
-
 
     },
     load1() {
@@ -233,6 +249,23 @@ export default {
 
       })
     },
+
+    deleteObject(neoId){
+      ElMessageBox.confirm("确定删除该实例吗？", "warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        title: "删除确认",
+      }).then(()=>{
+        console.log("要删除的实例id是" + neoId)
+        deleteIns(neoId).then(({ data }) => {
+          // console.log(data);
+          ElMessage.success("删除成功");
+        });
+        this.load();
+      });
+
+    }
 
 
 

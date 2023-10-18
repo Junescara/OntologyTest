@@ -432,7 +432,7 @@ export default {
             query: { neoId: data.neoId },
           });
         });
-      });
+      });    
 },
     OntoView(){
       this.$router.push("OntoView");

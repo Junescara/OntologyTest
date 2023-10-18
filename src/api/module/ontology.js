@@ -117,11 +117,74 @@ export function Relonto(startList,endList,name,strategy,scope) {
  */
 export function DeleteOnto(neoId) {
   return request({
-    url: `${baseURL}/delete-onto`,
+    url: `${baseURL}/logic-delete-onto`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
     },
     data: neoId
+  });
+}
+/**
+ * 删除属性
+ * @param {*} name
+ * @returns
+ */
+export function DeleteProp(neoId) {
+  return request({
+    url: `${baseURL}/logic-delete-prop`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: neoId
+  });
+}
+
+/**
+ * 删除属性
+ * @param {*} name
+ * @returns
+ */
+export function DeleteOntoProp(neoId) {
+  return request({
+    url: `${baseURL}/logic-delete-onto-prop`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: neoId
+  });
+}
+/**
+ * 新增属性
+ * @param {*} name
+ * @returns
+ */
+export function AddProp(ontoNeoId,codes) {
+  return request({
+    url: `${baseURL}/add-onto-prop`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: ontoNeoId,codes
+  });
+}
+
+/**
+ * 查询关系本体列表
+ * @param
+ * @returns 关系本体的名称
+ */
+export function queryRelList(){
+  return request({
+    url: `${baseURL}/query-rel-onto`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: {
+    },
   });
 }

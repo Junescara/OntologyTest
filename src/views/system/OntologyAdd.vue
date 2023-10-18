@@ -183,7 +183,7 @@
 <el-divider></el-divider>
   </el-form>
   <div style="display: flex;overflow:auto" >
-            <KGVisibleVisNetwork  ref="KGVisibleVisNetwork" :kgType = "1">
+            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1">
             </KGVisibleVisNetwork>
         </div>
 </div>

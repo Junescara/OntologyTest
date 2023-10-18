@@ -1,6 +1,6 @@
 <template>
   <div >
-    <p>流域水循环关系平台</p>
+    <p>流域水循环对象关系图谱构建平台（原型）</p>
     <br>
     <div><el-row :gutter="80">
       <el-col :span="12">

@@ -57,12 +57,12 @@
        <el-table-column prop="name" label="本体名称" width="auto" align="left" />
        <el-table-column  prop="labels" label="本体类型" width="auto" align="left">
        </el-table-column>
-       <el-table-column  prop="neoId" label="编号" width="auto" align="left"></el-table-column>
        <el-table-column  prop="time" label="创建时间" width="auto" align="left"></el-table-column>
        <el-table-column  prop="creater" label="创建人" width="auto" align="left"></el-table-column>\
        <el-table-column  prop="number" label="属性数量" width="auto" align="left"></el-table-column>
        <el-table-column label="操作" width="180">
-           <template #default="scope">
+           <template v-slot="scope">
+          
              <el-button
                link
                type="primary"
@@ -74,21 +74,35 @@
                  })
                "
                >查看结点</el-button
+             ><el-button
+               link
+               type="success"
+               size="small"
+               @click=""
+               >新增属性</el-button
              >
-           </template>
-         </el-table-column>
-
-         <el-table-column label="操作" width="180">
-           <template #default="scope">
              <el-button
                link
                type="danger"
                size="small"
-               @click="DeleteObject($event,scope.row.neoId)"
-               >删除</el-button
+               @click="AddOntoProp(scope.row.neoId)"
+               >删除属性</el-button
              >
+             <el-button
+               link
+               type="danger"
+               size="small"
+               @click="DeleteObject(scope.row.neoId)"
+               >删除实体</el-button
+             >
+            
            </template>
+           
+             
+          
          </el-table-column>
+
+    
       
      </el-table>
     
@@ -111,7 +125,7 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { DeleteOnto, Ontolist } from "../../api/module/ontology";
+import { AddProp, DeleteOnto, Ontolist } from "../../api/module/ontology";
 
 const router = useRouter();
 
@@ -232,20 +246,26 @@ export default {
         });
       });
 },
-DeleteObject(){
+AddOntoProp(neoId){
+  this.neoId=neoId;
+},
+DeleteObject(neoId){
+  this.neoId=neoId;
   ElMessageBox.confirm("确定删除该本体吗？", "warning", {
         confirmButtonText: "确认",
         cancelButtonText: "取消",
         type: "warning",
         title: "删除确认",
       }).then(()=>{
+         console.log(this.neoId);
+         console.log(this.tableData1);
         DeleteOnto({neoId:this.neoId}).then(({ data }) => {
           // console.log(data);
-          ElMessage.success("删除成功");
+          this.load1();
         });
       });
 
-     
+
   
 },
 OntoView(){

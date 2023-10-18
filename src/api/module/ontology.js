@@ -117,7 +117,7 @@ export function Relonto(startList,endList,name,strategy,scope) {
  */
 export function DeleteOnto(neoId) {
   return request({
-    url: `${baseURL}/delete-onto`,
+    url: `${baseURL}/logic-delete-onto`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
@@ -140,6 +140,21 @@ export function DeleteProp(neoId) {
       "Content-Type": "application/json",
     },
     data: neoId
+  });
+}
+/**
+ * 新增属性
+ * @param {*} name
+ * @returns
+ */
+export function AddProp(ontoNeoId,codes) {
+  return request({
+    url: `${baseURL}/add-onto-prop`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: ontoNeoId,codes
   });
 }
 

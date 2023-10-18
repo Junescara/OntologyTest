@@ -127,12 +127,12 @@
 </el-table-column>
 <el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
 <el-table-column label="操作" width="180">
-           <template #default="scope">
+           <template v-slot="scope">
              <el-button
                link
                type="danger"
                size="small"
-               @click="DeleteProp($event,scope.row.neoId)"
+               @click="DeleteProp(scope.row.neoId)"
                >删除</el-button
              >
            </template>
@@ -327,7 +327,8 @@ export default {
 
     },
    
-    DeleteProp(){
+    DeleteProp(neoId){
+      this.neoId=neoId;
   ElMessageBox.confirm("确定删除该属性吗？", "warning", {
         confirmButtonText: "确认",
         cancelButtonText: "取消",
@@ -336,7 +337,6 @@ export default {
       }).then(()=>{
         DeleteProp({neoId:this.neoId}).then(({ data }) => {
           // console.log(data);
-          ElMessage.success("删除成功");
         });
       });
 

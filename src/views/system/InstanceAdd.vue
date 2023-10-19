@@ -2,7 +2,7 @@
     <span>
     <div>
 
-<el-form label-width="200px" inline label-position="left"  align="left">
+<el-form label-width="200px" inline label-position="left"  align="left"  >
 
         <el-form-item >
             <el-select
@@ -108,6 +108,7 @@
             clearable
             v-model="searchContent"
             @keyup.enter="searchInst"
+            autofocus
         />
       </el-form-item>
 
@@ -140,19 +141,13 @@
               type="primary"
               size="small"
               @click="openUpdateDialog(scope.row.neoId)"
-          >修改属性</el-button>
-          <el-button
-              link
-              type="primary"
-              size="small"
-              @click="
-              router.push({
-                path: 'entity-result',
-                query: { neoId: scope.row.neoId },
-              })
-            "
-          >浏览结点</el-button
-          >
+          >修改实例属性</el-button>
+        <el-button
+            link
+            type="danger"
+            size="small"
+            @click="deleteObject(scope.row.neoId)"
+        >删除实例</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -257,7 +252,7 @@ import {
   queryOntoList,
   queryInsList,
   queryRelList,
-  udpateInst, inslist, createRelIns, getontoProp, getInsProp
+  udpateInst, inslist, createRelIns, getontoProp, getInsProp, deleteIns
 } from "@/api/module/instance.js";
 import { getEntity as getInstance } from "@/api/module/result.js";
 import {reactive, ref, computed, onMounted} from "vue";
@@ -459,11 +454,31 @@ const handleUpdateAtrr = (neoId, value) => {
   dialogVisible_create.value = false;
 };
 
+
+const deleteObject = (neoId) => {
+  ElMessageBox.confirm("确定删除该实例吗？", "warning", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+    title: "删除确认",
+  }).then(()=>{
+    console.log("要删除的实例id是" + neoId)
+    deleteIns(neoId).then(({ data }) => {
+      // console.log(data);
+      //ElMessage.success("删除成功");
+      initData();
+    });
+  });
+
+
+}
+
 //提交全部按钮
 const submitAll = () => {
   for (let index in attrList){
     document.getElementById('submit'+ index ).click();
   }
+  ElMessage.success("更新属性成功");
   dialogVisible_update.value = false;
  dialogVisible_create.value = false;
 }
@@ -487,6 +502,7 @@ const searchInst = () => {
     console.log("object="+object);
     console.log("relation =" + relation );
   });
+  searchContent.value  = "";
 };
 </script>
 

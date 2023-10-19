@@ -1,13 +1,15 @@
 <template >
     <span>
     <div>
-     <el-form label-width="200px" inline label-position="left"  align="left">
+     <el-form label-width="200px" inline label-position="left"  align="left" @submit.prevent >
               <el-form-item>
            <el-input align="left"
                      placeholder="请输入实例名进行搜索"
                      clearable
                      v-model="searchContent"
                      width="auto"
+                     @keyup.enter="searchInst"
+                     autofocus
            />
          </el-form-item>
          <el-form-item>
@@ -86,12 +88,12 @@
             size="small"
             @click="this.$router.push({ path: 'entity-result', query: { neoId: scope.row.neoId } })"
         >查看结点</el-button>
-        <el-button
-            link
-            type="danger"
-            size="small"
-            @click="deleteObject(scope.row.neoId)"
-        >删除实例</el-button>
+<!--        <el-button-->
+<!--            link-->
+<!--            type="danger"-->
+<!--            size="small"-->
+<!--            @click="deleteObject(scope.row.neoId)"-->
+<!--        >删除实例</el-button>-->
       </template>
     </el-table-column>
 
@@ -239,33 +241,38 @@ export default {
     },
 
     searchInst(){
-      inslist([
-        "水利对象"
-      ],this.searchContent).then(res=>{
-        console.log(res);
-        console.log(res.data.length);
-        this.tableData=res.data;
-        this.total=res.data.length;
-
-      })
-    },
-
-    deleteObject(neoId){
-      ElMessageBox.confirm("确定删除该实例吗？", "warning", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning",
-        title: "删除确认",
-      }).then(()=>{
-        console.log("要删除的实例id是" + neoId)
-        deleteIns(neoId).then(({ data }) => {
-          // console.log(data);
-          ElMessage.success("删除成功");
-        });
-        this.load();
+      // inslist([
+      //   "水利对象"
+      // ],this.searchContent).then(res=>{
+      //   console.log(res);
+      //   console.log(res.data.length);
+      //   this.tableData=res.data;
+      //   this.total=res.data.length;
+      //
+      // })
+      inslist(["水利对象"], this.searchContent).then(({ data }) => {
+          this.tableData=data;
+          this.total=data.length;
       });
-
-    }
+      this.searchContent = "";
+    },
+    //
+    // deleteObject(neoId){
+    //   ElMessageBox.confirm("确定删除该实例吗？", "warning", {
+    //     confirmButtonText: "确认",
+    //     cancelButtonText: "取消",
+    //     type: "warning",
+    //     title: "删除确认",
+    //   }).then(()=>{
+    //     console.log("要删除的实例id是" + neoId)
+    //     deleteIns(neoId).then(({ data }) => {
+    //       // console.log(data);
+    //       ElMessage.success("删除成功");
+    //     });
+    //     this.load();
+    //   });
+    //
+    // }
 
 
 

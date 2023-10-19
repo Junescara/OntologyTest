@@ -8,7 +8,7 @@
     <div >
      <el-form inline label-position="left"  align="left">
       <el-form-item>
-        <el-text>本体类型选择：</el-text>
+        <el-text>类型选择：</el-text>
       </el-form-item>
       <el-form-item >
             <el-select

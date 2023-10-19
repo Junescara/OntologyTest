@@ -1,6 +1,6 @@
 <template >
     <span>
-    <div>
+    <div v-show="!DeleteFlag">
      <el-form label-width="200px" inline label-position="left"  align="left">
         <el-form-item>
             <el-select
@@ -51,8 +51,7 @@
    <el-divider></el-divider>
    <br>
    
-
-   
+<div v-show="!DeleteFlag">
    <el-table :data="tableData1.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
        <el-table-column prop="name" label="本体名称" width="auto" align="left" />
        <el-table-column  prop="labels" label="本体类型" width="auto" align="left">
@@ -60,7 +59,7 @@
        <el-table-column  prop="time" label="创建时间" width="auto" align="left"></el-table-column>
        <el-table-column  prop="creater" label="创建人" width="auto" align="left"></el-table-column>\
        <el-table-column  prop="number" label="属性数量" width="auto" align="left"></el-table-column>
-       <el-table-column label="操作" width="180">
+       <el-table-column label="节点操作" width="180">
            <template v-slot="scope">
           
              <el-button
@@ -74,19 +73,6 @@
                  })
                "
                >查看结点</el-button
-             ><el-button
-               link
-               type="success"
-               size="small"
-               @click=""
-               >新增属性</el-button
-             >
-             <el-button
-               link
-               type="danger"
-               size="small"
-               @click="AddOntoProp(scope.row.neoId)"
-               >删除属性</el-button
              >
              <el-button
                link
@@ -95,6 +81,31 @@
                @click="DeleteObject(scope.row.neoId)"
                >删除实体</el-button
              >
+            
+           </template>
+           
+             
+          
+         </el-table-column>
+
+         <el-table-column label="属性操作" width="180">
+           <template v-slot="scope">
+          
+         <el-button
+               link
+               type="success"
+               size="small"
+               @click="Add(scope.row.neoId)"
+               >新增属性</el-button
+             >
+             <el-button
+               link
+               type="danger"
+               size="small"
+               @click="Delete(scope.row.neoId)"
+               >删除属性</el-button
+             >
+            
             
            </template>
            
@@ -115,6 +126,52 @@
                  layout="total, sizes, prev, pager, next, jumper"
                  :total="tableData1.length">
    </el-pagination>
+</div>
+   
+
+
+   <div v-show="DeleteFlag" >
+   
+    <el-table :data="tableData2.slice((currentPage2-1)*pageSize2,currentPage2*pageSize2)" style="width: auto" border stripe :header-cell-class-name="headerBg2">
+      <el-table-column prop="name" label="属性名称" width="auto" align="left">
+      </el-table-column>
+      <el-table-column  prop="owerBound,upperBound" width="auto" align="left" label="范围" >
+<template #default="scope" >
+<div v-if="scope.row"><el-tag size="medium">{{ scope.row.lowerBound }}~{{ scope.row.upperBound }}</el-tag></div>
+</template>
+</el-table-column>
+      <el-table-column prop="dimension" label="单位" width="auto" align="left">
+      </el-table-column>
+      <el-table-column label="属性操作" width="180">
+           <template v-slot="scope">
+    
+             <el-button
+               link
+               type="danger"
+               size="small"
+               @click="Deleteprop(scope.row.neoId)"
+               >删除属性</el-button
+             >
+            
+            
+           </template>
+           
+             
+          
+         </el-table-column>
+
+    </el-table>
+
+    <el-pagination align='center' 
+     @size-change="handleSizeChange2"
+                 @current-change="handleCurrentChange2"
+                 :current-page="pageNum"
+                 :page-sizes="[2, 5, 10, 20]"
+                 :page-size="pageSize2"
+                 layout="total, sizes, prev, pager, next, jumper"
+                 :total="tableData2.length">
+   </el-pagination>
+   </div>
    </template>
 
    
@@ -125,7 +182,8 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { AddProp, DeleteOnto, Ontolist } from "../../api/module/ontology";
+import { AddProp, DeleteOnto, DeleteOntoProp, Ontolist } from "../../api/module/ontology";
+
 
 const router = useRouter();
 
@@ -136,12 +194,16 @@ export default {
                 return {
                     tableData:  [],
                     tableData1:  [],
+                    tableData2: [],
       insName:"",
       searchContent:"",
       rangeItem:[],
       neoId:"",
+      AddFlag:false,
+      DeleteFlag:false,
       time:"2023-1-1",
       creater:"竹子",
+      tableColumn:[],
       ontoType:["水利对象本体","流域本体"],
       multipleSelection: [],
       msg: "hello 竹子",
@@ -151,6 +213,7 @@ export default {
       logoTextShow: true,
       headerBg: 'headerBg',
       headerBg1:'headerBg',
+      headerBg2:'headerBg',
       currentPage: 1, // 当前页码
                     total: 20, // 总条数
                     pageSize: 10 // 每页的数据条数
@@ -158,6 +221,10 @@ export default {
       currentPage1: 1, // 当前页码
                     total: 20, // 总条数
                     pageSize1: 10 // 每页的数据条数
+,
+currentPage2: 1, // 当前页码
+                    total: 20, // 总条数
+                    pageSize2: 10 // 每页的数据条数
 
                     
                 }
@@ -166,6 +233,8 @@ export default {
     // 请求分页查询数据
     this.load()
     this.load1()
+ 
+    
     
   },
 
@@ -189,6 +258,7 @@ export default {
 
         this.tableData1=res.data;
         this.total=res.total;
+        console.log(this.tableData1);
       }
 
       )
@@ -220,6 +290,18 @@ export default {
                   console.log(`当前页: ${val}`);
                   this.currentPage1 = val;
                   
+                }, //每页条数改变时触发 选择一页显示多少行
+                   handleSizeChange2(val) {
+                  console.log(`每页 ${val} 条`);
+                 this.currentPage1 = 1;
+                  this.pageSize1 = val;
+                  this.Delete(this.neoId);
+                },
+                //当前页改变时触发 跳转其他页
+                handleCurrentChange2(val) {
+                  console.log(`当前页: ${val}`);
+                  this.currentPage1 = val;
+                  this.Delete(this.neoId);
                 },
 
                 handleSelectionChange(val) {
@@ -246,8 +328,43 @@ export default {
         });
       });
 },
-AddOntoProp(neoId){
+Add(neoId){
+this.neoId=neoId;
+},
+Delete(neoId){
   this.neoId=neoId;
+  this.DeleteFlag=true;
+
+  loadOntoInfo(this.neoId).then(res => {
+    console.log(res.data);
+    console.log(res.data.propClzList);
+
+        this.tableData2=res.data.propClzList;
+        console.log(this.tableData2);
+      })
+
+  
+
+},
+Deleteprop(neoId){
+  this.neoId=neoId;
+  ElMessageBox.confirm("确定删除该属性吗？", "warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        title: "删除确认",
+      }).then(()=>{
+         console.log(this.neoId);
+     
+        DeleteOntoProp({neoId:this.neoId}).then(({ data }) => {
+          // console.log(data);
+          this.DeleteFlag = fasle;
+          
+        });
+        this.$router.go(0);
+      });
+
+      
 },
 DeleteObject(neoId){
   this.neoId=neoId;

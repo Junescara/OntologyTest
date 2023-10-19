@@ -24,10 +24,14 @@
         </el-select>
         </el-form-item>
         <el-form-item >
-      <el-input  v-model="name" placeholder="请输入本体名" clearable >
+      <el-input v-show="object" v-model="name" placeholder="请输入实体名" clearable >
+      </el-input>
+      <el-input v-show="attribute" v-model="name" placeholder="请输入属性名" clearable >
+      </el-input>
+      <el-input v-show="relation" v-model="name" placeholder="请输入关系名" clearable >
       </el-input>
     </el-form-item>
-    <el-form-item>
+    <el-form-item >
        <!-- 提交按你 -->
     <el-button v-show="object"  type="success" @click="create" >提交</el-button>
     <el-button v-show="attribute"  type="success" @click="Attcreate" >提交</el-button>
@@ -358,11 +362,8 @@ export default {
       else{
         this.attribute=false;
       }
-      if(ontoType=="objectrel"){
-        this.objectrel=true;
-      }else{
-        this.objectrel=false;
-      }
+     
+      
 
     },
                 //每页条数改变时触发 选择一页显示多少行

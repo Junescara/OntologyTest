@@ -44,7 +44,52 @@
       </el-form-item>
     </el-form>
     </div>
-    
+    <div v-show="DeleteFlag" inline label-position="right"  align="right">
+
+            <el-button type="primary" @click="HandleAddProp">新增</el-button>
+
+             <el-button type="primary"  @click="ReturnToView">返回</el-button>
+
+    </div>
+    <el-dialog
+            v-model="addPropDialogVisible"
+            title="新增属性"
+    >
+
+       <div>
+    <div>
+        <el-table
+                :data="addPropForm.slice((currentPage3-1)*pageSize3,currentPage3*pageSize3)"
+                align="center" style="width: auto" border stripe
+                :header-cell-class-name="headerBg1"
+                ref="multiplePropTable"
+                @selection-change="handlePropSelectionChange"
+        >
+            <el-table-column
+                    type="selection"
+                    prop='checked'
+                    lable=''>
+            </el-table-column>
+             <el-table-column prop="name" label="属性名称" width="auto" align="left"></el-table-column>
+             <el-table-column prop="range" label="范围" width="auto" align="left"></el-table-column>
+             <el-table-column prop="dimension" label="单位" width="auto" align="left"></el-table-column>
+
+        </el-table>
+     <el-pagination align='center'
+                    @size-change="handleSizeChange3"
+                    @current-change="handleCurrentChange3"
+                    :current-page="pageNum"
+                    :page-sizes="[2, 5, 10, 20]"
+                    :page-size="pageSize3"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="addPropForm.length">
+   </el-pagination>
+    </div>
+    <div style="margin-top: 10px">
+      <el-button type="primary" @click="submitAdd" size="small">确定</el-button>
+    </div>
+  </div>
+     </el-dialog>
    </span>
 
     
@@ -88,22 +133,16 @@
           
          </el-table-column>
 
-         <el-table-column label="属性操作" width="180">
+         <el-table-column label="属性操作" width="100">
            <template v-slot="scope">
           
-         <el-button
-               link
-               type="success"
-               size="small"
-               @click="Add(scope.row.neoId)"
-               >新增属性</el-button
-             >
+
              <el-button
                link
-               type="danger"
+               type="primary"
                size="small"
-               @click="Delete(scope.row.neoId)"
-               >删除属性</el-button
+               @click="EditProp(scope.row.neoId)"
+               >编辑属性</el-button
              >
             
             
@@ -182,7 +221,7 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { AddProp, DeleteOnto, DeleteOntoProp, Ontolist } from "../../api/module/ontology";
+import { AddProp, DeleteOnto, DeleteOntoProp, Ontolist, queryPropList } from "../../api/module/ontology";
 
 
 const router = useRouter();
@@ -201,6 +240,7 @@ export default {
       neoId:"",
       AddFlag:false,
       DeleteFlag:false,
+      addPropDialogVisible:false,
       time:"2023-1-1",
       creater:"竹子",
       tableColumn:[],
@@ -214,6 +254,9 @@ export default {
       headerBg: 'headerBg',
       headerBg1:'headerBg',
       headerBg2:'headerBg',
+        addPropForm: {},//加载所有属性的数据集
+        isAllPropSelected : false,//选择所有属性
+        selectedProp:[],
       currentPage: 1, // 当前页码
                     total: 20, // 总条数
                     pageSize: 10 // 每页的数据条数
@@ -224,7 +267,13 @@ export default {
 ,
 currentPage2: 1, // 当前页码
                     total: 20, // 总条数
-                    pageSize2: 10 // 每页的数据条数
+                    pageSize2: 10, // 每页的数据条数
+
+                    //新增属性时展示所有属性用到的分页器
+                    currentPage3: 1, // 当前页码
+                    total: 20, // 总条数
+                    pageSize3: 10 // 每页的数据条数
+
 
                     
                 }
@@ -295,14 +344,28 @@ currentPage2: 1, // 当前页码
                   console.log(`每页 ${val} 条`);
                  this.currentPage1 = 1;
                   this.pageSize1 = val;
-                  this.Delete(this.neoId);
+                  this.EditProp(this.neoId);
                 },
                 //当前页改变时触发 跳转其他页
                 handleCurrentChange2(val) {
                   console.log(`当前页: ${val}`);
                   this.currentPage1 = val;
-                  this.Delete(this.neoId);
+                  this.EditProp(this.neoId);
                 },
+
+      //新增属性页面每页条数改变时触发 选择一页显示多少行
+      handleSizeChange3(val) {
+          console.log(`每页 ${val} 条`);
+          this.currentPage3 = 1;
+          this.pageSize3 = val;
+          this.HandleAddProp();
+      },
+      //新增属性页面，当前页改变时触发 跳转其他页
+      handleCurrentChange3(val) {
+          console.log(`当前页: ${val}`);
+          this.currentPage3 = val;
+          this.HandleAddProp();
+      },
 
                 handleSelectionChange(val) {
                     console.log(val)
@@ -328,40 +391,97 @@ currentPage2: 1, // 当前页码
         });
       });
 },
-Add(neoId){
-this.neoId=neoId;
+HandleAddProp(){
+//this.neoId=neoId;
+
+    queryPropList({type:"p"}).then(({ data }) => {
+        console.log("HandleAddProp",data);
+
+        let propData = [];
+
+        for (let item of data){
+            let propItem = {
+                name: item.name,
+                code: item.code,
+                neoId:item.neoId,
+                checked:false,
+                range:item.rangeItem.lowerBound +"~"+item.rangeItem.upperBound,
+                dimension:item.dimension,
+
+            };
+            propData.push(propItem);
+        }
+        this.addPropForm = propData;
+        console.log("this.addPropForm",this.addPropForm);
+        //this.DeleteFlag = false;
+        this.addPropDialogVisible = true;
+        console.log("this.addPropDialogVisible",this.addPropDialogVisible);
+
+    });
 },
-Delete(neoId){
+
+
+      allPropSelected(){
+          for (let item of this.addPropForm){
+              item.checked = this.isAllPropSelected;
+          }
+      },
+
+submitAdd(){
+     let codes = [];
+    console.log(" submitAdd ==> this.selectedProp", this.selectedProp);
+    for (let item of this.selectedProp){
+        codes.push(item.code);
+    }
+    let submitData ={
+        ontoNeoId:this.neoId,
+        codes:codes,
+    }
+    console.log(" this.submitData", submitData);
+    AddProp(submitData).then(res => {
+        this.EditProp(this.neoId)
+    })
+    this.addPropDialogVisible = false;
+
+
+},
+EditProp(neoId){
   this.neoId=neoId;
   this.DeleteFlag=true;
 
   loadOntoInfo(this.neoId).then(res => {
     console.log(res.data);
-    console.log(res.data.propClzList);
+    console.log("res.data.propClzList",res.data.propClzList);
 
         this.tableData2=res.data.propClzList;
-        console.log(this.tableData2);
+        console.log("this.tableData2",this.tableData2);
       })
 
-  
-
 },
+ReturnToView(){
+    this.DeleteFlag=false;
+}   ,
+      handlePropSelectionChange(val){
+          console.log("handlePropSelectionChange",val);
+          this.selectedProp = val
+      },
+
 Deleteprop(neoId){
-  this.neoId=neoId;
+  //this.neoId=neoId;
   ElMessageBox.confirm("确定删除该属性吗？", "warning", {
         confirmButtonText: "确认",
         cancelButtonText: "取消",
         type: "warning",
         title: "删除确认",
       }).then(()=>{
-         console.log(this.neoId);
+         console.log(neoId);
      
-        DeleteOntoProp({neoId:this.neoId}).then(({ data }) => {
-          // console.log(data);
-          this.DeleteFlag = fasle;
-          
+        DeleteOntoProp({neoId:neoId}).then(({ data }) => {
+           console.log(data);
+          //this.DeleteFlag = fasle;
+          this.EditProp(this.neoId);
         });
-        this.$router.go(0);
+        //this.$router.go(0);
       });
 
       

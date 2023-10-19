@@ -44,6 +44,7 @@
       </el-form-item>
     </el-form>
     </div>
+
     <div v-show="DeleteFlag" inline label-position="right"  align="right">
 
             <el-button type="primary" @click="HandleAddProp">新增</el-button>
@@ -51,6 +52,7 @@
              <el-button type="primary"  @click="ReturnToView">返回</el-button>
 
     </div>
+    <!-- 本体新增属性 -->
     <el-dialog
             v-model="addPropDialogVisible"
             title="新增属性"
@@ -102,8 +104,18 @@
        <el-table-column  prop="labels" label="本体类型" width="auto" align="left">
        </el-table-column>
        <el-table-column  prop="time" label="创建时间" width="auto" align="left"></el-table-column>
-       <el-table-column  prop="creater" label="创建人" width="auto" align="left"></el-table-column>\
-       <el-table-column  prop="number" label="属性数量" width="auto" align="left"></el-table-column>
+       <el-table-column  label="创建人" width="auto" align="left"></el-table-column>
+       
+       <el-table-column    label="属性数量" width="auto" align="left">
+        <template v-slot="scope">
+        <el-tag size="middle" v-model="number" >
+          {{ numberList[number+scope.$index]}}
+          </el-tag>
+        </template>
+      
+</el-table-column>
+
+      
        <el-table-column label="节点操作" width="180">
            <template v-slot="scope">
           
@@ -174,7 +186,7 @@
     <el-table :data="tableData2.slice((currentPage2-1)*pageSize2,currentPage2*pageSize2)" style="width: auto" border stripe :header-cell-class-name="headerBg2">
       <el-table-column prop="name" label="属性名称" width="auto" align="left">
       </el-table-column>
-      <el-table-column  prop="owerBound,upperBound" width="auto" align="left" label="范围" >
+      <el-table-column  prop="lowerBound,upperBound" width="auto" align="left" label="范围" >
 <template #default="scope" >
 <div v-if="scope.row"><el-tag size="medium">{{ scope.row.lowerBound }}~{{ scope.row.upperBound }}</el-tag></div>
 </template>
@@ -244,6 +256,9 @@ export default {
       time:"2023-1-1",
       creater:"竹子",
       tableColumn:[],
+      neoIdList:[],
+      numberList:[],
+      number:0,
       ontoType:["水利对象本体","流域本体"],
       multipleSelection: [],
       msg: "hello 竹子",
@@ -305,12 +320,36 @@ currentPage2: 1, // 当前页码
     load1() {
       Ontolist({name:""}).then(res=>{
 
-        this.tableData1=res.data;
-        this.total=res.total;
-        console.log(this.tableData1);
+       
+ 
+        for(let i=0;i<res.data.length;i++){
+          this.neoIdList[i]=res.data[i].neoId;
+        }
+         
+        for(let j=0;j<res.data.length;j++){
+        loadOntoInfo(this.neoIdList[j]).then(res=>{
+        this.numberList[j]=res.data.propClzList.length;
+        })
+
       }
+      let resData = res.data;
+      
+      // let object1=res.data;
+      // let object2=this.numberList;
+      // let object3=Object.assign({},object1,object2);
+      // console.log(this.numberList);
+      // console.log(object3);
+   
+      this.tableData1=res.data;
+   
+            }
+        
+      
 
       )
+      console.log(this.neoIdList);
+      
+      console.log(this.numberList);
 
     },
                 //每页条数改变时触发 选择一页显示多少行
@@ -332,12 +371,18 @@ currentPage2: 1, // 当前页码
                   console.log(`每页 ${val} 条`);
                  this.currentPage1 = 1;
                   this.pageSize1 = val;
+                  this.load1();
+             
+                  
                   
                 },
                 //当前页改变时触发 跳转其他页
                 handleCurrentChange1(val) {
                   console.log(`当前页: ${val}`);
                   this.currentPage1 = val;
+                  this.number=(val-1)*this.pageSize1;
+                  console.log(this.number);
+
                   
                 }, //每页条数改变时触发 选择一页显示多少行
                    handleSizeChange2(val) {

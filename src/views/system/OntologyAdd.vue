@@ -18,10 +18,9 @@
           clearable
           filterable
         >
-        <el-option label="对象本体" value="object" selected></el-option>
-      <el-option label="属性本体" value="attribute"></el-option>
-      <el-option label="关系本体" value="objectrel"></el-option>
-      <el-option label="本体间的关系" value="relation"></el-option>
+        <el-option label="实体类型" value="object" selected></el-option>
+      <el-option label="属性" value="attribute"></el-option>
+      <el-option label="关系" value="relation"></el-option>
         </el-select>
         </el-form-item>
         <el-form-item >
@@ -37,12 +36,9 @@
     <el-button v-show="object"  type="success" @click="create" >提交</el-button>
     <el-button v-show="attribute"  type="success" @click="Attcreate" >提交</el-button>
     <el-button v-show="relation"  type="success" @click="Recreate" >提交</el-button>
-    <el-button v-show="objectrel"  type="success" @click="ObjectRel" >提交</el-button>
     </el-form-item>
       <el-form-item >
-        <el-button  type="primary"  @click="handelReturn">
-          返回
-        </el-button>
+       
       </el-form-item>
       <el-form-item >
         <el-button  type="primary"  @click="OntoView">
@@ -184,6 +180,11 @@
           />
         </el-select>
 </el-form-item>
+<el-form-item>
+  <el-button  type="primary"  @click="handelReturn">
+          返回
+        </el-button>
+</el-form-item>
 <el-divider></el-divider>
   </el-form>
   <div style="display: flex;overflow:auto" >
@@ -194,6 +195,7 @@
 
 
 <!-- 关系本体页面 -->
+<!-- 
 <div v-show="objectrel">
   <el-form  label-width="100px" label-position="left" align="left" inline >
 <el-form-item>
@@ -210,8 +212,8 @@
             :value="item.neoId"
           />
         </el-select>
-</el-form-item>
-
+</el-form-item> -->
+<!-- 
 <el-form-item>
   <el-select
           v-model="EId"
@@ -227,10 +229,15 @@
           />
         </el-select>
 </el-form-item>
+<el-form-item>
+  <el-button  type="primary"  @click="handelReturn">
+          返回
+        </el-button>
+</el-form-item>
 <el-divider></el-divider>
   </el-form>
  
-</div>
+</div> -->
 <br>
  
 
@@ -401,16 +408,17 @@ export default {
             },
             Recreate(){
              createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
-              ElMessage.success("构建成功");
+              
               this.$router.push("OntoWatch");
             });
-            },
-            ObjectRel(){
-               Relonto({startList:[this.SId],endList:[this.EId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
+
+            Relonto({startList:[this.AId],endList:[this.BId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
               ElMessage.success("构建成功");
-              this.$router.go(0);
+         
             });
-          },
+            this.$router.push("OntoWatch");
+            },
+            
             create() {
       let name = ref("");
       let propsClzs = this.multipleSelection.map((v) => v.code);

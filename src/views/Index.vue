@@ -47,29 +47,6 @@
                   浏览
                 </el-button>
 
-                <el-button
-                  type="primary"
-                  size="small"
-                  @click="this.$router.push('OntoView')"
-                >
-                  查看
-                </el-button>
-
-                <el-button
-                  type="primary"
-                  size="small"
-                  @click="this.$router.push('OntoAdd')"
-                >
-                  新增
-                </el-button>
-
-                <el-button
-                  type="primary"
-                  size="small"
-                  @click="this.$router.push('OntoWatch')"
-                >
-                  浏览
-                </el-button>
               </template>
             </el-descriptions>
             <div>

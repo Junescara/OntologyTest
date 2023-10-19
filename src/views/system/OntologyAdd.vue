@@ -8,7 +8,7 @@
     <div >
      <el-form inline label-position="left"  align="left">
       <el-form-item>
-        <el-text>类型选择：</el-text>
+        <el-text>本体类型选择：</el-text>
       </el-form-item>
       <el-form-item >
             <el-select
@@ -18,9 +18,10 @@
           clearable
           filterable
         >
-        <el-option label="实体类型" value="object" selected></el-option>
-      <el-option label="属性" value="attribute"></el-option>
-      <el-option label="关系" value="relation"></el-option>
+        <el-option label="对象本体" value="object" selected></el-option>
+      <el-option label="属性本体" value="attribute"></el-option>
+      <el-option label="关系本体" value="objectrel"></el-option>
+      <el-option label="本体间的关系" value="relation"></el-option>
         </el-select>
         </el-form-item>
         <el-form-item >
@@ -39,7 +40,9 @@
     <el-button v-show="objectrel"  type="success" @click="ObjectRel" >提交</el-button>
     </el-form-item>
       <el-form-item >
-      
+        <el-button  type="primary"  @click="handelReturn">
+          返回
+        </el-button>
       </el-form-item>
       <el-form-item >
         <el-button  type="primary"  @click="OntoView">
@@ -130,17 +133,6 @@
 </template>
 </el-table-column>
 <el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
-<el-table-column label="操作" width="180">
-           <template v-slot="scope">
-             <el-button
-               link
-               type="danger"
-               size="small"
-               @click="DeleteProp(scope.row.neoId)"
-               >删除</el-button
-             >
-           </template>
-         </el-table-column>
 
    
   </el-table>
@@ -192,30 +184,53 @@
           />
         </el-select>
 </el-form-item>
-<el-form-item>
-  <el-button  type="primary"  @click="handelReturn" aria-placeholder="">
-          返回
-        </el-button>
-</el-form-item>
 <el-divider></el-divider>
   </el-form>
-  
-  <div style="display: flex;overflow:auto" align="right">
-    
+  <div style="display: flex;overflow:auto" >
             <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1">
-              
             </KGVisibleVisNetwork>
-            <div>
-              
-            </div>
-            
-        </div>
-        <div>
-
         </div>
 </div>
 
 
+<!-- 关系本体页面 -->
+<div v-show="objectrel">
+  <el-form  label-width="100px" label-position="left" align="left" inline >
+<el-form-item>
+  <el-select
+          v-model="SId"
+          placeholder="请选择A本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList1"
+            :key="index"
+            :label="item.name "
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+
+<el-form-item>
+  <el-select
+          v-model="EId"
+          placeholder="请选择B本体"
+          clearable
+          filterable
+        >
+          <el-option
+            v-for="(item, index) in ontoList2"
+            :key="index"
+            :label="item.name"
+            :value="item.neoId"
+          />
+        </el-select>
+</el-form-item>
+<el-divider></el-divider>
+  </el-form>
+ 
+</div>
 <br>
  
 
@@ -231,9 +246,8 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { createRel, DeleteOnto, DeleteProp, Ontolist, ontoprop, queryRelList, Relonto } from "../../api/module/ontology";
+import { createRel, Ontolist, ontoprop, Relonto } from "../../api/module/ontology";
 const ontoList = reactive([]); //本体源列表
-
 
 import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
 const router = useRouter();
@@ -257,7 +271,6 @@ export default {
       isCollapse: false,
       sideWidth: 200,
       logoTextShow: true,
-      neoId:"",
       ontoType:"",
       dimension:"",
       lowerBound:"",
@@ -330,24 +343,6 @@ export default {
       )
 
     },
-   
-    DeleteProp(neoId){
-      this.neoId=neoId;
-  ElMessageBox.confirm("确定删除该属性吗？", "warning", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning",
-        title: "删除确认",
-      }).then(()=>{
-        DeleteProp({neoId:this.neoId}).then(({ data }) => {
-          // console.log(data);
-          this.load();
-        });
-      });
-
-     
-  
-},
     changeType(ontoType){
       if(ontoType=="object")
        this.object=true;
@@ -401,21 +396,21 @@ export default {
             Attcreate(){
             ontoprop({type:"1",name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
               ElMessage.success("构建成功");
-              this.load();
+              this.$router.go(0);
             });
             },
             Recreate(){
-              Relonto({startList:[this.AId],endList:[this.BId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
-                
-            });
              createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
               ElMessage.success("构建成功");
-              
               this.$router.push("OntoWatch");
             });
-           
             },
-      
+            ObjectRel(){
+               Relonto({startList:[this.SId],endList:[this.EId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
+              ElMessage.success("构建成功");
+              this.$router.go(0);
+            });
+          },
             create() {
       let name = ref("");
       let propsClzs = this.multipleSelection.map((v) => v.code);
@@ -445,7 +440,17 @@ export default {
       this.$router.push("OntoWatch");
     },
 
-   
+searchInst(){
+  Ontolist({name:this.searchContent}).then(res=>{
+
+this.tableData1=res.data;
+this.total=res.total;
+})
+
+},
+            
+                 
+          
                 
         }
       }

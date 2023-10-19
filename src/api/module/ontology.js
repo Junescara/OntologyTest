@@ -161,14 +161,14 @@ export function DeleteOntoProp(neoId) {
  * @param {*} name
  * @returns
  */
-export function AddProp(ontoNeoId,codes) {
+export function AddProp(data) {
   return request({
     url: `${baseURL}/add-onto-prop`,
     method: "post",
     headers: {
       "Content-Type": "application/json",
     },
-    data: ontoNeoId,codes
+    data: data
   });
 }
 
@@ -187,4 +187,15 @@ export function queryRelList(){
     data: {
     },
   });
+}
+
+export function queryPropList(type){
+    return request({
+        url: `${baseURL}/list-basic-clz`,
+        method: "post",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        params: type,
+    });
 }

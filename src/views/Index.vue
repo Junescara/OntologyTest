@@ -39,7 +39,7 @@
                   size="small"
                   @click="this.$router.push({
                 path:  item.add ,
-                query: { sname: item.sname },
+                query: { sname: item.sname,neoId:item.neoId},
               })"
                 >
                   新增
@@ -175,10 +175,10 @@ export default {
       load(){
            this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划父本体",neoId:"0da94327-0c07-4c70-8050-5c8c9e808a38"}
            ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}
-           ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象父本体"}
-           ,"流域对象实例管理"
-           ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构父本体"}
-           ,"流域机构实例管理"
+           ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象父本体",neoId:"b82314fd-7c78-4a05-98e3-9e51b2ae8ccc"}
+           ,{name:"流域对象实例管理"}
+           ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构父本体",neoId:"694a16b5-0ebf-4784-aa25-d4b776292b15"}
+           ,{name:"流域机构实例管理"}
            ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术父本体"}
            ,"抢险技术实例管理"
            ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险父本体"}

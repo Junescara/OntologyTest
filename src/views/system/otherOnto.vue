@@ -12,14 +12,7 @@
           
         </el-select> 
         </el-form-item>
-      <el-form-item>
-           <el-input align="left"
-             placeholder="请输入本体名"
-             clearable
-             v-model="searchContent"
-             width="auto"
-           />
-         </el-form-item>
+    
          <el-form-item>
            <el-button type="primary" :icon="Search" @click="searchInst"
              >搜索</el-button
@@ -355,12 +348,15 @@ currentPage2: 1, // 当前页码
 
     load3(){
       console.log({neoId:this.neoId});
+     
         subOnto({neoId:this.neoId}).then(res=>{
+          this.tableData1=res.data;
 
           for(let i=0;i<res.data.length;i++){
           this.neoIdList[i]=res.data[i].neoId;
         }
          
+
         for(let j=0;j<res.data.length;j++){
         loadOntoInfo(this.neoIdList[j]).then(res=>{
         this.numberList[j]=res.data.propClzList.length;
@@ -368,9 +364,10 @@ currentPage2: 1, // 当前页码
 
       }
 
-          this.tableData1=res.data;
+         
         })
-
+       
+     
           console.log(this.numberList);
     },
                 //每页条数改变时触发 选择一页显示多少行
@@ -591,6 +588,8 @@ this.total=res.total;
 getParams() {
       this.neoId = this.$route.query.neoId;
       console.log(this.neoId);
+    
+      
     },
             
                  

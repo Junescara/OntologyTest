@@ -129,6 +129,20 @@
 </template>
 </el-table-column>
 <el-table-column  prop="dimension" label="单位" width="auto" align="left"></el-table-column>
+<el-table-column label="属性操作" width="100">
+           <template v-slot="scope">
+             <el-button
+               link
+               type="danger"
+               size="small"
+               @click="EditProp(scope.row.neoId)"
+               >删除属性</el-button
+             >
+
+           </template>
+
+         </el-table-column>
+
 
    
   </el-table>
@@ -253,7 +267,8 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { createRel, Ontolist, ontoprop, Relonto, subRel } from "../../api/module/ontology";
+import { createRel, DeleteProp, Ontolist, ontoprop, Relonto, subRel } from "../../api/module/ontology";
+
 
 const ontoList = reactive([]); //本体源列表
 
@@ -290,6 +305,7 @@ export default {
       objectrel:false,
       AId:"",
       BId:"",
+      neoId:"",
       SId:[],
       EId:[],
       ontoList1:[],
@@ -424,6 +440,17 @@ export default {
             });
             
             },
+            EditProp(neoId){
+              this.neoId = neoId;
+              DeleteProp({neoId:this.neoId}).then(res=>{
+
+              })
+              listbasic({ type:"p"}).then(res => {
+        this.tableData = res.data;
+         this.total = res.total;
+      })
+              
+            },
             
             create() {
       let name = ref("");
@@ -434,8 +461,20 @@ export default {
         type: "warning",
         title: "创建确认",
       }).then(() => {
+
+        
+        
         createOnto({ propsClzs, name: this.name }).then(({ data }) => {
           // console.log(data);
+        // console.log(this.neoId);
+        //   Relonto({startList:[this.neoId],endList:[data.neoId],name:"管辖",strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
+              
+         
+        //     });
+        //     subRel({from:this.neoId,to:data.neoId,name:"管辖",seriesName:this.sname}).then(({ data })=>{
+              
+            
+        //     });
           ElMessage.success("构建成功");
           this.$router.push({
             path: "/Ontology-result",
@@ -464,6 +503,7 @@ this.total=res.total;
 },
 getParams() {
       this.sname = this.$route.query.sname;
+      this.neoId = this.$route.query.neoId;
     },
             
                  

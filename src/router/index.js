@@ -141,7 +141,7 @@ const routes = [
         name: "OtherOnto",
         component: () => import("@/views/system/otherOnto.vue"),
         meta: {
-          title: "实体类型浏览",
+          title: "实体类型查看",
           menu: false,
           visByUrl: false,
         },

@@ -4,7 +4,7 @@
      <el-form label-width="200px" inline label-position="left"  align="left">
         <el-form-item>
             <el-input
-          v-model="ontoType"
+       
           placeholder="请输入实体类型"
           clearable
           filterable
@@ -587,7 +587,7 @@ this.total=res.total;
 },
 getParams() {
       this.neoId = this.$route.query.neoId;
-      
+
       console.log(this.neoId);
     
       

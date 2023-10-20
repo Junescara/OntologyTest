@@ -7,9 +7,8 @@
     <div  >
       <el-row :gutter="80" style="margin-bottom: 20px;margin-left: 10px">
         <el-col :span="12" v-for="(item,index) in dataList.slice(start,end)" :key="index" >
-          
           <el-card class="box-card" style="width: 100%" >
-            <el-text type="primary" size="large" style="padding-right:260px ;">
+            <el-text type="primary" size="large" style="padding-right:250px ;">
             {{item.name}}
           </el-text>
             <el-descriptions column="1" >
@@ -28,7 +27,7 @@
                   size="small"
                   @click="  this.$router.push({
                 path: item.view ,
-                query: { neoId: item.neoId },
+                query: { neoId: item.neoId  },
               })
             ">
                   查看
@@ -39,7 +38,7 @@
                   size="small"
                   @click="this.$router.push({
                 path:  item.add ,
-                query: { sname: item.sname,neoId:item.neoId},
+                query: { neoId: item.neoId },
               })"
                 >
                   新增
@@ -50,7 +49,7 @@
                   size="small"
                   @click="this.$router.push({
                 path:  item.watch ,
-                // query: { neoId: scope.row.neoId },
+                query: { neoId: item.neoId },
               })"
                 >
                   浏览
@@ -173,18 +172,22 @@ export default {
     },
     methods:{ 
       load(){
-           this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划父本体",neoId:"0da94327-0c07-4c70-8050-5c8c9e808a38"}
-           ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}
-           ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象父本体",neoId:"b82314fd-7c78-4a05-98e3-9e51b2ae8ccc"}
-           ,{name:"流域对象实例管理"}
-           ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构父本体",neoId:"694a16b5-0ebf-4784-aa25-d4b776292b15"}
-           ,{name:"流域机构实例管理"}
-           ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术父本体",neoId:"55f3d081-fa7d-4271-9200-5461b51aa89a"}
-           ,"抢险技术实例管理"
-           ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险父本体",neoId:"ef3f1eb4-020f-4fa6-999f-fb67b7644511"}
-           ,"应急抢险实例管理"
-           ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"}
-           ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}]
+        this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划父本体",neoId:"0da94327-0c07-4c70-8050-5c8c9e808a38"}
+        ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"0da94327-0c07-4c70-8050-5c8c9e808a38"}
+
+          ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构父本体",neoId:" 694a16b5-0ebf-4784-aa25-d4b776292b15"}
+        ,{name:"流域机构实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:" 694a16b5-0ebf-4784-aa25-d4b776292b15"}
+
+          ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象父本体",neoId:" b82314fd-7c78-4a05-98e3-9e51b2ae8ccc"}
+        ,{name:"流域对象实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域对象",neoId:"b82314fd-7c78-4a05-98e3-9e51b2ae8ccc"}
+
+          ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险父本体",neoId:"ef3f1eb4-020f-4fa6-999f-fb67b7644511"}
+          ,{name:"应急抢险实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"应急抢险",neoId:"ef3f1eb4-020f-4fa6-999f-fb67b7644511"}
+
+          ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术父本体",neoId:"55f3d081-fa7d-4271-9200-5461b51aa89a"}
+        ,{name:"抢险技术实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"抢险技术",neoId:"55f3d081-fa7d-4271-9200-5461b51aa89a"}
+        ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"}
+        ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}]
     },
       
       handleSizeChange(val) {

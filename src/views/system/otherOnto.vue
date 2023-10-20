@@ -3,23 +3,16 @@
     <div v-show="!DeleteFlag">
      <el-form label-width="200px" inline label-position="left"  align="left">
         <el-form-item>
-            <el-select
-          v-model="ontoType"
-          placeholder="请选择本体类型"
+            <el-input
+       
+          placeholder="请输入实体类型"
           clearable
           filterable
         >
           
-        </el-select> 
+        </el-input> 
         </el-form-item>
-      <el-form-item>
-           <el-input align="left"
-             placeholder="请输入本体名"
-             clearable
-             v-model="searchContent"
-             width="auto"
-           />
-         </el-form-item>
+    
          <el-form-item>
            <el-button type="primary" :icon="Search" @click="searchInst"
              >搜索</el-button
@@ -100,7 +93,7 @@
    
 <div v-show="!DeleteFlag">
    <el-table :data="tableData1.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
-       <el-table-column prop="name" label="本体名称" width="auto" align="left" />
+       <el-table-column prop="name" label="实体类型" width="auto" align="left" />
        <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
        <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
        
@@ -354,10 +347,30 @@ currentPage2: 1, // 当前页码
     },
 
     load3(){
+      
+      
       console.log({neoId:this.neoId});
+     
         subOnto({neoId:this.neoId}).then(res=>{
           this.tableData1=res.data;
+
+          for(let i=0;i<res.data.length;i++){
+          this.neoIdList[i]=res.data[i].neoId;
+        }
+         
+
+        for(let j=0;j<res.data.length;j++){
+        loadOntoInfo(this.neoIdList[j]).then(res=>{
+        this.numberList[j]=res.data.propClzList.length;
         })
+
+      }
+
+         
+        })
+       
+     
+          console.log(this.numberList);
     },
                 //每页条数改变时触发 选择一页显示多少行
                 handleSizeChange(val) {
@@ -576,13 +589,24 @@ this.total=res.total;
 },
 getParams() {
       this.neoId = this.$route.query.neoId;
+
       console.log(this.neoId);
+    
+      
     },
             
                  
           
                 
-        }
+        },
+        watch: {
+    $route(to, from) {
+      if (to.fullPath.indexOf("OtherOnto") !== -1) {
+        this.neoId = to.query.neoId;
+        this.load3();
+      }
+    },
+  },
       }
     
 </script>

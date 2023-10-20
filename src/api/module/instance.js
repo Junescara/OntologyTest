@@ -51,16 +51,16 @@ export function createRelIns(from,to,name)  {
 
 
 /**
- * 查询本体列表
+ * 查询基类本体的子本体
  * @param {*} name
  * @returns
  */
-export function queryOntoList() {
+export function queryOntoList(neoId) {
   return request({
-    url: `${baseURL}/list-onto-inst`,
+    url: `${baseURL}/query-sub-onto`,
     method: "post",
     headers,
-    data: { name },
+    data: { neoId },
   });
 }
 /**

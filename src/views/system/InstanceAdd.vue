@@ -274,7 +274,7 @@ let AId = ref(null);
 let BId = ref(null);
 let insRelation = ref(null);
 const individualButtons = reactive([]);
-
+let receivedNeoId = ref(2); //5个父本体的id
 
 const ontoList = reactive([]); //本体源列表
 const insList = reactive([
@@ -313,19 +313,25 @@ let total = computed(() => {
 });
 let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
-let receivedNeoIdIndex = ref(0); //5个父本体的id数组索引
+
 let fatherOntoIdList;
 fatherOntoIdList = ["0da94327-0c07-4c70-8050-5c8c9e808a38", "694a16b5-0ebf-4784-aa25-d4b776292b15", "b82314fd-7c78-4a05-98e3-9e51b2ae8ccc", "ef3f1eb4-020f-4fa6-999f-fb67b7644511", "55f3d081-fa7d-4271-9200-5461b51aa89a"]
 
 
+
+
 // 初始化数据
 const initData = () => {
+  receivedNeoId.value = route.query.neoId;
 
   // 获取本体列表
-  queryOntoList().then(({ data }) => {
-    ontoList.length = 0;
-    ontoList.push(...data);
-  });
+  // queryOntoList().then(({ data }) => {
+  //   ontoList.length = 0;
+  //   ontoList.push(...data);
+  // });
+
+
+
   // 获取实例列表
   // const labels = [ "水利实例", "实例主节点"];
   // queryInsList(labels).then(({ data }) => {
@@ -345,17 +351,28 @@ const initData = () => {
       //   应急抢险父本体 ef3f1eb4-020f-4fa6-999f-fb67b7644511
       //   抢险技术父本体 55f3d081-fa7d-4271-9200-5461b51aa89a
   //获取指定父本体下的所有子本体的所有实例列表
-  //receivedNeoIdIndex.value = this.$route.query.neoIdIndex
+  console.log("接口外的父本体id是", receivedNeoId.value);
 
-  console.log("receivedNeoIdIndex", receivedNeoIdIndex.value);
-  instanceByFatherId(fatherOntoIdList[receivedNeoIdIndex.value],0).then(({ data }) => {
-    console.log("父本体id是", fatherOntoIdList[receivedNeoIdIndex.value]);
-    console.log(data.subData[0].list);
+  instanceByFatherId(receivedNeoId.value,0).then(({ data }) => {
+    console.log("父本体id是", receivedNeoId.value);
+    console.log(data.subData);
     insList.length = 0;
     insList.push(...data.subData[0].list);
-    //this.total = res.total;
   });
+  // watch(() => route.query.neoId, (newNeoId) => {
+  //   receivedNeoId.value = newNeoId;
+  //   // 在这里可以执行你希望的其他操作，比如重新获取数据
+  //   initData();
+  // });
 
+  //获取该父本体下的所有本体
+  queryOntoList(receivedNeoId.value).then(({ data }) => {
+    console.log("receivedNeoId.value",receivedNeoId.value)
+    console.log("data ",data);
+    ontoList.length = 0;
+    ontoList.push(...data);
+    console.log("ontoList ",ontoList);
+  });
 
 
 };
@@ -512,8 +529,10 @@ const submitAll = () => {
 }
 onMounted(() => {
   console.log("钩子函数")
-  //receivedNeoIdIndex.value = $route.query.neoIdIndex;
-  receivedNeoIdIndex.value = route.query.neoIdIndex;
+
+  receivedNeoId.value = route.query.neoId;
+  console.log("钩子函数中receivedNeoId.value是",receivedNeoId.value);
+
   // 在组件挂载后将按钮引用存入 ref
   const buttons = document.querySelectorAll('[data-hide-on-submit]');
   buttons.forEach(button => {

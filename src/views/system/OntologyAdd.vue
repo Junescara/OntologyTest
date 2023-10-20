@@ -425,19 +425,19 @@ export default {
             });
             },
             Recreate(){
-            //  createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
+             createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
               
            
-            // });
+            });
 
             Relonto({startList:[this.AId],endList:[this.BId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
               
-         
-            });
-            subRel({from:this.AId,to:this.BId,name:this.name,seriesName:this.sname}).then(({ data })=>{
-              
               this.$router.push("OntoWatch");
             });
+            // subRel({from:this.AId,to:this.BId,name:this.name,seriesName:this.sname}).then(({ data })=>{
+              
+            //   this.$router.push("OntoWatch");
+            // });
             
             },
             EditProp(neoId){

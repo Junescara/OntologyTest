@@ -471,7 +471,7 @@ export default {
               
          
             });
-            subRel({from:this.neoId,to:data.neoId,name:"管辖",seriesName:this.sname}).then(({ data })=>{
+            subRel({from:this.neoId,to:data.neoId,name:"管辖",sname:this.sname}).then(({ data })=>{
               
             
             });

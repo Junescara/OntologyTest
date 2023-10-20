@@ -179,9 +179,9 @@ export default {
            ,{name:"流域对象实例管理"}
            ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构父本体",neoId:"694a16b5-0ebf-4784-aa25-d4b776292b15"}
            ,{name:"流域机构实例管理"}
-           ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术父本体"}
+           ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术父本体",neoId:"55f3d081-fa7d-4271-9200-5461b51aa89a"}
            ,"抢险技术实例管理"
-           ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险父本体"}
+           ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险父本体",neoId:"ef3f1eb4-020f-4fa6-999f-fb67b7644511"}
            ,"应急抢险实例管理"
            ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"}
            ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}]

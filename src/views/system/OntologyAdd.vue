@@ -465,16 +465,16 @@ export default {
         
         
         createOnto({ propsClzs, name: this.name }).then(({ data }) => {
-          // console.log(data);
-        // console.log(this.neoId);
-        //   Relonto({startList:[this.neoId],endList:[data.neoId],name:"管辖",strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
+          console.log(data);
+        console.log(this.neoId);
+          Relonto({startList:[this.neoId],endList:[data.neoId],name:"管辖",strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
               
          
-        //     });
-        //     subRel({from:this.neoId,to:data.neoId,name:"管辖",seriesName:this.sname}).then(({ data })=>{
+            });
+            subRel({from:this.neoId,to:data.neoId,name:"管辖",seriesName:this.sname}).then(({ data })=>{
               
             
-        //     });
+            });
           ElMessage.success("构建成功");
           this.$router.push({
             path: "/Ontology-result",

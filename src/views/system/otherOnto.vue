@@ -3,14 +3,14 @@
     <div v-show="!DeleteFlag">
      <el-form label-width="200px" inline label-position="left"  align="left">
         <el-form-item>
-            <el-select
+            <el-input
           v-model="ontoType"
-          placeholder="请选择本体类型"
+          placeholder="请输入实体类型"
           clearable
           filterable
         >
           
-        </el-select> 
+        </el-input> 
         </el-form-item>
     
          <el-form-item>
@@ -93,7 +93,7 @@
    
 <div v-show="!DeleteFlag">
    <el-table :data="tableData1.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
-       <el-table-column prop="name" label="本体名称" width="auto" align="left" />
+       <el-table-column prop="name" label="实体类型" width="auto" align="left" />
        <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
        <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
        
@@ -587,6 +587,7 @@ this.total=res.total;
 },
 getParams() {
       this.neoId = this.$route.query.neoId;
+      
       console.log(this.neoId);
     
       

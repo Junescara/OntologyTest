@@ -295,8 +295,7 @@ currentPage2: 1, // 当前页码
     // 请求分页查询数据
     this.getParams()
     this.load()
-    this.load1()
-   
+    this.load3()
     
  
     
@@ -354,12 +353,12 @@ currentPage2: 1, // 当前页码
 
     },
 
-    // load3(){
-    //   console.log({neoId:this.neoId});
-    //     subOnto({neoId:this.neoId}).then(res=>{
-    //       this.tableData1=res.data;
-    //     })
-    // },
+    load3(){
+      console.log({neoId:this.neoId});
+        subOnto({neoId:this.neoId}).then(res=>{
+          this.tableData1=res.data;
+        })
+    },
                 //每页条数改变时触发 选择一页显示多少行
                 handleSizeChange(val) {
                   console.log(`每页 ${val} 条`);

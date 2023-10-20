@@ -135,6 +135,17 @@ const routes = [
           visByUrl: false,
         },
       },
+
+      {
+        path: "OtherOnto",
+        name: "OtherOnto",
+        component: () => import("@/views/system/otherOnto.vue"),
+        meta: {
+          title: "实例浏览",
+          menu: false,
+          visByUrl: false,
+        },
+      },
     ],
   },
 ];

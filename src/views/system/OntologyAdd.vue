@@ -253,7 +253,8 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { createRel, Ontolist, ontoprop, Relonto } from "../../api/module/ontology";
+import { createRel, Ontolist, ontoprop, Relonto, subRel } from "../../api/module/ontology";
+
 const ontoList = reactive([]); //本体源列表
 
 import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
@@ -270,6 +271,7 @@ export default {
                     tableData:  [],
                     tableData1:  [],
       name:"",
+      sname:"",
       searchContent:"",
       rangeItem:[],
       multipleSelection: [],
@@ -310,7 +312,7 @@ export default {
     // 请求分页查询数据
     this.load()
     this.load1()
-    
+    this.getParams();
   },
 
 
@@ -407,16 +409,20 @@ export default {
             });
             },
             Recreate(){
-             createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
+            //  createRel({from:this.AId,to:this.BId,name:this.name}).then(({ data })=>{
+              
+           
+            // });
+
+            Relonto({startList:[this.AId],endList:[this.BId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
+              
+         
+            });
+            subRel({from:this.AId,to:this.BId,name:this.name,seriesName:this.sname}).then(({ data })=>{
               
               this.$router.push("OntoWatch");
             });
-
-            Relonto({startList:[this.AId],endList:[this.BId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
-              ElMessage.success("构建成功");
-         
-            });
-            this.$router.push("OntoWatch");
+            
             },
             
             create() {
@@ -456,6 +462,9 @@ this.total=res.total;
 })
 
 },
+getParams() {
+      this.sname = this.$route.query.sname;
+    },
             
                  
           

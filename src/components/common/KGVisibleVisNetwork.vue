@@ -40,16 +40,16 @@ export default {
         //edges:null,
 
       //network: null,
-      currentNodeId:null,
+      //currentNodeId:null,
       settings:{
         visibleTypeFlag: 5,
         length:2,
         relType:[],
       },
       loading:true,
-      currentNodeType:[],//当前的结点类型，用作图例显示
-      currentDbId:null,
-      currentDbName:null,
+      //currentNodeType:[],//当前的结点类型，用作图例显示
+      //currentDbId:null,
+      //currentDbName:null,
       KGSize:{
         width:1200,
         height:800,
@@ -60,24 +60,24 @@ export default {
     }
   },
   props: {
-    currentNode: {
-      type: Array,
-      default: () => [{}]
-    },
-    visibleSettings:{
-      type:Object,
-      default: () => {}
-    },
+      neoId:{
+          type:String,
+          default:""
+      },
 
     //图谱种类.是本体图还是实例图,默认本体图
     kgType: {
         type:Number,
         default:0
     },
+      sname:{
+          type:String,
+          default:"",
+      }
   },
   created() {
-    this.currentDbId = localStorage.getItem('instanceId')
-    this.currentDbName = localStorage.getItem('instanceName')
+    //this.currentDbId = localStorage.getItem('instanceId')
+    //this.currentDbName = localStorage.getItem('instanceName')
 
     //初始化查询节点
     // if (this.currentDbName == '椒江流域知识图谱'){
@@ -99,7 +99,7 @@ export default {
   methods: {
 
     initKG() {
-        console.log("kgType"+this.kgType);
+        console.log("kgType",this.kgType);
       if(this.kgType == 1)//本体图
           this.getOntologyKG();
       else if(this.kgType == 2)//实例图
@@ -112,9 +112,9 @@ export default {
        */
       getOntologyKG(){
           this.loading = true
-
+          console.log("getOntologyKG ==> this.neoId",this.neoId);
           //默认显示图，用于页面初始化时候的显示
-          relationApi.getOntologyKGLinks().then(({data}) => {
+          relationApi.getOntologyKGLinks(this.neoId).then(({data}) => {
               this.handleKGData(data)
           })
       },
@@ -137,11 +137,39 @@ export default {
        */
       handleKGData(data){
           console.log("handleKGData ==> data",data);
+
+          //把2后端传递的子节点连接到父节点上
+          this.connectNodeToFather(data);
+          let _this = this
+          console.log("handleKGData",this.datas);
+          const container = this.$refs.KGNetwork;
+          this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
+          this.network = new Vis.Network(container, this.datas, _this.options);;
+
+
+          this.network.on('click',function(properties){
+              console.log(properties);
+              _this.handleKGClick(properties);
+          })
+
+          _this.setLoading()
+      },
+
+      //把后端返回的子节点连接到父节点下
+      connectNodeToFather(data){
           let _this = this
           let nodes = [];
           let edges = [];
 
-          for (let item of data.nodeVos)
+          let fatherNode = {
+              id: this.neoId,
+              label: this.sname,
+              /*parentNode:"",
+              foldState:1//1是折叠状态,0是非折叠状态,2是附属结点,不需要折叠*/
+          }
+          nodes.push(fatherNode)
+
+          for (let item of data)
           {
               let nodeItem = {
                   id: item.neoId,
@@ -152,12 +180,12 @@ export default {
               nodes.push(nodeItem)
           }
 
-          for (let item of data.relVos)
+          for (let item of data)
           {
               let linkItem = {
-                  from: item.from,
-                  to: item.to,
-                  label: item.name,
+                  from: this.neoId,
+                  to: item.neoId,
+                  label: "拥有",
                   /*parentNode:""*/
               }
               edges.push(linkItem)
@@ -166,18 +194,8 @@ export default {
               nodes:nodes,
               edges:edges,
           };
-          console.log("handleKGData",this.datas);
-          const container = this.$refs.KGNetwork;
-          _this.options = VisUtils.setVisibleOption(this.settings.visibleTypeFlag)
-          this.network = new Vis.Network(container, this.datas, _this.options);;
-
-          this.network.on('click',function(properties){
-              console.log(properties);
-              _this.handleKGClick(properties);
-          })
-
-          _this.setLoading()
       },
+
     setLoading(){
       const _this = this
         this.network.once('afterDrawing',() => {
@@ -323,7 +341,7 @@ export default {
           console.log("handleClickData ==> this.KGLevel ", this.KGLevel )
           let dataList =  [];
           if(kgType == 1){
-              dataList = data.propClzList;
+              dataList = data.list;
           }else if(kgType == 2){
               dataList = data.propObjList;
           }
@@ -332,11 +350,11 @@ export default {
           } else {
 
               this.KGLevel = 1;
-              let arrtibuteNodes =[];
-              let arrtibuteEdges = [];
-              arrtibuteNodes.push({
+              let insNodes =[];
+              let insEdges = [];
+             insNodes.push({
                   id: data.neoId,
-                  label: data.name,
+                  label: dataList[0].ontoName,
                   /*parentNode:properties.nodes[0],
                   foldState:2*/
               })
@@ -352,18 +370,18 @@ export default {
                   let edgeItem = {
                       from: data.neoId,
                       to: item.neoId,
-                      label: "拥有",
+                      label: "实例化",
                   }
-                  arrtibuteNodes.push(nodeItem);
-                  arrtibuteEdges.push(edgeItem);
+                  insNodes.push(nodeItem);
+                  insEdges.push(edgeItem);
 
               }
-              console.log("handleClickData ==> arrtibuteNodes", arrtibuteNodes)
-              console.log("handleClickData ==> arrtibuteEdges", arrtibuteEdges)
+              console.log("handleClickData ==> insNodes", insNodes)
+              console.log("handleClickData ==> insEdges", insEdges)
 
               //使用setData方法更新数据会报错,使用window.network会有其他问题,直接new新的network
               const container = this.$refs.KGNetwork;
-              this.network = new Vis.Network(container, {nodes: arrtibuteNodes, edges: arrtibuteEdges}, this.options);
+              this.network = new Vis.Network(container, {nodes: insNodes, edges: insEdges}, this.options);
               //this.network.setData({nodes: arrtibuteNodes, edges: arrtibuteEdges});
               let _this = this
               this.network.on('click',function(properties){

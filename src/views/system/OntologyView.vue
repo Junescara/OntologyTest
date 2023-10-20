@@ -2,7 +2,7 @@
     <span>
     <div v-show="!DeleteFlag">
      <el-form label-width="200px" inline label-position="left"  align="left">
-        <el-form-item>
+        <!-- <el-form-item>
             <el-select
           v-model="ontoType"
           placeholder="请选择本体类型"
@@ -11,7 +11,7 @@
         >
           
         </el-select> 
-        </el-form-item>
+        </el-form-item> -->
       <el-form-item>
            <el-input align="left"
              placeholder="请输入本体名"

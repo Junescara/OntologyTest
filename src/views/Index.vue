@@ -39,7 +39,7 @@
                   size="small"
                   @click="this.$router.push({
                 path:  item.add ,
-                query: { sname: item.sname },
+                query: { sname: item.sname,neoId:item.neoId},
               })"
                 >
                   新增
@@ -50,7 +50,7 @@
                   size="small"
                   @click="this.$router.push({
                 path:  item.watch ,
-                 query: { neoId: item.neoId,sname: item.sname }
+                query: { neoId: item.neoId,sname: item.sname }
                 // query: { neoId: scope.row.neoId },
               })"
                 >

@@ -347,6 +347,8 @@ currentPage2: 1, // 当前页码
     },
 
     load3(){
+      
+      
       console.log({neoId:this.neoId});
      
         subOnto({neoId:this.neoId}).then(res=>{
@@ -596,7 +598,15 @@ getParams() {
                  
           
                 
-        }
+        },
+        watch: {
+    $route(to, from) {
+      if (to.fullPath.indexOf("OtherOnto") !== -1) {
+        this.neoId = to.query.neoId;
+        this.load3();
+      }
+    },
+  },
       }
     
 </script>

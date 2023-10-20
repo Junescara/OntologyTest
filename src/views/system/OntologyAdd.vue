@@ -303,6 +303,7 @@ export default {
       attribute:false,
       relation:false,
       objectrel:false,
+      Id:"",
       AId:"",
       BId:"",
       neoId:"",
@@ -453,6 +454,7 @@ export default {
             },
             
             create() {
+              console.log(this.neoId);
       let name = ref("");
       let propsClzs = this.multipleSelection.map((v) => v.code);
       ElMessageBox.confirm("确定创建该本体吗？", "warning", {

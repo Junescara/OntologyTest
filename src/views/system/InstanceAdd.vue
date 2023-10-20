@@ -127,9 +127,10 @@
         style="width: 70%; text-align: left"
         empty-text="暂无实例"
     >
+            <el-table-column prop="name" label="实例名称" width="auto" />
     <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
 <!--      <el-table-column prop="neoId" label="实例编号" width="auto" />-->
-      <el-table-column prop="name" label="实例名称" width="auto" />
+
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
     <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
 
@@ -252,16 +253,17 @@ import {
   queryOntoList,
   queryInsList,
   queryRelList,
-  udpateInst, inslist, createRelIns, getontoProp, getInsProp, deleteIns
+  udpateInst, inslist, createRelIns, getontoProp, getInsProp, deleteIns, instanceByFatherId
 } from "@/api/module/instance.js";
 import { getEntity as getInstance } from "@/api/module/result.js";
 import {reactive, ref, computed, onMounted} from "vue";
 import { Search, Plus } from "@element-plus/icons-vue";
 import MyPagination from "@/components/common/MyPagination.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { useRouter } from "vue-router";
+import { useRouter,useRoute} from "vue-router";
 import {createRel} from "@/api/module/ontology.js";
 
+const route = useRoute();
 const router = useRouter();
 
 let ontoId = ref(null); //当前选择本体源neoid
@@ -273,30 +275,21 @@ let AId = ref(null);
 let BId = ref(null);
 let insRelation = ref(null);
 const individualButtons = reactive([]);
-
+let receivedNeoId = ref(2); //5个父本体的id
 
 const ontoList = reactive([]); //本体源列表
 const insList = reactive([
-  {
-    neoId: "5249d48f-b96d-4a71-bbc3-6d2da022951a",
-    name: '"btest5"',
-    labels: ["水利对象", "水库"],
-    basicObjList: null,
-    funcObjList: null,
-    propObjList: null,
-  },
+  // {
+  //   neoId: "5249d48f-b96d-4a71-bbc3-6d2da022951a",
+  //   name: '"btest5"',
+  //   labels: ["水利对象", "水库"],
+  //   basicObjList: null,
+  //   funcObjList: null,
+  //   propObjList: null,
+  // },
 ]); //实例列表
 const insRelList = reactive([{
-  "startList": [
-    "A"
-  ],
-  "endList": [
-    "B"
-  ],
-  "name": "关系11",
-  "strategy": "NAME_CONSTRAINT",
-  "neoId": "c108a370-9665-4a33-a0cf-0e1edd8be248",
-  "scope": "INST_RELATION"
+
 }]);//关系本体列表
 const attrList = reactive([]); //当前实例属性列表
 let searchContent = ref("");
@@ -313,27 +306,74 @@ let total = computed(() => {
 let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
 
+let fatherOntoIdList;
+fatherOntoIdList = ["0da94327-0c07-4c70-8050-5c8c9e808a38", "694a16b5-0ebf-4784-aa25-d4b776292b15", "b82314fd-7c78-4a05-98e3-9e51b2ae8ccc", "ef3f1eb4-020f-4fa6-999f-fb67b7644511", "55f3d081-fa7d-4271-9200-5461b51aa89a"]
+
+
+
+
 // 初始化数据
 const initData = () => {
+  receivedNeoId.value = route.query.neoId;
+
   // 获取本体列表
-  queryOntoList().then(({ data }) => {
-    ontoList.length = 0;
-    ontoList.push(...data);
-  });
+  // queryOntoList().then(({ data }) => {
+  //   ontoList.length = 0;
+  //   ontoList.push(...data);
+  // });
+
+
+
   // 获取实例列表
-  const labels = [ "水利实例", "实例主节点"];
-  queryInsList(labels).then(({ data }) => {
-    insList.length = 0;
-    insList.push(...data);
-  });
+  // const labels = [ "水利实例", "实例主节点"];
+  // queryInsList(labels).then(({ data }) => {
+  //   insList.length = 0;
+  //   insList.push(...data);
+  // });
   queryRelList().then(({ data }) => {
     insRelList.length = 0;
     insRelList.push(...data);
     //console.log(insRelList);
   });
 
+
+      //   行政区划父本体 0da94327-0c07-4c70-8050-5c8c9e808a38
+      //   流域机构父本体 694a16b5-0ebf-4784-aa25-d4b776292b15
+      //   流域对象父本体 b82314fd-7c78-4a05-98e3-9e51b2ae8ccc
+      //   应急抢险父本体 ef3f1eb4-020f-4fa6-999f-fb67b7644511
+      //   抢险技术父本体 55f3d081-fa7d-4271-9200-5461b51aa89a
+  //获取指定父本体下的所有子本体的所有实例列表
+  console.log("接口外的父本体id是", receivedNeoId.value);
+
+  instanceByFatherId(receivedNeoId.value,0).then(({ data }) => {
+    console.log("父本体id是", receivedNeoId.value);
+    console.log(data.subData);
+    for( let i =  0;i <data.subData.length;i++){
+      insList.push(...data.subData[i].list)
+    }
+    // insList.length = 0;
+    // insList.push(...data.subData[0].list);
+  });
+  // watch(() => route.query.neoId, (newNeoId) => {
+  //   receivedNeoId.value = newNeoId;
+  //   // 在这里可以执行你希望的其他操作，比如重新获取数据
+  //   initData();
+  // });
+
+  //获取该父本体下的所有本体
+  queryOntoList(receivedNeoId.value).then(({ data }) => {
+    console.log("receivedNeoId.value",receivedNeoId.value)
+    console.log("data ",data);
+    ontoList.length = 0;
+    ontoList.push(...data);
+    console.log("ontoList ",ontoList);
+  });
+
+
 };
+
 initData();
+
 
 // 创建对象实例
 const handleInsCreate = (ontoId) => {
@@ -483,10 +523,16 @@ const submitAll = () => {
  dialogVisible_create.value = false;
 }
 onMounted(() => {
+  console.log("钩子函数")
+
+  receivedNeoId.value = route.query.neoId;
+  console.log("钩子函数中receivedNeoId.value是",receivedNeoId.value);
+
   // 在组件挂载后将按钮引用存入 ref
   const buttons = document.querySelectorAll('[data-hide-on-submit]');
   buttons.forEach(button => {
     button.style.display = 'none'; // 隐藏按钮
+
   });
 });
 // 处理分页

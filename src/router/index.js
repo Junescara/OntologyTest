@@ -61,7 +61,7 @@ const routes = [
         name: "ontology-result",
         component: () => import("@/views/system/Ontology-result.vue"),
         meta: {
-          title: "本体构建结果",
+          title: "实体类型构建结果",
           menu: false,
           visByUrl: false,
         },
@@ -81,7 +81,7 @@ const routes = [
         name: "OntoView",
         component: () => import("@/views/system/OntologyView.vue"),
         meta: {
-          title: "本体查看",
+          title: "实体类型查看",
           menu: false,
           visByUrl: false,
         },
@@ -91,7 +91,7 @@ const routes = [
         name: "OntoAdd",
         component: () => import("@/views/system/OntologyAdd.vue"),
         meta: {
-          title: "本体查看",
+          title: "类型添加",
           menu: false,
           visByUrl: false,
         },
@@ -101,7 +101,7 @@ const routes = [
         name: "OntoWatch",
         component: () => import("@/views/system/OntologyWatch.vue"),
         meta: {
-          title: "本体查看",
+          title: "实体类型浏览",
           menu: false,
           visByUrl: false,
         },
@@ -141,7 +141,7 @@ const routes = [
         name: "OtherOnto",
         component: () => import("@/views/system/otherOnto.vue"),
         meta: {
-          title: "实例浏览",
+          title: "实体类型浏览",
           menu: false,
           visByUrl: false,
         },

@@ -26,7 +26,12 @@
 
     </div>
     <div style="display: flex">
-            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1"  >
+            <KGVisibleVisNetwork
+                    ref="KGVisibleVisNetwork"
+                    :kgType = "1"
+                    :neoId = "neoId"
+                    :sname = "sname"
+            >
 
             </KGVisibleVisNetwork>
         </div>
@@ -42,8 +47,17 @@ export default {
     data() {
         return {
         level:0,
+            neoId : "",//父节点标签id
+            sname : "",//父节点标签名称
     }},
     mounted() {
+
+    },
+    created() {
+        // 请求分页查询数据
+        this.neoId = this.$route.query.neoId;
+        this.sname = this.$route.query.sname;
+        console.log("OntoWatch ==> created: neoId", this.neoId, this.sname);
 
     },
     components:{

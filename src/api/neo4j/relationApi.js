@@ -12,30 +12,30 @@ export default {
     /**
      * 获取所有本体图谱所包含的结点
      */
-  getOntologyKGLinks(){
+  getOntologyKGLinks(neoId){
     return request({
-        url: `/kg/onto-kg`,
+        url: `/db/query-sub-onto`,
         method: 'post',
-        data:{}
+        data: {neoId: neoId}
       }
     )
   },
     /**
      * 获取所有实例图谱所包含的结点
      */
-    getInstanceKGLinks(){
+    getInstanceKGLinks(neoId){
         return request({
-                url: `/kg/inst-kg`,
-                method: 'post',
-                data:{}
+            url: `/db/query-sub-onto`,
+            method: 'post',
+            params: {neoId: neoId}
             }
         )
     },
-    getOntologyNodeById(NodeId){
+    getOntologyNodeById(neoId){
         return request({
-                url: `/db/load-ontology`,
-                method: 'get',
-                params: {neoId: NodeId}
+                url: `/db/query-inst-by-onto`,
+                method: 'post',
+                data: {neoId: neoId,isSub:0}
             }
         )
     },

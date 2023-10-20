@@ -120,7 +120,7 @@ import { ElMessageBox, ElMessage } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { Ontolist } from "../../api/module/ontology";
-import {deleteIns, inslist, queryInsList} from "@/api/module/instance.js";
+import {deleteIns, inslist, instanceByFatherId, queryInsList} from "@/api/module/instance.js";
 
 const router = useRouter();
 
@@ -150,36 +150,56 @@ export default {
       ,
       currentPage1: 1, // 当前页码
       total: 20, // 总条数
-      pageSize1: 10 // 每页的数据条数
-
-
+      pageSize1: 10,// 每页的数据条数
+      receivedNeoIdIndex:0 , //5个父本体的id数组索引
+      fatherOntoIdList:["0da94327-0c07-4c70-8050-5c8c9e808a38", "694a16b5-0ebf-4784-aa25-d4b776292b15", "b82314fd-7c78-4a05-98e3-9e51b2ae8ccc", "ef3f1eb4-020f-4fa6-999f-fb67b7644511", "55f3d081-fa7d-4271-9200-5461b51aa89a"],
+    //   行政区划父本体 0da94327-0c07-4c70-8050-5c8c9e808a38
+    //   流域机构父本体 694a16b5-0ebf-4784-aa25-d4b776292b15
+    //   流域对象父本体 b82314fd-7c78-4a05-98e3-9e51b2ae8ccc
+    //   应急抢险父本体 ef3f1eb4-020f-4fa6-999f-fb67b7644511
+    //   抢险技术父本体 55f3d081-fa7d-4271-9200-5461b51aa89a
     }
   },
   created() {
     // 请求分页查询数据
     this.load()
     this.load1()
-    console.log("creted函数被执行拉！")
+    this.receivedNeoIdIndex = this.$route.query.neoIdIndex
+    console.log("this.receivedNeoIdIndex"+this.receivedNeoIdIndex)
+    console.log("created")
   },
 
 
 
 //方法
   methods: {
+    //不按照父本体来查询所有实例的接口
+    // load() {
+    //   queryInsList(["水利实例", "实例主节点"]).then(res => {
+    //     this.tableData.time="2023-1-1";
+    //     this.tableData = res.data;
+    //     console.log("res.total"+res.total)
+    //     this.total = res.total;
+    //   })
+    // },
 
-    load() {
-      queryInsList(["水利实例", "实例主节点"]).then(res => {
-        this.tableData.time="2023-1-1";
-        this.tableData = res.data;
-        console.log("res.total"+res.total)
+    //按照父本体的id来查询所有本体（参数isSub为0的时候，会查询该本体的子本体对应的实例集合，并分类返回
+    //参数isSub为1的时候，只会查询指定本体对应的实例）
+    load(){
+      instanceByFatherId(this.fatherOntoIdList[this.receivedNeoIdIndex],0).then(res=>{
+        console.log("父本体id是",this.fatherOntoIdList[this.receivedNeoIdIndex]);
+        console.log("res.data是");
+        console.log(res.data.subData[0].list);
+        this.tableData = res.data.subData[0].list;
+        console.log("   ",this.tableData);
         this.total = res.total;
-      })
-
+        })
     },
+
+
     load1() {
       Ontolist({name:""}).then(res=>{
-            console.log("res.data是");
-            console.log(res.data);
+
             this.tableData1=res.data;
             this.total=res.total;
           }
@@ -241,6 +261,7 @@ export default {
     },
 
     searchInst(){
+      console.log( "index ",this.$route.query.neoIdIndex )
       // inslist([
       //   "水利对象"
       // ],this.searchContent).then(res=>{

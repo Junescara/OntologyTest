@@ -214,3 +214,24 @@ export function getInsProp(neoId){
   });
 }
 
+/**
+ * 查询本体对应的实例。
+ * 参数isSub为0的时候，会查询该本体的子本体对应的实例集合，并分类返回
+ * 参数isSub为1的时候，只会查询指定本体对应的实例
+ */
+export function instanceByFatherId(neoId,isSub){
+  console.log("instanceByFatherId中的neoId是"+neoId);
+  return request({
+    url: `${baseURL}/query-inst-by-onto`,
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: {
+      neoId,isSub
+    }
+  })
+}
+
+
+

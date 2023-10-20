@@ -252,16 +252,17 @@ import {
   queryOntoList,
   queryInsList,
   queryRelList,
-  udpateInst, inslist, createRelIns, getontoProp, getInsProp, deleteIns
+  udpateInst, inslist, createRelIns, getontoProp, getInsProp, deleteIns, instanceByFatherId
 } from "@/api/module/instance.js";
 import { getEntity as getInstance } from "@/api/module/result.js";
 import {reactive, ref, computed, onMounted} from "vue";
 import { Search, Plus } from "@element-plus/icons-vue";
 import MyPagination from "@/components/common/MyPagination.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { useRouter } from "vue-router";
+import { useRouter,useRoute} from "vue-router";
 import {createRel} from "@/api/module/ontology.js";
 
+const route = useRoute();
 const router = useRouter();
 
 let ontoId = ref(null); //当前选择本体源neoid
@@ -312,28 +313,55 @@ let total = computed(() => {
 });
 let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
+let receivedNeoIdIndex = ref(0); //5个父本体的id数组索引
+let fatherOntoIdList;
+fatherOntoIdList = ["0da94327-0c07-4c70-8050-5c8c9e808a38", "694a16b5-0ebf-4784-aa25-d4b776292b15", "b82314fd-7c78-4a05-98e3-9e51b2ae8ccc", "ef3f1eb4-020f-4fa6-999f-fb67b7644511", "55f3d081-fa7d-4271-9200-5461b51aa89a"]
+
 
 // 初始化数据
 const initData = () => {
+
   // 获取本体列表
   queryOntoList().then(({ data }) => {
     ontoList.length = 0;
     ontoList.push(...data);
   });
   // 获取实例列表
-  const labels = [ "水利实例", "实例主节点"];
-  queryInsList(labels).then(({ data }) => {
-    insList.length = 0;
-    insList.push(...data);
-  });
+  // const labels = [ "水利实例", "实例主节点"];
+  // queryInsList(labels).then(({ data }) => {
+  //   insList.length = 0;
+  //   insList.push(...data);
+  // });
   queryRelList().then(({ data }) => {
     insRelList.length = 0;
     insRelList.push(...data);
     //console.log(insRelList);
   });
 
+
+      //   行政区划父本体 0da94327-0c07-4c70-8050-5c8c9e808a38
+      //   流域机构父本体 694a16b5-0ebf-4784-aa25-d4b776292b15
+      //   流域对象父本体 b82314fd-7c78-4a05-98e3-9e51b2ae8ccc
+      //   应急抢险父本体 ef3f1eb4-020f-4fa6-999f-fb67b7644511
+      //   抢险技术父本体 55f3d081-fa7d-4271-9200-5461b51aa89a
+  //获取指定父本体下的所有子本体的所有实例列表
+  //receivedNeoIdIndex.value = this.$route.query.neoIdIndex
+
+  console.log("receivedNeoIdIndex", receivedNeoIdIndex.value);
+  instanceByFatherId(fatherOntoIdList[receivedNeoIdIndex.value],0).then(({ data }) => {
+    console.log("父本体id是", fatherOntoIdList[receivedNeoIdIndex.value]);
+    console.log(data.subData[0].list);
+    insList.length = 0;
+    insList.push(...data.subData[0].list);
+    //this.total = res.total;
+  });
+
+
+
 };
+
 initData();
+
 
 // 创建对象实例
 const handleInsCreate = (ontoId) => {
@@ -483,10 +511,14 @@ const submitAll = () => {
  dialogVisible_create.value = false;
 }
 onMounted(() => {
+  console.log("钩子函数")
+  //receivedNeoIdIndex.value = $route.query.neoIdIndex;
+  receivedNeoIdIndex.value = route.query.neoIdIndex;
   // 在组件挂载后将按钮引用存入 ref
   const buttons = document.querySelectorAll('[data-hide-on-submit]');
   buttons.forEach(button => {
     button.style.display = 'none'; // 隐藏按钮
+
   });
 });
 // 处理分页

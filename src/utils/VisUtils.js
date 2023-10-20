@@ -1075,7 +1075,7 @@ export default {
         edges: {
           // label: '哈哈哈',
           width: 2,
-          length: 260,
+          length: 320,
           // physics: false,
           font: {
             //字体配置
@@ -1129,8 +1129,20 @@ export default {
             springLength: 2200, //弹簧长度
             springConstant: 0.04,
             damping: 0.09,
-            avoidOverlap: 0
+            avoidOverlap: 1
           },
+
+            forceAtlas2Based: {
+                theta: 0.5,
+                gravitationalConstant: -1500,
+                centralGravity: 0.01,
+                springConstant: 0.08,
+                springLength: 100,
+                damping: 0.4,
+                avoidOverlap: 0
+            },
+
+
           maxVelocity: 50,
           minVelocity: 1,
           stabilization: {

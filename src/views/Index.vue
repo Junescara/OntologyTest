@@ -7,6 +7,7 @@
     <div  >
       <el-row :gutter="80" style="margin-bottom: 20px;margin-left: 10px">
         <el-col :span="12" v-for="(item,index) in dataList.slice(start,end)" :key="index" >
+          
           <el-card class="box-card" style="width: 100%" >
             <el-text type="primary" size="large" style="padding-right:250px ;">
             {{item.name}}

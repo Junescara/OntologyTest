@@ -25,9 +25,9 @@ export default {
      */
     getInstanceKGLinks(neoId){
         return request({
-            url: `/db/query-sub-onto`,
+            url: `/db/query-inst-by-onto`,
             method: 'post',
-            params: {neoId: neoId}
+            data: {neoId: neoId,isSub:0}
             }
         )
     },

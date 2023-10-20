@@ -356,8 +356,22 @@ currentPage2: 1, // 当前页码
     load3(){
       console.log({neoId:this.neoId});
         subOnto({neoId:this.neoId}).then(res=>{
+
+          for(let i=0;i<res.data.length;i++){
+          this.neoIdList[i]=res.data[i].neoId;
+        }
+         
+        for(let j=0;j<res.data.length;j++){
+        loadOntoInfo(this.neoIdList[j]).then(res=>{
+        this.numberList[j]=res.data.propClzList.length;
+        })
+
+      }
+
           this.tableData1=res.data;
         })
+
+          console.log(this.numberList);
     },
                 //每页条数改变时触发 选择一页显示多少行
                 handleSizeChange(val) {

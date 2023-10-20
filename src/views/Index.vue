@@ -10,7 +10,7 @@
           
           <el-card class="box-card" style="width: 100%" >
             <el-text type="primary" size="large" style="padding-right:250px ;">
-            {{item}}
+            {{item.name}}
           </el-text>
             <el-descriptions column="1" >
               
@@ -26,15 +26,21 @@
                 <el-button
                   type="primary"
                   size="small"
-                  @click="this.$router.push('OntoView')"
-                >
+                  @click="  this.$router.push({
+                path: item.view ,
+                // query: { neoId: scope.row.neoId },
+              })
+            ">
                   查看
                 </el-button>
 
                 <el-button
                   type="primary"
                   size="small"
-                  @click="this.$router.push('OntoAdd')"
+                  @click="this.$router.push({
+                path:  item.add ,
+                // query: { neoId: scope.row.neoId },
+              })"
                 >
                   新增
                 </el-button>
@@ -42,7 +48,10 @@
                 <el-button
                   type="primary"
                   size="small"
-                  @click="this.$router.push('OntoWatch')"
+                  @click="this.$router.push({
+                path:  item.watch ,
+                // query: { neoId: scope.row.neoId },
+              })"
                 >
                   浏览
                 </el-button>
@@ -164,7 +173,7 @@ export default {
     },
     methods:{ 
       load(){
-           this.dataList=["行政区划本体管理","行政区划实例管理","流域对象本体管理","流域对象实例管理","流域机构本体管理","流域机构实例管理","抢险技术本体管理","抢险技术实例管理","应急抢险本体管理","应急抢险实例管理"]
+           this.dataList=[{name:"行政区划本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"},{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"},"流域对象本体管理","流域对象实例管理","流域机构本体管理","流域机构实例管理","抢险技术本体管理","抢险技术实例管理","应急抢险本体管理","应急抢险实例管理"]
     },
       
       handleSizeChange(val) {

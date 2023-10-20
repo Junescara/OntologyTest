@@ -216,3 +216,18 @@ export function subRel(from,to,name,seriesName){
   });
 }
 
+/**
+ * 继承序列关系创建
+ * @param
+ * @returns 
+ */
+export function subOnto(neoId){
+  return request({
+      url: `${baseURL}/query-sub-onto`,
+      method: "post",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      data: neoId
+});
+}

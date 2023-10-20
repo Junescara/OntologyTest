@@ -26,8 +26,12 @@
     </el-form>
     </div>
 
-       <div style="display: flex">
-            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "2">
+       <div >
+            <KGVisibleVisNetwork
+                    ref="KGVisibleVisNetwork"
+                    :kgTypeProp = "2"
+                    :neoIdProp = "neoId"
+                    :snameProp = "sname">
 
             </KGVisibleVisNetwork>
         </div>
@@ -39,8 +43,21 @@
 <script>
     import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
 export default {
+    data() {
+        return {
+            neoId : "",//父节点标签id
+            sname : "",//父节点标签名称
+        }},
+    created() {
+        // 请求分页查询数据
+        this.neoId = this.$route.query.neoId;
+        this.sname = this.$route.query.sname;
+        //console.log("InsWatch ==> created: neoId", this.neoId, this.sname);
+
+    },
     components:{
-        KGVisibleVisNetwork
+        KGVisibleVisNetwork,
+
     },
   methods:{
       handelReturn(){
@@ -57,9 +74,21 @@ export default {
     },
     Export(){
 
-    }
+    },
 
-  }
+
+
+  },
+    watch: {
+        $route(to, from) {
+            if (to.fullPath.indexOf("InstanceWatch") !== -1) {
+                console.log("InstanceWatch==>to.query",to.query);
+                this.neoId = to.query.neoId;
+                this.sname = to.query.sname;
+                this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,2);
+            }
+        },
+    },
 }
 </script>
 

@@ -25,12 +25,12 @@
     </el-form>
 
     </div>
-    <div style="display: flex">
+    <div >
             <KGVisibleVisNetwork
                     ref="KGVisibleVisNetwork"
-                    :kgType = "1"
-                    :neoId = "neoId"
-                    :sname = "sname"
+                    :kgTypeProp = "1"
+                    :neoIdProp = "neoId"
+                    :snameProp = "sname"
             >
 
             </KGVisibleVisNetwork>
@@ -57,6 +57,7 @@ export default {
         // 请求分页查询数据
         this.neoId = this.$route.query.neoId;
         this.sname = this.$route.query.sname;
+
         console.log("OntoWatch ==> created: neoId", this.neoId, this.sname);
 
     },
@@ -77,8 +78,17 @@ export default {
       this.$router.push("OntoWatch");
     },
 
-    }
-   
+    } ,
+    watch: {
+        $route(to, from) {
+            if (to.fullPath.indexOf("OntoWatch") !== -1) {
+                //console.log(to.query);
+                this.neoId = to.query.neoId;
+                this.sname = to.query.sname;
+                this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,1);
+            }
+        },
+    },
 }
 </script>
 

@@ -11,6 +11,7 @@
          element-loading-text="拼命加载中"
          element-loading-spinner="el-icon-loading"
          element-loading-background="rgba(0, 0, 0, 0.8)">
+      <p >{{title}}</p>
       <div id="KGNetwork" ref="KGNetwork" :style="{width:KGSize.width+ 'px',height:KGSize.height+ 'px'}" v-show="!visibles.nullVisible"></div>
       <el-empty description="暂无内容" v-show="visibles.nullVisible"></el-empty>
     </div>
@@ -33,9 +34,14 @@ export default {
       arrtibuteDatas:{},//属性层图谱数据集
       options: null,//图谱配置
 
+        title:"图谱浏览",
         network:null,
         KGLevel:0,
-
+        neoId:"",
+        sname:"",
+        nodes:[],
+        edges:[],
+        kgType:"",
         //nodes:null,
         //edges:null,
 
@@ -60,17 +66,17 @@ export default {
     }
   },
   props: {
-      neoId:{
+      neoIdProp:{
           type:String,
           default:""
       },
 
     //图谱种类.是本体图还是实例图,默认本体图
-    kgType: {
+    kgTypeProp: {
         type:Number,
         default:0
     },
-      sname:{
+      snameProp:{
           type:String,
           default:"",
       }
@@ -93,19 +99,34 @@ export default {
 
   },
   mounted() {
+      this.neoId = this.neoIdProp;
+      this.sname = this.snameProp;
+      this.kgType = this.kgTypeProp;
       //this.KGLevel = 0
     this.initKG()
   },
   methods: {
 
     initKG() {
-        console.log("kgType",this.kgType);
-      if(this.kgType == 1)//本体图
-          this.getOntologyKG();
-      else if(this.kgType == 2)//实例图
-          this.getInstanceKG();
+        console.log("kgType:", this.kgType, " this.sname:", this.sname, " this.neoId:", this.neoId);
+        if (this.kgType == 1)//本体图
+        {
+            this.title = this.sname + "本体图谱";
+            this.getOntologyKG();
+        }
+        else if (this.kgType == 2) {//实例图{
+            this.title = this.sname + "实例图谱";
+            this.getInstanceKG();
+        }
     },
 
+      getParams(neoId,sname,kgType) {
+          this.neoId = neoId;
+          this.sname = sname;
+          this.kgType = kgType;
+          this.KGLevel = 0
+          this.initKG();
+      },
 
       /**
        * 获取并显示本体图谱
@@ -124,9 +145,8 @@ export default {
        */
       getInstanceKG(){
           this.loading = true
-
           //默认显示图，用于页面初始化时候的显示
-          relationApi.getInstanceKGLinks().then(({data}) => {
+          relationApi.getInstanceKGLinks(this.neoId).then(({data}) => {
               this.handleKGData(data)
           })
       },
@@ -139,7 +159,36 @@ export default {
           console.log("handleKGData ==> data",data);
 
           //把2后端传递的子节点连接到父节点上
-          this.connectNodeToFather(data);
+          this.nodes = [];
+          this.edges = [];
+
+          if(this.kgType == 1){
+              this.connectNodeToFather(data,this.sname,this.neoId,"拥有","#97C2FC",15,200);
+          }else if(this.kgType == 2){
+
+
+              this.nodes.push({
+                  id:this.neoId,
+                  label:this.sname,
+                  color: { background:"#60a4d1"},
+                  size:25,
+              })
+
+              for(let i = 0;i < data.subData.length;i++){
+                  this.connectNodeToFather(data.subData[i].list,data.subData[i].ontoName,data.subData[i].ontoNeoId,"实例化","#d1edff",15,150);
+                  this.edges.push({
+                      from: this.neoId,
+                      to: data.subData[i].ontoNeoId,
+                      label:"拥有",
+                  });
+              }
+          }
+          this.datas = {
+              nodes:this.nodes,
+              edges:this.edges,
+          }
+
+
           let _this = this
           console.log("handleKGData",this.datas);
           const container = this.$refs.KGNetwork;
@@ -155,45 +204,51 @@ export default {
           _this.setLoading()
       },
 
+
+      /**
+       * 将data中含有的结点以指定的方式连接到指定的结点上
+       */
       //把后端返回的子节点连接到父节点下
-      connectNodeToFather(data){
+      connectNodeToFather(data,fatherName,fatherId,connectType,color,size,length){
           let _this = this
           let nodes = [];
           let edges = [];
 
           let fatherNode = {
-              id: this.neoId,
-              label: this.sname,
+              id: fatherId,
+              label: fatherName,
+              color: { background:"#29a7fc"},
+              size:20,
               /*parentNode:"",
               foldState:1//1是折叠状态,0是非折叠状态,2是附属结点,不需要折叠*/
           }
-          nodes.push(fatherNode)
+          this.nodes.push(fatherNode)
 
           for (let item of data)
           {
               let nodeItem = {
                   id: item.neoId,
                   label: item.name,
+                  color: { background:color},
+                  size:size,
                   /*parentNode:"",
                   foldState:1//1是折叠状态,0是非折叠状态,2是附属结点,不需要折叠*/
               }
-              nodes.push(nodeItem)
+              this.nodes.push(nodeItem)
           }
 
           for (let item of data)
           {
               let linkItem = {
-                  from: this.neoId,
+                  from: fatherId,
                   to: item.neoId,
-                  label: "拥有",
+                  label: connectType,
+                  length:length,
                   /*parentNode:""*/
               }
-              edges.push(linkItem)
+              this.edges.push(linkItem)
           }
-          this.datas = {
-              nodes:nodes,
-              edges:edges,
-          };
+
       },
 
     setLoading(){
@@ -340,21 +395,45 @@ export default {
       handleClickData(data,kgType){
           console.log("handleClickData ==> this.KGLevel ", this.KGLevel )
           let dataList =  [];
+          let lable = "";
           if(kgType == 1){
+
+
               dataList = data.list;
+              if (dataList.length == 0) {
+                  this.$message.info('未查询到实例')
+                  return
+              }
+              lable = dataList[0].ontoName;
+              this.title = "本体'" +lable +"'所有实例化结点" ;
           }else if(kgType == 2){
+              //实例图谱本体结点无点击效果
+              for(let i= 0;i<data.labels.length;i++){
+                  if(data.labels[i] == "水利本体"){
+                      //this.$message.info('点击本体')
+                      return;
+                  }
+              }
+
               dataList = data.propObjList;
+              if (dataList.length == 0) {
+                  this.$message.info('未查询到属性')
+                  return
+              }
+
+              lable = data.name;
+              this.title = "实例'"+lable+"'所有属性结点";
           }
-          if (dataList.length == 0) {
-              this.$message.info('未查询到属性。')
-          } else {
+
 
               this.KGLevel = 1;
               let insNodes =[];
               let insEdges = [];
              insNodes.push({
                   id: data.neoId,
-                  label: dataList[0].ontoName,
+                  label: lable,
+                 color: { background:"#29a7fc"},
+                 size:20,
                   /*parentNode:properties.nodes[0],
                   foldState:2*/
               })
@@ -388,11 +467,19 @@ export default {
                   console.log(properties);
                   _this.handleKGClick(properties);
               })
-          }
+
       },
       handleReturn(){
           console.log("handleReturn ==> this.KGLevel ", this.KGLevel )
           if(this.KGLevel == 1){
+              if(this.kgType == 1){
+                  this.title = this.sname + "本体图谱";
+              }else if(this.kgType == 2){
+                  this.title = this.sname + "本体图谱";
+              }else{
+                  this.title ="";
+              }
+
               this.KGLevel = 0;
               const container = this.$refs.KGNetwork;
               this.network = new Vis.Network(container, this.datas, this.options);;
@@ -402,7 +489,10 @@ export default {
                   console.log(properties);
                   _this.handleKGClick(properties);
               })
+          }else if(this.KGLevel == 0){
+              this.$router.push("/index");
           }
+
       },
 
 
@@ -457,11 +547,16 @@ export default {
 </script>
 
 <style scoped>
+  p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #777;
+  }
 #KGNetwork{
   /*width: 800px;*/
   /*height: 500px;*/
   width: 1200px;
-  height: 1200px;
+  height: 800px;
 }
 
 .smallKG{
@@ -471,7 +566,7 @@ export default {
 
 .largeKG{
   width: 1200px;
-  height: 1200px;
+  height: 800px;
 }
 </style>
 

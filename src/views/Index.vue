@@ -176,9 +176,9 @@ export default {
       load(){
           this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划",neoId:"0da94327-0c07-4c70-8050-5c8c9e808a38"}
               ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"0da94327-0c07-4c70-8050-5c8c9e808a38"}
-              ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构",neoId:" 694a16b5-0ebf-4784-aa25-d4b776292b15"}
-              ,{name:"流域机构实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:" 694a16b5-0ebf-4784-aa25-d4b776292b15"}
-              ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象",neoId:" b82314fd-7c78-4a05-98e3-9e51b2ae8ccc"}
+              ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构",neoId:"694a16b5-0ebf-4784-aa25-d4b776292b15"}
+              ,{name:"流域机构实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:"694a16b5-0ebf-4784-aa25-d4b776292b15"}
+              ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象",neoId:"b82314fd-7c78-4a05-98e3-9e51b2ae8ccc"}
               ,{name:"流域对象实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域对象",neoId:"b82314fd-7c78-4a05-98e3-9e51b2ae8ccc"}
               ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险",neoId:"ef3f1eb4-020f-4fa6-999f-fb67b7644511"}
               ,{name:"应急抢险实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"应急抢险",neoId:"ef3f1eb4-020f-4fa6-999f-fb67b7644511"}

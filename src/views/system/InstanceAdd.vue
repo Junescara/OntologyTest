@@ -127,9 +127,10 @@
         style="width: 70%; text-align: left"
         empty-text="暂无实例"
     >
+            <el-table-column prop="name" label="实例名称" width="auto" />
     <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
 <!--      <el-table-column prop="neoId" label="实例编号" width="auto" />-->
-      <el-table-column prop="name" label="实例名称" width="auto" />
+
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
     <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
 
@@ -278,26 +279,17 @@ let receivedNeoId = ref(2); //5个父本体的id
 
 const ontoList = reactive([]); //本体源列表
 const insList = reactive([
-  {
-    neoId: "5249d48f-b96d-4a71-bbc3-6d2da022951a",
-    name: '"btest5"',
-    labels: ["水利对象", "水库"],
-    basicObjList: null,
-    funcObjList: null,
-    propObjList: null,
-  },
+  // {
+  //   neoId: "5249d48f-b96d-4a71-bbc3-6d2da022951a",
+  //   name: '"btest5"',
+  //   labels: ["水利对象", "水库"],
+  //   basicObjList: null,
+  //   funcObjList: null,
+  //   propObjList: null,
+  // },
 ]); //实例列表
 const insRelList = reactive([{
-  "startList": [
-    "A"
-  ],
-  "endList": [
-    "B"
-  ],
-  "name": "关系11",
-  "strategy": "NAME_CONSTRAINT",
-  "neoId": "c108a370-9665-4a33-a0cf-0e1edd8be248",
-  "scope": "INST_RELATION"
+
 }]);//关系本体列表
 const attrList = reactive([]); //当前实例属性列表
 let searchContent = ref("");
@@ -356,8 +348,11 @@ const initData = () => {
   instanceByFatherId(receivedNeoId.value,0).then(({ data }) => {
     console.log("父本体id是", receivedNeoId.value);
     console.log(data.subData);
-    insList.length = 0;
-    insList.push(...data.subData[0].list);
+    for( let i =  0;i <data.subData.length;i++){
+      insList.push(...data.subData[i].list)
+    }
+    // insList.length = 0;
+    // insList.push(...data.subData[0].list);
   });
   // watch(() => route.query.neoId, (newNeoId) => {
   //   receivedNeoId.value = newNeoId;

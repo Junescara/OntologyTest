@@ -23,6 +23,7 @@
         <el-button type="primary" :icon="Plus" @click="
                  this.$router.push({
                    path: 'instanceAdd',
+                   query: { neoId: this.receivedNeoId },
                  })
                ">新增实例</el-button>
       </el-form-item>
@@ -45,41 +46,15 @@
 
 
   <el-table :data="tableData.slice((currentPage1-1)*pageSize1,currentPage1*pageSize1)" style="width: auto" border stripe :header-cell-class-name="headerBg1"  >
-<!--    <el-table-column  prop="labels" label="所属本体类型" width="auto" align="left">-->
-<!--    </el-table-column>-->
-    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
-    <el-table-column prop="neoId" label="实例编号" width="auto" />
+    <!--    <el-table-column  prop="labels" label="所属本体类型" width="auto" align="left">-->
+    <!--    </el-table-column>-->
     <el-table-column prop="name" label="实例名称" width="auto" />
+    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
+<!--    <el-table-column prop="neoId" label="实例编号" width="auto" />-->
+
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
     <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
 
-<!--    <el-table-column label="浏览" width="180">-->
-<!--      <template #default="scope">-->
-<!--        <el-button-->
-<!--            link-->
-<!--            type="primary"-->
-<!--            size="small"-->
-<!--            @click="-->
-<!--                 this.$router.push({-->
-<!--                   path: 'entity-result',-->
-<!--                   query: { neoId: scope.row.neoId },-->
-<!--                 })-->
-<!--               "-->
-<!--        >查看结点</el-button-->
-<!--        >-->
-<!--      </template>-->
-
-<!--      <template #default="scope_1">-->
-<!--        <el-button-->
-<!--            link-->
-<!--            type="danger"-->
-<!--            size="small"-->
-<!--            @click="deleteObject($event,scope_1.row.neoId)"-->
-<!--        >删除</el-button-->
-<!--        >-->
-<!--      </template>-->
-
-<!--    </el-table-column>-->
     <el-table-column label="操作" width="180">
       <template #default="scope">
         <el-button
@@ -88,12 +63,6 @@
             size="small"
             @click="this.$router.push({ path: 'entity-result', query: { neoId: scope.row.neoId } })"
         >查看结点</el-button>
-<!--        <el-button-->
-<!--            link-->
-<!--            type="danger"-->
-<!--            size="small"-->
-<!--            @click="deleteObject(scope.row.neoId)"-->
-<!--        >删除实例</el-button>-->
       </template>
     </el-table-column>
 
@@ -151,23 +120,38 @@ export default {
       currentPage1: 1, // 当前页码
       total: 20, // 总条数
       pageSize1: 10,// 每页的数据条数
-      receivedNeoId: this.$route.query.neoId, //接收Index.vue传来的父本体Id
+      receivedNeoId: " ", //接收Index.vue传来的父本体Id
       fatherOntoIdList:["0da94327-0c07-4c70-8050-5c8c9e808a38", "694a16b5-0ebf-4784-aa25-d4b776292b15", "b82314fd-7c78-4a05-98e3-9e51b2ae8ccc", "ef3f1eb4-020f-4fa6-999f-fb67b7644511", "55f3d081-fa7d-4271-9200-5461b51aa89a"],
-    //   行政区划父本体 0da94327-0c07-4c70-8050-5c8c9e808a38
-    //   流域机构父本体 694a16b5-0ebf-4784-aa25-d4b776292b15
-    //   流域对象父本体 b82314fd-7c78-4a05-98e3-9e51b2ae8ccc
-    //   应急抢险父本体 ef3f1eb4-020f-4fa6-999f-fb67b7644511
-    //   抢险技术父本体 55f3d081-fa7d-4271-9200-5461b51aa89a
+      //   行政区划父本体 0da94327-0c07-4c70-8050-5c8c9e808a38
+      //   流域机构父本体 694a16b5-0ebf-4784-aa25-d4b776292b15
+      //   流域对象父本体 b82314fd-7c78-4a05-98e3-9e51b2ae8ccc
+      //   应急抢险父本体 ef3f1eb4-020f-4fa6-999f-fb67b7644511
+      //   抢险技术父本体 55f3d081-fa7d-4271-9200-5461b51aa89a
     }
   },
   created() {
     // 请求分页查询数据
+
+    this.receivedNeoId = this.$route.query.neoId
+    console.log("this.receivedNeoId"+this.receivedNeoId)
     this.load()
     this.load1()
-    this.receivedNeoId = this.$route.query.neoId
-    console.log("this.receivedNeoIdIndex"+this.receivedNeoId)
+
+    console.log("this.receivedNeoId是"+this.receivedNeoId)
     console.log("created")
   },
+  // created() {
+  //   this.load();
+  // },
+  // mounted() {
+  //   // 现在你可以访问this.$route.query.neoId
+  //   this.receivedNeoId = this.$route.query.neoId;
+  //   console.log("this.receivedNeoId: ", this.$route.query.neoId);
+  //   this.load();
+  //   this.load1();
+  //   console.log("mounted");
+  // },
+
 
 
 
@@ -190,10 +174,17 @@ export default {
         console.log("父本体id是",this.receivedNeoId);
         console.log("res.data是");
         //console.log(res.data.subData[0].list);
-        this.tableData = res.data.subData[0].list;
-        console.log("   ",this.tableData);
+        //this.tableData = res.data.subData[0].list;
+        console.log("res.data.subData   ",res.data.subData);
+        console.log("subData长度为",res.data.subData.length)
+        for( let i =  0;i <res.data.subData.length;i++){
+          this.tableData.push(...res.data.subData[i].list)
+        }
+
+
+
         this.total = res.total;
-        })
+      })
     },
 
 
@@ -272,8 +263,8 @@ export default {
       //
       // })
       inslist(["水利对象"], this.searchContent).then(({ data }) => {
-          this.tableData=data;
-          this.total=data.length;
+        this.tableData=data;
+        this.total=data.length;
       });
       this.searchContent = "";
     },
@@ -298,7 +289,21 @@ export default {
 
 
 
-  }
+  },
+  watch: {
+    $route(to, from) {
+      if (to.fullPath.indexOf("InstanceView") !== -1) {
+        //console.log(to.query);
+        this.receivedNeoId = to.query.neoId;
+        //this.sname = to.query.sname;
+        this.load();
+       // this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,1);
+      }
+    },
+  },
+
+
+
 }
 
 </script>

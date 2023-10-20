@@ -228,7 +228,8 @@ export function instanceByFatherId(neoId,isSub){
       "Content-Type": "application/json",
     },
     data: {
-      neoId,isSub
+      neoId:neoId,
+      isSub:isSub
     }
   })
 }

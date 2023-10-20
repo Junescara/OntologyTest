@@ -174,8 +174,8 @@ export function AddProp(data) {
 
 /**
  * 查询关系本体列表
- * @param
- * @returns 关系本体的名称
+ * 
+ * 关系本体的名称
  */
 export function queryRelList(){
   return request({
@@ -199,3 +199,20 @@ export function queryPropList(type){
         params: type,
     });
 }
+
+/**
+ * 继承序列关系创建
+ * @param
+ * @returns 
+ */
+export function subRel(from,to,name,seriesName){
+  return request({
+      url: `${baseURL}/add-sub-onto-rel`,
+      method: "post",
+      headers: {
+          "Content-Type": "application/json",
+      },
+      data: from,to,name,seriesName
+  });
+}
+

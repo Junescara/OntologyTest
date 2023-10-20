@@ -9,7 +9,7 @@
         <el-col :span="12" v-for="(item,index) in dataList.slice(start,end)" :key="index" >
           
           <el-card class="box-card" style="width: 100%" >
-            <el-text type="primary" size="large" style="padding-right:250px ;">
+            <el-text type="primary" size="large" style="padding-right:260px ;">
             {{item.name}}
           </el-text>
             <el-descriptions column="1" >
@@ -39,7 +39,7 @@
                   size="small"
                   @click="this.$router.push({
                 path:  item.add ,
-                // query: { neoId: scope.row.neoId },
+                query: { sname: item.sname },
               })"
                 >
                   新增
@@ -173,7 +173,18 @@ export default {
     },
     methods:{ 
       load(){
-           this.dataList=[{name:"行政区划本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"},{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"},"流域对象本体管理","流域对象实例管理","流域机构本体管理","流域机构实例管理","抢险技术本体管理","抢险技术实例管理","应急抢险本体管理","应急抢险实例管理"]
+           this.dataList=[{name:"行政区划本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划父本体"}
+           ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}
+           ,{name:"流域对象本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象父本体"}
+           ,"流域对象实例管理"
+           ,{name:"流域机构本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构父本体"}
+           ,"流域机构实例管理"
+           ,{name:"抢险技术本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术父本体"}
+           ,"抢险技术实例管理"
+           ,{name:"应急抢险本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险父本体"}
+           ,"应急抢险实例管理"
+           ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"}
+           ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}]
     },
       
       handleSizeChange(val) {

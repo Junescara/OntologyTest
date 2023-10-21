@@ -7,7 +7,7 @@
           返回
         </el-button>
       </el-form-item>
-      <el-form-item left-padding="300px">
+      <!-- <el-form-item left-padding="300px">
         <el-button  type="primary"  @click="OntoView">
           查看
         </el-button>
@@ -21,7 +21,7 @@
         <el-button type="primary"  @click="OntoWatch">
          浏览
         </el-button>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
 
     </div>

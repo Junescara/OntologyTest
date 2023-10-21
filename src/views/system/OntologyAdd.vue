@@ -119,7 +119,7 @@
   @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page="pageNum"
-              :page-sizes="[2, 5, 10, 20]"
+              :page-sizes="[2, 5, 10, 20, 50]"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="tableData.length">
@@ -165,7 +165,7 @@
   @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page="pageNum"
-              :page-sizes="[2, 5, 10, 20]"
+              :page-sizes="[2, 5, 10, 20, 50]"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="tableData.length">
@@ -391,10 +391,16 @@ export default {
 
     },
     Type(type){
-      if(type=="val")
-       this.selectType="1";
+      if(type=="val"){
+        this.selectType="1";
+        this.lowerBound="0";
+       this.upperBound="65535"
+      }
+       
      if(type=="text")
        this.selectType="2";
+       this.lowerBound="0";
+       this.upperBound="65535"
     if(type=="date")
        this.selectType="3";
       if(type=="bool")

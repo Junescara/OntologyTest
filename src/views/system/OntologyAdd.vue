@@ -65,6 +65,20 @@
 
     
 <el-form label-width="100px" label-position="left" align="left" inline >
+  <el-form-item>
+    <el-select
+          v-model="type"
+          @change="Type($event,type)"
+          placeholder="请选择属性类型"
+          filterable
+        >
+        <el-option label="数值类" value="val" selected></el-option>
+      <el-option label="文本类" value="text"></el-option>
+      <el-option label="日期类" value="date"></el-option>
+      <el-option label="布尔类" value="bool"></el-option>
+        </el-select>
+  </el-form-item>
+  
 <el-form-item>
   <el-input  v-model="dimension" placeholder="请输入单位" clearable >
       </el-input>
@@ -287,6 +301,8 @@ export default {
                     tableData1:  [],
       name:"",
       sname:"",
+      type:"",
+      selectType:"",
       searchContent:"",
       rangeItem:[],
       multipleSelection: [],
@@ -369,6 +385,18 @@ export default {
       )
 
     },
+    Type(type){
+      if(type=="val")
+       this.selectType="1";
+     if(type=="text")
+       this.selectType="2";
+    if(type=="date")
+       this.selectType="3";
+      if(type=="bool")
+       this.selectType="4";
+    
+      console.log(this.selectType);
+    },
     changeType(ontoType){
       if(ontoType=="object")
        this.object=true;
@@ -420,7 +448,7 @@ export default {
                    this.multipleSelection = val
             },
             Attcreate(){
-            ontoprop({type:"1",name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
+            ontoprop({type:this.selectType,name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
               ElMessage.success("构建成功");
               this.$router.go(0);
             });

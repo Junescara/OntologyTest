@@ -480,7 +480,7 @@ export default {
                   let edgeItem = {
                       from: data.neoId,
                       to: item.neoId,
-                      label: "实例化",
+                      label: "拥有",
                   }
                   insNodes.push(nodeItem);
                   insEdges.push(edgeItem);

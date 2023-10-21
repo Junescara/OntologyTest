@@ -296,6 +296,7 @@ export default {
       if (to.fullPath.indexOf("InstanceView") !== -1) {
         //console.log(to.query);
         this.receivedNeoId = to.query.neoId;
+        //this.sname = to.query.sname;
         this.load();
         this.load1()
        // this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,1);

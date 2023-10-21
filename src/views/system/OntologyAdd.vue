@@ -40,7 +40,7 @@
       <el-form-item >
        
       </el-form-item>
-      <el-form-item >
+      <!-- <el-form-item >
         <el-button  type="primary"  @click="OntoView">
           查看
         </el-button>
@@ -54,7 +54,7 @@
         <el-button type="primary"  @click="OntoWatch">
          浏览
         </el-button>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     </div>
     
@@ -65,6 +65,20 @@
 
     
 <el-form label-width="100px" label-position="left" align="left" inline >
+  <el-form-item>
+    <el-select
+          v-model="type"
+          @change="Type($event,type)"
+          placeholder="请选择属性类型"
+          filterable
+        >
+        <el-option label="数值类" value="val" selected></el-option>
+      <el-option label="文本类" value="text"></el-option>
+      <el-option label="日期类" value="date"></el-option>
+      <el-option label="布尔类" value="bool"></el-option>
+        </el-select>
+  </el-form-item>
+  
 <el-form-item>
   <el-input  v-model="dimension" placeholder="请输入单位" clearable >
       </el-input>
@@ -105,7 +119,7 @@
   @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page="pageNum"
-              :page-sizes="[2, 5, 10, 20]"
+              :page-sizes="[2, 5, 10, 20, 50]"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="tableData.length">
@@ -151,7 +165,7 @@
   @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page="pageNum"
-              :page-sizes="[2, 5, 10, 20]"
+              :page-sizes="[2, 5, 10, 20, 50]"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="tableData.length">
@@ -202,7 +216,12 @@
 <el-divider></el-divider>
   </el-form>
   <div style="display: flex;overflow:auto" >
-            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1">
+            <KGVisibleVisNetwork
+                    ref="KGVisibleVisNetwork"
+                    :kgTypeProp = "1"
+                    :neoIdProp = "neoId"
+                    :snameProp = "sname"
+            >
             </KGVisibleVisNetwork>
         </div>
 </div>
@@ -287,6 +306,8 @@ export default {
                     tableData1:  [],
       name:"",
       sname:"",
+      type:"",
+      selectType:"",
       searchContent:"",
       rangeItem:[],
       multipleSelection: [],
@@ -369,6 +390,24 @@ export default {
       )
 
     },
+    Type(type){
+      if(type=="val"){
+        this.selectType="1";
+        this.lowerBound="0";
+       this.upperBound="65535"
+      }
+       
+     if(type=="text")
+       this.selectType="2";
+       this.lowerBound="0";
+       this.upperBound="65535"
+    if(type=="date")
+       this.selectType="3";
+      if(type=="bool")
+       this.selectType="4";
+    
+      console.log(this.selectType);
+    },
     changeType(ontoType){
       if(ontoType=="object")
        this.object=true;
@@ -420,7 +459,7 @@ export default {
                    this.multipleSelection = val
             },
             Attcreate(){
-            ontoprop({type:"1",name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
+            ontoprop({type:this.selectType,name:this.name,dimension:this.dimension,lowerBound:this.lowerBound,upperBound:this.upperBound}).then(({ data })=>{
               ElMessage.success("构建成功");
               this.$router.go(0);
             });
@@ -511,7 +550,17 @@ getParams() {
                  
           
                 
-        }
+        },
+    watch: {
+        $route(to, from) {
+            if (to.fullPath.indexOf("OntoAdd") !== -1) {
+                console.log("InstanceWatch==>to.query",to.query);
+                this.neoId = to.query.neoId;
+                this.sname = to.query.sname;
+                this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,2);
+            }
+        },
+    },
       }
     
 </script>

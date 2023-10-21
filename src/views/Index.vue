@@ -50,7 +50,8 @@
                   size="small"
                   @click="this.$router.push({
                 path:  item.watch ,
-                query: { sname:item.sname,neoId: item.neoId },
+                query: { neoId: item.neoId,sname: item.sname }
+                // query: { neoId: scope.row.neoId },
               })"
                 >
                   浏览
@@ -173,22 +174,18 @@ export default {
     },
     methods:{ 
       load(){
-        this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划系列",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
-        ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
-
-        ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构系列",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
-        ,{name:"流域机构实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
-
-          ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象系列",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
-        ,{name:"流域对象实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
-
-          ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险系列",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
-          ,{name:"应急抢险实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
-
-          ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术系列",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
-        ,{name:"抢险技术实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
-        ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"}
-        ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}]
+          this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
+              ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
+              ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
+              ,{name:"流域机构实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
+              ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
+              ,{name:"流域对象实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
+              ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
+              ,{name:"应急抢险实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
+              ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
+              ,{name:"抢险技术实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
+              ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"}
+              ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}]
     },
       
       handleSizeChange(val) {

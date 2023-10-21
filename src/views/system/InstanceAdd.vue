@@ -23,7 +23,7 @@
       <el-form-item>
         <el-select
             v-model="ontoId"
-            placeholder="请选择实例所属本体"
+            placeholder="请选择实例所属实体类型"
             clearable
             filterable
         >
@@ -128,7 +128,7 @@
         empty-text="暂无实例"
     >
             <el-table-column prop="name" label="实例名称" width="auto" />
-    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
+    <el-table-column prop="ontoName" label="所属实体类型名称" width="auto" align="left" />
 <!--      <el-table-column prop="neoId" label="实例编号" width="auto" />-->
 
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
@@ -348,6 +348,8 @@ const initData = () => {
   instanceByFatherId(receivedNeoId.value,0).then(({ data }) => {
     console.log("父本体id是", receivedNeoId.value);
     console.log(data.subData);
+    insList.length = 0;
+
     for( let i =  0;i <data.subData.length;i++){
       insList.push(...data.subData[i].list)
     }
@@ -473,10 +475,11 @@ const openUpdateDialog = (insneoId) => {
   getInsProp(insneoId).then(({data}) => {
     console.log("本次修改实例属性所属的本体的ID", ontoId);
     console.log("本次修改实例的实例ID", data.neoId);
-    console.log("data.propObjList" + data.propObjList);
+    console.log("data.propObjList" , data.propObjList);
     attrList.length = 0;
     attrList.push(...data.propObjList);
     console.log("attrList是",attrList);
+    console.log("attrList[0].neoId是",attrList[0].neoId);
     console.log("attrList【0】.value是",attrList[0].value);
     console.log("attrList【0】.name是",attrList[0].name);
     for (let i in attrList)

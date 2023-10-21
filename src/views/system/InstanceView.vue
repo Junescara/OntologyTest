@@ -49,7 +49,7 @@
     <!--    <el-table-column  prop="labels" label="所属本体类型" width="auto" align="left">-->
     <!--    </el-table-column>-->
     <el-table-column prop="name" label="实例名称" width="auto" />
-    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
+    <el-table-column prop="ontoName" label="所属实体类型名称" width="auto" align="left" />
 <!--    <el-table-column prop="neoId" label="实例编号" width="auto" />-->
 
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
@@ -177,6 +177,7 @@ export default {
         //this.tableData = res.data.subData[0].list;
         console.log("res.data.subData   ",res.data.subData);
         console.log("subData长度为",res.data.subData.length)
+        this.tableData=[];
         for( let i =  0;i <res.data.subData.length;i++){
           this.tableData.push(...res.data.subData[i].list)
         }
@@ -295,8 +296,8 @@ export default {
       if (to.fullPath.indexOf("InstanceView") !== -1) {
         //console.log(to.query);
         this.receivedNeoId = to.query.neoId;
-        //this.sname = to.query.sname;
         this.load();
+        this.load1()
        // this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,1);
       }
     },

@@ -65,7 +65,7 @@
                 size="medium"
                 src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
               />
-              <div style="display: inline-block" class="text item">竹子</div>
+              <div style="display: inline-block" class="text item">admin</div>
               <div
                 style="display: inline-block; padding-left: 100px"
                 class="text item"

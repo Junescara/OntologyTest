@@ -44,7 +44,7 @@ const routes = [
         component: () => import("@/views/system/OntologyView.vue"),
         meta: {
           menu: true,
-          title: "本体构建",
+          title: "实体库",
         },
       },
       {
@@ -53,7 +53,16 @@ const routes = [
         component: () => import("@/views/system/InstanceView.vue"),
         meta: {
           menu: true,
-          title: "实例构建",
+          title: "关系库",
+        },
+      },
+      {
+        path: "attribute",
+        name: "attribue",
+        component: () => import("@/views/system/Attribute.vue"),
+        meta: {
+          menu: true,
+          title: "属性库",
         },
       },
       {

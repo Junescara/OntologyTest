@@ -15,7 +15,7 @@
             <el-descriptions column="1" >
               
               <el-descriptions-item label="用途"
-                >用于规范水利对象属性定义及对象间空间、水流等基础语义关系</el-descriptions-item
+                >用于规范{{item.name}},以及属性定义、对象间空间等基础语义关系</el-descriptions-item
               >
               <template>
                 <div><slot name="extra"></slot></div

@@ -518,7 +518,7 @@ const submitAll = () => {
   for (let index in attrList){
     document.getElementById('submit'+ index ).click();
   }
-  ElMessage.success("更新属性成功");
+  // ElMessage.success("更新属性成功");
   dialogVisible_update.value = false;
  dialogVisible_create.value = false;
 }

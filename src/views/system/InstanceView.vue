@@ -49,7 +49,7 @@
     <!--    <el-table-column  prop="labels" label="所属本体类型" width="auto" align="left">-->
     <!--    </el-table-column>-->
     <el-table-column prop="name" label="实例名称" width="auto" />
-    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
+    <el-table-column prop="ontoName" label="所属实例类型名称" width="auto" align="left" />
 <!--    <el-table-column prop="neoId" label="实例编号" width="auto" />-->
 
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>

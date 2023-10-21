@@ -307,7 +307,7 @@ let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
 
 let fatherOntoIdList;
-fatherOntoIdList = ["0da94327-0c07-4c70-8050-5c8c9e808a38", "694a16b5-0ebf-4784-aa25-d4b776292b15", "b82314fd-7c78-4a05-98e3-9e51b2ae8ccc", "ef3f1eb4-020f-4fa6-999f-fb67b7644511", "55f3d081-fa7d-4271-9200-5461b51aa89a"]
+fatherOntoIdList = ["f20aae5d-ef71-471a-8588-0e93c831d4a2", "69556244-00e2-4420-b66e-76e959470c73", "8f1dfb12-1832-4161-bc53-482ae6c95c53", "7e08b5f3-8de5-4312-ae18-44842e9e79fc", "bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"]
 
 
 

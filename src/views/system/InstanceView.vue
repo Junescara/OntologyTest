@@ -131,8 +131,8 @@ export default {
   },
   created() {
     // 请求分页查询数据
-
-    this.receivedNeoId = this.$route.query.neoId
+    this.getParams()
+    // this.receivedNeoId = this.$route.query.neoId
     console.log("this.receivedNeoId"+this.receivedNeoId)
     this.load()
     this.load1()
@@ -174,18 +174,22 @@ export default {
         console.log("父本体id是",this.receivedNeoId);
         console.log("res.data是");
         //console.log(res.data.subData[0].list);
-        //this.tableData = res.data.subData[0].list;
+        // this.tableData = res.data.subData[0].list;
         console.log("res.data.subData   ",res.data.subData);
         console.log("subData长度为",res.data.subData.length)
+        this.tableData= [];
         for( let i =  0;i <res.data.subData.length;i++){
           this.tableData.push(...res.data.subData[i].list)
         }
+
+        // this.tableData=res.data;
 
 
 
         this.total = res.total;
       })
     },
+    
 
 
     load1() {
@@ -286,17 +290,28 @@ export default {
     //
     // }
 
+    getParams() {
+      this.receivedNeoId = this.$route.query.neoId
 
+
+      console.log(this.receivedNeoId);
+    
+      
+    },
 
 
   },
   watch: {
     $route(to, from) {
       if (to.fullPath.indexOf("InstanceView") !== -1) {
-        //console.log(to.query);
+        console.log(to.query.neoId);
+        console.log("数据传过来了");
         this.receivedNeoId = to.query.neoId;
         //this.sname = to.query.sname;
         this.load();
+        this.load1();
+
+        
        // this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,1);
       }
     },

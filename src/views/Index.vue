@@ -184,8 +184,8 @@ export default {
               ,{name:"应急抢险实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
               ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
               ,{name:"抢险技术实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
-              ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch"}
-              ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch"}]
+              ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"本体管理",neoId:"0000"}
+              ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"实例管理",neoId:"0000"}]
     },
       
       handleSizeChange(val) {

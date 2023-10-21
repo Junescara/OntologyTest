@@ -1025,7 +1025,7 @@ export default {
           //   selected: '/static/images/icon_selected.svg',
           // },
           size: 15, // 节点大小
-          physics: true, // 关闭物理引擎
+          physics: false, // 关闭物理引擎
           mass:0.12,
           //title: '实体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
           widthConstraint: { // 节点的最小宽度与最大宽度
@@ -1155,13 +1155,18 @@ export default {
         // 布局
         layout: {
           randomSeed: 1,
-        //   hierarchical: {
-        //     enabled: true,
-        //     levelSeparation: 100, // 层级之间的距离,太小的话箭头会盖住标签字
-        //     nodeSpacing: 100,     // 节点之间的距离
-        //     treeSpacing: 100,     // 树之间的距离
-        //     sortMethod: 'directed',
-        //   },
+            improvedLayout:true,
+            clusterThreshold:40,
+          hierarchical: {
+            enabled: true,
+            levelSeparation: 200, // 层级之间的距离,太小的话箭头会盖住标签字
+            nodeSpacing: 50,     // 节点之间的距离
+            treeSpacing: 100,     // 树之间的距离
+            sortMethod: 'directed',
+              direction:"LR",
+              blockShifting:true,
+              edgeMinimization:true,
+          },
         },
       }
       return option

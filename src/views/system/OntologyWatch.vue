@@ -28,7 +28,7 @@
     <div >
             <KGVisibleVisNetwork
                     ref="KGVisibleVisNetwork"
-                    :kgTypeProp = "1"
+                    :kgTypeProp = "kgType"
                     :neoIdProp = "neoId"
                     :snameProp = "sname"
             >
@@ -49,6 +49,7 @@ export default {
         level:0,
             neoId : "",//父节点标签id
             sname : "",//父节点标签名称
+            kgType:1,
     }},
     mounted() {
 
@@ -57,8 +58,11 @@ export default {
         // 请求分页查询数据
         this.neoId = this.$route.query.neoId;
         this.sname = this.$route.query.sname;
+        this.kgType = 1;//代表按模块展示的示例图
+        if(this.sname == "本体管理")
+            this.kgType = 3//代表展示所有本体的总图
 
-        console.log("OntoWatch ==> created: neoId", this.neoId, this.sname);
+        console.log("OntoWatch ==> created: neoId", this.neoId, this.sname,this.kgType);
 
     },
     components:{
@@ -85,7 +89,10 @@ export default {
                 //console.log(to.query);
                 this.neoId = to.query.neoId;
                 this.sname = to.query.sname;
-                this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,1);
+                let kgType = 1;//代表按模块展示的示例图
+                if(this.sname == "本体管理")
+                    kgType = 3//代表展示所有本体的总图
+                this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,kgType);
             }
         },
     },

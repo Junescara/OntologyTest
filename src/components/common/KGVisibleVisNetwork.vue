@@ -110,16 +110,65 @@ export default {
 
     initKG() {
         console.log("kgType:", this.kgType, " this.sname:", this.sname, " this.neoId:", this.neoId);
-        if (this.kgType == 1)//本体图
+        if (this.kgType == 1)//按模块查询的本体图
         {
             this.title = this.sname + "本体图谱";
-            this.getOntologyKG();
+            this.nodes = [];//清空列表
+            this.edges = [];
+            this.getOntologyKG(this.neoId,this.sname,this.kgType);
         }
-        else if (this.kgType == 2) {//实例图{
+        else if (this.kgType == 2) {//按模块查询的实例图{
             this.title = this.sname + "实例图谱";
-            this.getInstanceKG();
+            this.nodes = [];//清空列表
+            this.edges = [];
+            this.getInstanceKG(this.neoId,this.sname,this.kgType);
+        }else{
+            let neoIdList = [
+                {sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"},
+                {sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"},
+                {sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"},
+                {sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"},
+                {sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"},
+            ]
+            //保留边列表和结点,不清空列表
+
+            //创建最顶层的父本体
+            this.nodes.push({
+                id:this.neoId,
+                label:this.sname,
+                color: { background:"#29a7fc"},
+                size:25,
+                level:0,
+            })
+            if(this.kgType ==3){//查询拥有所有本体的总图
+
+                for(let i = 0;i< neoIdList.length; i++){
+
+                    this.getOntologyKG(neoIdList[i].neoId,neoIdList[i].sname,1);
+                    this.edges.push({
+                        from: this.neoId,
+                        to: neoIdList[i].neoId,
+                        label:"拥有",
+                        length:400,
+                    })
+                }
+
+                this.title = "流域水循环本体图谱"
+            }else if(this.kgType ==4){//查询拥有所有实例的总图
+                for(let i = 0;i< neoIdList.length; i++){
+
+                    this.getInstanceKG(neoIdList[i].neoId,neoIdList[i].sname,2);
+                    this.edges.push({
+                        from: this.neoId,
+                        to: neoIdList[i].neoId,
+                        label:"拥有",
+                        length:1000
+                    })
+                }
+                this.title = "流域水循环实例图谱"
+            }
         }
-    },
+  },
 
       getParams(neoId,sname,kgType) {
           this.neoId = neoId;
@@ -132,23 +181,23 @@ export default {
       /**
        * 获取并显示本体图谱
        */
-      getOntologyKG(){
+      getOntologyKG(neoId,sname,kgType){
           this.loading = true
-          console.log("getOntologyKG ==> this.neoId",this.neoId);
+          console.log("getOntologyKG ==> neoId",neoId,sname,kgType);
           //默认显示图，用于页面初始化时候的显示
-          relationApi.getOntologyKGLinks(this.neoId).then(({data}) => {
-              this.handleKGData(data)
+          relationApi.getOntologyKGLinks(neoId).then(({data}) => {
+              this.handleKGData(data,neoId,sname,kgType)
           })
       },
 
       /**
        * 获取并显示实例图谱
        */
-      getInstanceKG(){
+      getInstanceKG(neoId,sname,kgType){
           this.loading = true
           //默认显示图，用于页面初始化时候的显示
-          relationApi.getInstanceKGLinks(this.neoId).then(({data}) => {
-              this.handleKGData(data)
+          relationApi.getInstanceKGLinks(neoId).then(({data}) => {
+              this.handleKGData(data,neoId,sname,kgType)
           })
       },
 
@@ -156,29 +205,30 @@ export default {
        * 对http请求获得的data数据进行处理,并且显示
        * @param data
        */
-      handleKGData(data){
-          console.log("handleKGData ==> data",data);
+      handleKGData(data,neoId,sname,kgType){
+          console.log("handleKGData ==> data",data,neoId,sname,kgType);
 
           //把2后端传递的子节点连接到父节点上
-          this.nodes = [];
-          this.edges = [];
+          /*this.nodes = [];
+          this.edges = [];*/
 
-          if(this.kgType == 1){
-              this.connectNodeToFather(data,this.sname,this.neoId,"拥有","#97C2FC",15,200);
-          }else if(this.kgType == 2){
+          if(kgType == 1){
+              this.connectNodeToFather(data,sname,neoId,"拥有","#97C2FC",15,200);
+          }else if(kgType == 2){
 
 
               this.nodes.push({
-                  id:this.neoId,
-                  label:this.sname,
+                  id:neoId,
+                  label:sname,
                   color: { background:"#60a4d1"},
                   size:25,
+                  level:1,
               })
 
               for(let i = 0;i < data.subData.length;i++){
                   this.connectNodeToFather(data.subData[i].list,data.subData[i].ontoName,data.subData[i].ontoNeoId,"实例化","#d1edff",15,150);
                   this.edges.push({
-                      from: this.neoId,
+                      from: neoId,
                       to: data.subData[i].ontoNeoId,
                       label:"拥有",
                   });
@@ -199,7 +249,7 @@ export default {
 
           this.network.on('click',function(properties){
               console.log(properties);
-              _this.handleKGClick(properties);
+              _this.handleKGClick(properties,kgType);
           })
 
           _this.setLoading()
@@ -220,6 +270,7 @@ export default {
               label: fatherName,
               color: { background:"#29a7fc"},
               size:20,
+              level:2,
               /*parentNode:"",
               foldState:1//1是折叠状态,0是非折叠状态,2是附属结点,不需要折叠*/
           }
@@ -232,6 +283,7 @@ export default {
                   label: item.name,
                   color: { background:color},
                   size:size,
+                  level:3,
                   /*parentNode:"",
                   foldState:1//1是折叠状态,0是非折叠状态,2是附属结点,不需要折叠*/
               }
@@ -263,7 +315,7 @@ export default {
       /**
        * 处理图谱结点的点击事件
        */
-      handleKGClick (properties){
+      handleKGClick (properties,kgType){
           let _this = this
 
           if(this.KGLevel == 1)
@@ -277,13 +329,13 @@ export default {
           if(properties.nodes.length!=0){
               //处理顶点结点的点击事件
 
-              if(this.kgType==1){
+              if(kgType==1){
                   //处理图谱是本体图的情况
 
 
                   relationApi.getOntologyNodeById(properties.nodes[0]).then(({data}) => {
                       console.log("getOntologyNodeById", data)
-                      this.handleClickData(data,this.kgType);
+                      this.handleClickData(data,kgType);
 
 
                       /*//查看该结点是否是折叠状态
@@ -383,11 +435,11 @@ export default {
 
 
                   })
-              }else if(this.kgType == 2){
+              }else if(kgType == 2){
 
                   relationApi.getInstanceNodeById(properties.nodes[0]).then(({data}) => {
                       console.log("getInstanceNodeById", data)
-                      this.handleClickData(data,this.kgType);
+                      this.handleClickData(data,kgType);
                   })
               }
 
@@ -500,21 +552,30 @@ export default {
               let _this = this
               this.network.on('click',function(properties){
                   console.log(properties);
-                  _this.handleKGClick(properties);
+                  _this.handleKGClick(properties,kgType);
               })
 
 
 
       },
       handleReturn(){
+          this.nodes = [];//清空列表
+          this.edges = [];
           console.log("handleReturn ==> this.KGLevel ", this.KGLevel )
           if(this.KGLevel == 1){
+              let kgType = 0;
               if(this.kgType == 1){
                   this.title = this.sname + "本体图谱";
+                  kgType = 1;
               }else if(this.kgType == 2){
                   this.title = this.sname + "本体图谱";
-              }else{
-                  this.title ="";
+                  kgType = 2;
+              }if(this.kgType == 3){
+                  this.title = "流域水循环本体图谱";
+                  kgType = 1;
+              }if(this.kgType == 4){
+                  this.title = "流域水循环实例图谱";
+                  kgType = 2;
               }
 
               this.KGLevel = 0;
@@ -524,7 +585,7 @@ export default {
               let _this = this
               this.network.on('click',function(properties){
                   console.log(properties);
-                  _this.handleKGClick(properties);
+                  _this.handleKGClick(properties,kgType);
               })
           }else if(this.KGLevel == 0){
               this.$router.push("/index");

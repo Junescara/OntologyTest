@@ -23,6 +23,7 @@
 import Vis from "vis-network/dist/vis-network.min"
 import relationApi from "../../api/neo4j/relationApi";
 import VisUtils from "../../utils/VisUtils";
+import { Network } from 'vis-network/standalone';
 
 
 export default {
@@ -394,10 +395,11 @@ export default {
       },
       handleClickData(data,kgType){
           console.log("handleClickData ==> this.KGLevel ", this.KGLevel )
+          let insNodes =[];
+          let insEdges = [];
           let dataList =  [];
           let lable = "";
           if(kgType == 1){
-
 
               dataList = data.list;
               if (dataList.length == 0) {
@@ -406,6 +408,37 @@ export default {
               }
               lable = dataList[0].ontoName;
               this.title = "本体'" +lable +"'所有实例化结点" ;
+              this.KGLevel = 1;
+              /*let insNodes =[];
+              let insEdges = [];*/
+              insNodes.push({
+                  id: data.neoId,
+                  label: lable,
+                  color: { background:"#29a7fc"},
+                  //propData:"",
+                  size:20,
+                  /*parentNode:properties.nodes[0],
+                  foldState:2*/
+              })
+
+              for(var item of dataList){
+
+                  let nodeItem = {
+                      id: item.neoId,
+                      label: item.name,
+                      //title:""+item.value,
+                      /*parentNode:properties.nodes[0],
+                      foldState:2*/
+                  }
+                  let edgeItem = {
+                      from: data.neoId,
+                      to: item.neoId,
+                      label: "实例化",
+                  }
+                  insNodes.push(nodeItem);
+                  insEdges.push(edgeItem);
+
+              }
           }else if(kgType == 2){
               //实例图谱本体结点无点击效果
               for(let i= 0;i<data.labels.length;i++){
@@ -423,17 +456,14 @@ export default {
 
               lable = data.name;
               this.title = "实例'"+lable+"'所有属性结点";
-          }
-
-
               this.KGLevel = 1;
-              let insNodes =[];
-              let insEdges = [];
-             insNodes.push({
+
+              insNodes.push({
                   id: data.neoId,
                   label: lable,
-                 color: { background:"#29a7fc"},
-                 size:20,
+                  color: { background:"#29a7fc"},
+                  //propData:"",
+                  size:20,
                   /*parentNode:properties.nodes[0],
                   foldState:2*/
               })
@@ -443,6 +473,7 @@ export default {
                   let nodeItem = {
                       id: item.neoId,
                       label: item.name,
+                      title:""+item.value,
                       /*parentNode:properties.nodes[0],
                       foldState:2*/
                   }
@@ -455,8 +486,12 @@ export default {
                   insEdges.push(edgeItem);
 
               }
-              console.log("handleClickData ==> insNodes", insNodes)
-              console.log("handleClickData ==> insEdges", insEdges)
+          }
+
+
+
+              //console.log("handleClickData ==> insNodes", insNodes)
+              //console.log("handleClickData ==> insEdges", insEdges)
 
               //使用setData方法更新数据会报错,使用window.network会有其他问题,直接new新的network
               const container = this.$refs.KGNetwork;
@@ -467,6 +502,8 @@ export default {
                   console.log(properties);
                   _this.handleKGClick(properties);
               })
+
+
 
       },
       handleReturn(){

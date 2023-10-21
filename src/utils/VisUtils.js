@@ -1027,7 +1027,7 @@ export default {
           size: 15, // 节点大小
           physics: true, // 关闭物理引擎
           mass:0.12,
-          title: '实体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
+          //title: '实体', // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
           widthConstraint: { // 节点的最小宽度与最大宽度
             maximum: 100,
           }
@@ -1272,8 +1272,8 @@ export default {
           //   selected: '/static/images/icon_selected.svg',
           // },
           // size: 40, // 节点大小
-          physics: false, // 关闭物理引擎
-          //title: "", // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
+          physics: true, // 关闭物理引擎
+          title: "", // 用户悬停在节点上时显示的标题,可以是HTML元素或包含纯文本或HTML的字符串
           widthConstraint: { // 节点的最小宽度与最大宽度
             // maximum: 100,
           }

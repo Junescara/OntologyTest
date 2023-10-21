@@ -52,7 +52,7 @@ const routes = [
         name: "instance",
         component: () => import("@/views/system/InstanceView.vue"),
         meta: {
-          menu: true,
+          menu: false,
           title: "关系库",
         },
       },

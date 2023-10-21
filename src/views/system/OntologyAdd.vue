@@ -216,7 +216,12 @@
 <el-divider></el-divider>
   </el-form>
   <div style="display: flex;overflow:auto" >
-            <KGVisibleVisNetwork ref="KGVisibleVisNetwork" :kgType = "1">
+            <KGVisibleVisNetwork
+                    ref="KGVisibleVisNetwork"
+                    :kgTypeProp = "1"
+                    :neoIdProp = "neoId"
+                    :snameProp = "sname"
+            >
             </KGVisibleVisNetwork>
         </div>
 </div>
@@ -539,7 +544,17 @@ getParams() {
                  
           
                 
-        }
+        },
+    watch: {
+        $route(to, from) {
+            if (to.fullPath.indexOf("OntoAdd") !== -1) {
+                console.log("InstanceWatch==>to.query",to.query);
+                this.neoId = to.query.neoId;
+                this.sname = to.query.sname;
+                this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,2);
+            }
+        },
+    },
       }
     
 </script>

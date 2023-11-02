@@ -23,7 +23,7 @@
       <el-form-item>
         <el-select
             v-model="ontoId"
-            placeholder="请选择实例所属实体类型"
+            placeholder="请选择实例所属本体"
             clearable
             filterable
         >
@@ -128,7 +128,7 @@
         empty-text="暂无实例"
     >
             <el-table-column prop="name" label="实例名称" width="auto" />
-    <el-table-column prop="ontoName" label="所属实体类型名称" width="auto" align="left" />
+    <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
 <!--      <el-table-column prop="neoId" label="实例编号" width="auto" />-->
 
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
@@ -256,11 +256,11 @@ import {
   udpateInst, inslist, createRelIns, getontoProp, getInsProp, deleteIns, instanceByFatherId
 } from "@/api/module/instance.js";
 import { getEntity as getInstance } from "@/api/module/result.js";
-import {reactive, ref, computed, onMounted,watch} from "vue";
+import {reactive, ref, computed, onMounted} from "vue";
 import { Search, Plus } from "@element-plus/icons-vue";
 import MyPagination from "@/components/common/MyPagination.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
-import {useRouter, useRoute, onBeforeRouteUpdate} from "vue-router";
+import { useRouter,useRoute} from "vue-router";
 import {createRel} from "@/api/module/ontology.js";
 
 const route = useRoute();
@@ -306,6 +306,10 @@ let total = computed(() => {
 let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
 
+let fatherOntoIdList;
+fatherOntoIdList = ["f20aae5d-ef71-471a-8588-0e93c831d4a2", "69556244-00e2-4420-b66e-76e959470c73", "8f1dfb12-1832-4161-bc53-482ae6c95c53", "7e08b5f3-8de5-4312-ae18-44842e9e79fc", "bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"]
+
+
 
 
 // 初始化数据
@@ -344,8 +348,6 @@ const initData = () => {
   instanceByFatherId(receivedNeoId.value,0).then(({ data }) => {
     console.log("父本体id是", receivedNeoId.value);
     console.log(data.subData);
-    insList.length = 0;
-
     for( let i =  0;i <data.subData.length;i++){
       insList.push(...data.subData[i].list)
     }
@@ -371,16 +373,6 @@ const initData = () => {
 };
 
 initData();
-onBeforeRouteUpdate((to, from, next) => {
-  // 在路由参数改变时触发
-  console.log(`路由参数改变：从 ${from.query.neoId} 到 ${to.query.neoId}`);
-
-  initData();
-  // 在这里可以执行你希望的其他操作
-
-  next(); // 确保继续路由导航
-});
-
 
 
 // 创建对象实例
@@ -422,7 +414,7 @@ const handleInsCreate = (ontoId) => {
 
 
           });
-initData();
+      initData();
 
     });
     //changeOnto(ontoId);
@@ -481,11 +473,10 @@ const openUpdateDialog = (insneoId) => {
   getInsProp(insneoId).then(({data}) => {
     console.log("本次修改实例属性所属的本体的ID", ontoId);
     console.log("本次修改实例的实例ID", data.neoId);
-    console.log("data.propObjList" , data.propObjList);
+    console.log("data.propObjList" + data.propObjList);
     attrList.length = 0;
     attrList.push(...data.propObjList);
     console.log("attrList是",attrList);
-    console.log("attrList[0].neoId是",attrList[0].neoId);
     console.log("attrList【0】.value是",attrList[0].value);
     console.log("attrList【0】.name是",attrList[0].name);
     for (let i in attrList)
@@ -527,7 +518,7 @@ const submitAll = () => {
   for (let index in attrList){
     document.getElementById('submit'+ index ).click();
   }
-  //ElMessage.success("更新属性成功");
+  // ElMessage.success("更新属性成功");
   dialogVisible_update.value = false;
  dialogVisible_create.value = false;
 }

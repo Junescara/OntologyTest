@@ -29,7 +29,7 @@
        <div >
             <KGVisibleVisNetwork
                     ref="KGVisibleVisNetwork"
-                    :kgTypeProp = "2"
+                    :kgTypeProp = "kgType"
                     :neoIdProp = "neoId"
                     :snameProp = "sname">
 
@@ -47,12 +47,17 @@ export default {
         return {
             neoId : "",//父节点标签id
             sname : "",//父节点标签名称
+            kgType:2,
         }},
     created() {
         // 请求分页查询数据
         this.neoId = this.$route.query.neoId;
         this.sname = this.$route.query.sname;
-        //console.log("InsWatch ==> created: neoId", this.neoId, this.sname);
+        this.kgType = 1;//代表按模块展示的示例图
+        if(this.sname == "实例管理")
+            this.kgType = 4//代表展示所有本体的总图
+
+        console.log("InsWatch ==> created: neoId", this.neoId, this.sname,this.kgType);
 
     },
     components:{

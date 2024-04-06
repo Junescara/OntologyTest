@@ -8,6 +8,7 @@
           placeholder="请输入实体类型"
           clearable
           filterable
+          v-model="Content"
         >
           
         </el-input> 
@@ -238,7 +239,7 @@ export default {
                     tableData1:  [],
                     tableData2: [],
       insName:"",
-      searchContent:"",
+      Content:"",
       rangeItem:[],
       neoId:"",
       AddFlag:false,
@@ -580,7 +581,7 @@ OntoView(){
       this.$router.push("OntoWatch");
     },
 searchInst(){
-  Ontolist({name:this.searchContent}).then(res=>{
+  Ontolist({name:this.Content}).then(res=>{
 
 this.tableData1=res.data;
 this.total=res.total;

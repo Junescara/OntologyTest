@@ -14,7 +14,7 @@
         </el-form-item> -->
       <el-form-item>
            <el-input align="left"
-             placeholder="请输入本体名"
+             placeholder="请输入实体类型"
              clearable
              v-model="searchContent"
              width="auto"

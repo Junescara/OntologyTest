@@ -286,7 +286,7 @@ import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { createRel, DeleteProp, Ontolist, ontoprop, Relonto, subRel } from "../../api/module/ontology";
+import { createRel, DeleteProp, Ontolist, ontoprop, Relonto, subOnto, subRel } from "../../api/module/ontology";
 
 
 const ontoList = reactive([]); //本体源列表
@@ -347,6 +347,7 @@ export default {
                 }
             },
             created() {
+              this.getParams();
     // 请求分页查询数据
     this.load()
     this.load1()
@@ -371,12 +372,12 @@ export default {
 
     },
     load1() {
-      Ontolist({name:""}).then(res=>{
+      subOnto({neoId:this.neoId}).then(res=>{
+        console.log(res);
         this.ontoList1 = [];
-        for(let i = 0 ; i<res.data.length; i++){
-          this.ontoList1.push(res.data[i]);
-        }
-        console.log(this.ontoList1);
+        this.ontoList1 = res.data;
+        console.log("OntologyAdd"+this.neoId);
+        console.log("A本体加载完毕"+this.ontoList1);
 
         this.ontoList2 = [];
         for(let i = 0 ; i<res.data.length; i++){

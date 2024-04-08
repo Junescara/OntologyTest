@@ -231,3 +231,15 @@ export function subOnto(neoId){
       data: neoId
 });
 }
+/**
+ * 模糊查询本体属性
+ * @param {*} name 
+ * @returns 
+ */
+export function queryPropName(name) {
+  return request({
+    url: `${baseURL}/query-onto-prop`,
+    method: "post",
+    params: name
+  });
+}

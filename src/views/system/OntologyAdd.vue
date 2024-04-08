@@ -100,7 +100,31 @@
 </div>
    
 <div v-show="object">
-  <div align="left">请选择此本体应有的属性：</div>
+  <el-form inline>
+    <el-form-item align="left">
+      请选择此本体应有的属性：
+    </el-form-item>
+    <el-form-item/>
+    <el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/><el-form-item/>
+    <el-form-item>
+      <el-input
+    placeholder="请输入属性名" 
+    clearable
+    v-model="searchProp"
+    />
+    </el-form-item>
+<el-form-item>
+  <el-button
+
+    type="primary"
+    @click="propSearch"
+    >
+      搜索
+      </el-button>
+</el-form-item>
+  </el-form>
+  
+  
  <div align-items: center>
   <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto" border stripe :header-cell-class-name="headerBg"  @selection-change="handleSelectionChange">
     <el-table-column type="selection" width="auto" align="left" /> 
@@ -114,6 +138,8 @@
 
    
   </el-table>
+
+  
 
   <el-pagination align='center' 
   @size-change="handleSizeChange"
@@ -281,7 +307,7 @@
 
 <script >
 import {createOnto} from "@/api/module/ontology.js";
-import { listbasic } from "@/api/module/ontology.js";
+import { listbasic,queryPropName } from "@/api/module/ontology.js";
 import {loadOntoInfo} from "@/api/module/ontology.js";
 import { ElMessageBox, ElMessage, ElTimeSelect } from "element-plus";
 import { reactive, ref, computed } from "vue";
@@ -324,6 +350,7 @@ export default {
       attribute:false,
       relation:false,
       objectrel:false,
+      searchProp:"",
       Id:"",
       AId:"",
       BId:"",
@@ -432,13 +459,11 @@ export default {
                   console.log(`每页 ${val} 条`);
                  this.currentPage = 1;
                   this.pageSize = val;
-                  this.load()
                 },
                 //当前页改变时触发 跳转其他页
                 handleCurrentChange(val) {
                   console.log(`当前页: ${val}`);
                   this.currentPage = val;
-                   this.load()
                 },
 
                    //每页条数改变时触发 选择一页显示多少行
@@ -541,6 +566,19 @@ searchInst(){
 this.tableData1=res.data;
 this.total=res.total;
 })
+
+},
+propSearch(){
+  if(this.searchProp==""){
+    this.load();
+  }
+  queryPropName({name:this.searchProp}).then(res=>{
+    this.tableData = res.data;
+    this.total = res.total;
+    
+
+
+  })
 
 },
 getParams() {

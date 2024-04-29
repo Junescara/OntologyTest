@@ -496,7 +496,7 @@ export default {
            
             });
 
-            Relonto({startList:[this.AId],endList:[this.BId],name:this.name,strategy:"NAME_CONSTRAINT",scope:"INST_RELATION"}).then(({ data })=>{
+            Relonto({startList:[this.AId],endList:[this.BId],name:this.name,strategy:"ID_CONSTRAINT",scope:"ONTO_RELATION"}).then(({ data })=>{
               
               this.$router.push("OntoWatch");
             });

@@ -87,7 +87,7 @@
     <el-row :gutter="12">
     <el-col span="24">
 
-        <el-card class="box-card" style = "width: 300px" >
+        <el-card class="box-card" style = "width: 200px" >
         <template v-slot:header>
             <span>调度方案一览</span>
         </template>
@@ -107,7 +107,7 @@
 
     <el-col span="24">
  
-        <el-card class="box-card-2" style="width: 450px;">
+        <el-card class="box-card-2" style="width: 500px;">
         
         <template v-slot:header>
             <span>知识图谱</span>
@@ -150,7 +150,7 @@
     </el-col>
     <el-col span="24">
 
-        <el-card class="box-card" style="width: 300px;padding-left: 20px;">
+        <el-card class="box-card" style="width: 250px;padding-left: 20px;">
         <template v-slot:header>
             <span>实体类信息</span>
         </template>
@@ -186,6 +186,7 @@ import {getNodesByName,getSchedulePlan,getHaihePlanLink,getDefaultRelLinks,getNo
 import KGVisibleRegulationNetworkLarge from '../KG/KGVisibleRugulationNetworkLarge.vue';
 import KGVisibleRegulationNetwork from '../KG/KGVisibleRugulationNetwork.vue';
 
+import isCollapse from "../../Layout/SideBar.vue";
 
 export default {
   components:{
@@ -278,6 +279,7 @@ export default {
    
 
     methods:{
+    
       //传递绘图时获得的结点类型
     onChildEvent(message) {
       this.regulation.currentNodeTypes = message

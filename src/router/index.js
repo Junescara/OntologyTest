@@ -74,6 +74,16 @@ const routes = [
           title: "洪水调度方案库",
         },
       },
+      // 历史场次匹配
+      {
+        path: "historyMatch",
+        name: "historyMatch",
+        component: () => import("@/views/pattern/common/index.vue"),
+        meta: {
+          menu: true,
+          title: "历史相似场景匹配",
+        },
+      },
       {
         path: "ontology-result",
         name: "ontology-result",
@@ -123,7 +133,8 @@ const routes = [
           menu: false,
           visByUrl: false,
         },
-      },  {
+      },
+      {
         path: "InstanceView",
         name: "InstanceView",
         component: () => import("@/views/system/InstanceView.vue"),

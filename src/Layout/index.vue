@@ -38,7 +38,7 @@ import SideBar from "./SideBar.vue";
 }
 .el-main {
   height: 100px;
-  margin: 3px 0 0 0px;
+  margin: 0px 0 0 0px;
   background-color: #fff;
   box-shadow: 0px 0px 0px 0px #c1c1c1;
 }

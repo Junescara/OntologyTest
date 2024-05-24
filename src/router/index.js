@@ -58,11 +58,20 @@ const routes = [
       },
       {
         path: "attribute",
-        name: "attribue",
+        name: "attribute",
         component: () => import("@/views/system/Attribute.vue"),
         meta: {
           menu: true,
           title: "属性库",
+        },
+      },
+      {
+        path: "Flood",
+        name: "Flood",
+        component: () => import("@/views/system/FloodRegulation.vue"),
+        meta: {
+          menu: true,
+          title: "洪水调度方案库",
         },
       },
       {

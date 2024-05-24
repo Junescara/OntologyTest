@@ -217,7 +217,7 @@ export function subRel(from,to,name,seriesName){
 }
 
 /**
- * 继承序列关系创建
+ * 查询基类本体的子本体
  * @param
  * @returns 
  */
@@ -230,4 +230,16 @@ export function subOnto(neoId){
       },
       data: neoId
 });
+}
+/**
+ * 模糊查询本体属性
+ * @param {*} name 
+ * @returns 
+ */
+export function queryPropName(name) {
+  return request({
+    url: `${baseURL}/query-onto-prop`,
+    method: "post",
+    params: name
+  });
 }

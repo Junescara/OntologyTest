@@ -7,13 +7,13 @@
     <div  >
       <el-row :gutter="80" style="margin-bottom: 20px;margin-left: 10px">
         <el-col :span="12" v-for="(item,index) in dataList.slice(start,end)" :key="index" >
-          
+
           <el-card class="box-card" style="width: 100%" >
             <el-text type="primary" size="large" style="padding-right:250px ;">
             {{item.name}}
           </el-text>
             <el-descriptions column="1" >
-              
+
               <el-descriptions-item label="用途"
                 >用于规范{{item.name}},以及属性定义、对象间空间等基础语义关系</el-descriptions-item
               >
@@ -22,7 +22,7 @@
               ></template>
               <template v-slot:extra >
 
-                
+
                 <el-button
                   type="primary"
                   size="small"
@@ -76,7 +76,7 @@
           </el-card>
           <br><br>
         </el-col>
-<!-- 
+<!--
         <el-col :span="12" v-for="(item,index) in dataList1" :key="index" >
           <el-card class="box-card" style="width: 100%" >
             <el-text type="primary" size="large" style="padding-left:300px ;">
@@ -136,8 +136,8 @@
       </el-row>
 
       <!-- 分页 -->
-    
-      <el-pagination align='center' 
+
+      <el-pagination align='center'
   @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
               :current-page="pageNum"
@@ -172,7 +172,7 @@ export default {
     created(){
      this.load()
     },
-    methods:{ 
+    methods:{
       load(){
           this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
               ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
@@ -187,7 +187,7 @@ export default {
               ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"本体管理",neoId:"0000"}
               ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"实例管理",neoId:"0000"}]
     },
-      
+
       handleSizeChange(val) {
                   console.log(`每页 ${val} 条`);
                   this.currentPage = 1;
@@ -196,7 +196,7 @@ export default {
                   this.end=this.start+this.pageSize;
                   console.log(this.start);
                   console.log(this.end);
-          
+
                 },
                 //当前页改变时触发 跳转其他页
                 handleCurrentChange(val) {
@@ -206,9 +206,9 @@ export default {
                   this.end=this.start+this.pageSize;
                   console.log(this.start);
                   console.log(this.end);
-                  
+
                 },
-      
+
 
     }
 

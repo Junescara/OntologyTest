@@ -69,7 +69,7 @@ export function queryOntoList(neoId) {
  * @param {*} value 属性值
  * @returns
  */
-export function udpateInst(neoId, value) {
+export function updateInst(neoId, value) {
   return request({
     url: `${baseURL}/update-subinstance`,
     method: "post",

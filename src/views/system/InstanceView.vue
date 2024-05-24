@@ -100,7 +100,7 @@ export default {
     return {
       tableData:  [],
       tableData1:  [],
-      ontoName:"啊啊啊",
+      ontoName:" ",
       insName:"",
       ontoId:["a","b"],
       searchContent:"",
@@ -115,8 +115,7 @@ export default {
       headerBg1:'headerBg',
       currentPage: 1, // 当前页码
       //total: 20, // 总条数
-      pageSize: 10// 每页的数据条数
-      ,
+      pageSize: 10 ,// 每页的数据条数
       currentPage1: 1, // 当前页码
       total: 20, // 总条数
       pageSize1: 10,// 每页的数据条数
@@ -140,19 +139,6 @@ export default {
     console.log("this.receivedNeoId是"+this.receivedNeoId)
     console.log("created")
   },
-  // created() {
-  //   this.load();
-  // },
-  // mounted() {
-  //   // 现在你可以访问this.$route.query.neoId
-  //   this.receivedNeoId = this.$route.query.neoId;
-  //   console.log("this.receivedNeoId: ", this.$route.query.neoId);
-  //   this.load();
-  //   this.load1();
-  //   console.log("mounted");
-  // },
-
-
 
 
 //方法
@@ -173,16 +159,12 @@ export default {
       instanceByFatherId(this.receivedNeoId,0).then(res=>{
         console.log("父本体id是",this.receivedNeoId);
         console.log("res.data是");
-        //console.log(res.data.subData[0].list);
-        //this.tableData = res.data.subData[0].list;
         console.log("res.data.subData   ",res.data.subData);
         console.log("subData长度为",res.data.subData.length)
         this.tableData=[];
         for( let i =  0;i <res.data.subData.length;i++){
           this.tableData.push(...res.data.subData[i].list)
         }
-
-
 
         this.total = res.total;
       })
@@ -191,13 +173,12 @@ export default {
 
     load1() {
       Ontolist({name:""}).then(res=>{
-
             this.tableData1=res.data;
             this.total=res.total;
+
           }
 
       )
-
     },
     //每页条数改变时触发 选择一页显示多少行
     handleSizeChange(val) {
@@ -254,41 +235,13 @@ export default {
 
     searchInst(){
       console.log( "index ",this.$route.query.neoIdIndex )
-      // inslist([
-      //   "水利对象"
-      // ],this.searchContent).then(res=>{
-      //   console.log(res);
-      //   console.log(res.data.length);
-      //   this.tableData=res.data;
-      //   this.total=res.data.length;
-      //
-      // })
       inslist(["水利对象"], this.searchContent).then(({ data }) => {
         this.tableData=data;
         this.total=data.length;
+
       });
       this.searchContent = "";
     },
-    //
-    // deleteObject(neoId){
-    //   ElMessageBox.confirm("确定删除该实例吗？", "warning", {
-    //     confirmButtonText: "确认",
-    //     cancelButtonText: "取消",
-    //     type: "warning",
-    //     title: "删除确认",
-    //   }).then(()=>{
-    //     console.log("要删除的实例id是" + neoId)
-    //     deleteIns(neoId).then(({ data }) => {
-    //       // console.log(data);
-    //       ElMessage.success("删除成功");
-    //     });
-    //     this.load();
-    //   });
-    //
-    // }
-
-
-
 
   },
   watch: {
@@ -299,7 +252,6 @@ export default {
         //this.sname = to.query.sname;
         this.load();
         this.load1()
-       // this.$refs.KGVisibleVisNetwork.getParams(this.neoId,this.sname,1);
       }
     },
   },
@@ -314,7 +266,7 @@ import {
   createIns,
   queryOntoList,
   queryInsList,
-  udpateInst,
+  updateInst,
 } from "@/api/module/instance.js";
 import {Plus, Search} from "@element-plus/icons-vue";
 import {ref} from "vue";

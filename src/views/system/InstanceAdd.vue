@@ -1,7 +1,6 @@
 <template >
     <span>
     <div>
-
 <el-form label-width="200px" inline label-position="left"  align="left"  >
 
         <el-form-item >
@@ -52,7 +51,7 @@
             filterable
         >
                 <el-option
-                    v-for="(item, index) in insList"
+                    v-for="(item, index) in tableData"
                     :key="index"
                     :label="item.name "
                     :value="item.neoId"
@@ -85,7 +84,7 @@
             filterable
         >
                 <el-option
-                    v-for="(item, index) in insList"
+                    v-for="(item, index) in tableData"
                     :key="index"
                     :label="item.name"
                     :value="item.neoId"
@@ -94,6 +93,17 @@
       </el-form-item>
 
               </el-form>
+
+                  <div >
+            <KGVisibleVisNetwork
+                ref="KGVisibleVisNetwork"
+                :kgTypeProp = "kgType"
+                :neoIdProp = "neoId"
+                :snameProp = "sname">
+
+            </KGVisibleVisNetwork>
+        </div>
+
          </div>
 <!--        创建关系实例 结束-->
     </el-form-item>
@@ -120,16 +130,11 @@
     </el-form>
 
       <!-- 实例表格 -->
-    <el-table
-        :data="
-        insList.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-      "
-        style="width: 70%; text-align: left"
-        empty-text="暂无实例"
-    >
+      <div v-show = "object">
+<el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: auto"
+          border stripe :header-cell-class-name="headerBg1"  >
             <el-table-column prop="name" label="实例名称" width="auto" />
     <el-table-column prop="ontoName" label="所属本体名称" width="auto" align="left" />
-<!--      <el-table-column prop="neoId" label="实例编号" width="auto" />-->
 
     <el-table-column  prop="gmtCreated" label="创建时间" width="auto" align="left"></el-table-column>
     <el-table-column  prop="creator" label="创建人" width="auto" align="left"></el-table-column>
@@ -153,14 +158,17 @@
       </el-table-column>
     </el-table>
       <!-- 分页器 -->
-    <MyPagination
-        :pageSize="pageSize"
-        :layout="layout"
-        :pageTotal="total"
-        @pageFunc="pageFunc"
-        style="margin-left: -100px"
-    />
+  <el-pagination align='center'
+                 @size-change="handleSizeChange"
+                 @current-change="handleCurrentChange"
+                 :current-page="pageNum"
+                 :page-sizes="[2, 5, 10, 20]"
+                 :page-size="pageSize1"
+                 layout="total, sizes, prev, pager, next, jumper"
+                 :total="tableData.length">
+  </el-pagination>
   </div>
+      </div>
 
 
       <!-- 创建实例时输入属性值的对话框 -->
@@ -247,13 +255,13 @@
 </template>
 
 
-<script setup>
+<script >
 import {
   createIns,
   queryOntoList,
   queryInsList,
   queryRelList,
-  udpateInst, inslist, createRelIns, getontoProp, getInsProp, deleteIns, instanceByFatherId
+  inslist, createRelIns, getontoProp, getInsProp, deleteIns, instanceByFatherId, updateInst
 } from "@/api/module/instance.js";
 import { getEntity as getInstance } from "@/api/module/result.js";
 import {reactive, ref, computed, onMounted} from "vue";
@@ -261,295 +269,315 @@ import { Search, Plus } from "@element-plus/icons-vue";
 import MyPagination from "@/components/common/MyPagination.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useRouter,useRoute} from "vue-router";
-import {createRel} from "@/api/module/ontology.js";
-
+import {createRel, Ontolist} from "@/api/module/ontology.js";
+//import KGVisibleVisNetwork from "@/components/common/KGVisibleVisNetwork.vue";
+import KGVisibleVisNetwork from "../../components/common/KGVisibleVisNetwork.vue";
 const route = useRoute();
 const router = useRouter();
 
-let ontoId = ref(null); //当前选择本体源neoid
-let insName = ref(""); //创建实例名称
-let ontoType = ref("");
-let object = ref(false);
-let relation = ref(false);
-let AId = ref(null);
-let BId = ref(null);
-let insRelation = ref(null);
-const individualButtons = reactive([]);
-let receivedNeoId = ref(2); //5个父本体的id
+export default {
+  components: {KGVisibleVisNetwork, MyPagination},
+  data(){
+  return{
+    tableData:[],
+    ontoId:["a","b"],
+    insName:"",
+    ontoName:" ",
+    ontoType:"",
+    object:false,
+    relation:false,
+    AId:null,
+    BId:null,
+    insRelation:null,
+    insList:[],
+    receivedNeoId:"",  ////接收Index.vue传来的父本体Id
+    ontoList:[],
+    insRelList:[],
+    attrList:[],
+    searchContent: "",
+    dialogVisible_create:false,
+    dialogVisible_update:false,
+    // 表格相关
+    currentPage: 1,
+    total :20,
+    pageSize: 10,
+    pageSize1:10,
+    layout : "total, prev, pager, next, jumper, ->, slot",
+    headerBg: 'headerBg',
+    headerBg1:'headerBg',
+    neoId : "",//父节点标签id
+    sname : "",//父节点标签名称
+    kgType:2,
+    attUpdated:true,     //用于多个属性同时更新时，判断是否所有属性都成功更新了，只提示一次是否全部更新完毕。
+  }
+  },
 
-const ontoList = reactive([]); //本体源列表
-const insList = reactive([
-  // {
-  //   neoId: "5249d48f-b96d-4a71-bbc3-6d2da022951a",
-  //   name: '"btest5"',
-  //   labels: ["水利对象", "水库"],
-  //   basicObjList: null,
-  //   funcObjList: null,
-  //   propObjList: null,
-  // },
-]); //实例列表
-const insRelList = reactive([{
+  created() {
 
-}]);//关系本体列表
-const attrList = reactive([]); //当前实例属性列表
-let searchContent = ref("");
+    // 请求分页查询数据
+    console.log("this.tableData是"+ this.tableData)
+    //this.receivedNeoId = this.$route.query.neoId
+    //获取上个页面传来的参数
+    this.sname = this.$route.query.sname;
+    this.neoId = this.$route.query.neoId;
 
-const dialogVisible_create = ref(false);
-const dialogVisible_update = ref(false);
+    this.receivedNeoId = this.neoId;
 
+    this.load()
+    this.loadFatherOnto()
+    this.loadOnto()
+   // this.loadRel()
+    console.log("this.receivedNeoId是"+ this.receivedNeoId)
+    console.log("created")
 
-// 表格相关
-let currentPage = ref(1);
-let total = computed(() => {
-  return insList.length;
-});
-let pageSize = ref(10);
-let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
+  },
 
-let fatherOntoIdList;
-fatherOntoIdList = ["f20aae5d-ef71-471a-8588-0e93c831d4a2", "69556244-00e2-4420-b66e-76e959470c73", "8f1dfb12-1832-4161-bc53-482ae6c95c53", "7e08b5f3-8de5-4312-ae18-44842e9e79fc", "bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"]
+  methods: {
+    //按照父本体的id来查询所有本体（参数isSub为0的时候，会查询该本体的子本体对应的实例集合，并分类返回
+    //参数isSub为1的时候，只会查询指定本体对应的实例）
+    load() {
+      instanceByFatherId(this.receivedNeoId, 0).then(res => {
+        console.log("父本体id是", this.receivedNeoId);
+        console.log("res.data是");
+        console.log("res.data.subData   ", res.data.subData);
+        console.log("subData长度为", res.data.subData.length)
+        this.tableData = [];
+        for (let i = 0; i < res.data.subData.length; i++) {
+          this.tableData.push(...res.data.subData[i].list)
+        }
+        this.total = res.total;
+      })
+      //获取该父本体下的所有本体
+      queryOntoList(this.receivedNeoId).then(({ data }) => {
+        this.ontoList.length = 0;
+        this.ontoList.push(...data);
+        console.log("ontoList ",this.ontoList);
+      });
+    },
 
+    loadFatherOnto(){
+      Ontolist({name:""}).then(res=>{
+            this.tableData1=res.data;
+            this.total=res.total;
+          }
+      )
+    },
 
+    loadOnto(){
+      //获取该父本体下的所有本体
+      queryOntoList(this.receivedNeoId).then(({ data }) => {
+        this.ontoList.length = 0;
+        this.ontoList.push(...data);
+        console.log("ontoList ",this.ontoList);
+      });
 
-
-// 初始化数据
-const initData = () => {
-  receivedNeoId.value = route.query.neoId;
-
-  // 获取本体列表
-  // queryOntoList().then(({ data }) => {
-  //   ontoList.length = 0;
-  //   ontoList.push(...data);
-  // });
-
-
-
-  // 获取实例列表
-  // const labels = [ "水利实例", "实例主节点"];
-  // queryInsList(labels).then(({ data }) => {
-  //   insList.length = 0;
-  //   insList.push(...data);
-  // });
-  queryRelList().then(({ data }) => {
-    insRelList.length = 0;
-    insRelList.push(...data);
-    //console.log(insRelList);
-  });
-
-
-      //   行政区划父本体 0da94327-0c07-4c70-8050-5c8c9e808a38
-      //   流域机构父本体 694a16b5-0ebf-4784-aa25-d4b776292b15
-      //   流域对象父本体 b82314fd-7c78-4a05-98e3-9e51b2ae8ccc
-      //   应急抢险父本体 ef3f1eb4-020f-4fa6-999f-fb67b7644511
-      //   抢险技术父本体 55f3d081-fa7d-4271-9200-5461b51aa89a
-  //获取指定父本体下的所有子本体的所有实例列表
-  console.log("接口外的父本体id是", receivedNeoId.value);
-
-  instanceByFatherId(receivedNeoId.value,0).then(({ data }) => {
-    console.log("父本体id是", receivedNeoId.value);
-    console.log(data.subData);
-    for( let i =  0;i <data.subData.length;i++){
-      insList.push(...data.subData[i].list)
-    }
-    // insList.length = 0;
-    // insList.push(...data.subData[0].list);
-  });
-  // watch(() => route.query.neoId, (newNeoId) => {
-  //   receivedNeoId.value = newNeoId;
-  //   // 在这里可以执行你希望的其他操作，比如重新获取数据
-  //   initData();
-  // });
-
-  //获取该父本体下的所有本体
-  queryOntoList(receivedNeoId.value).then(({ data }) => {
-    console.log("receivedNeoId.value",receivedNeoId.value)
-    console.log("data ",data);
-    ontoList.length = 0;
-    ontoList.push(...data);
-    console.log("ontoList ",ontoList);
-  });
+    },
 
 
-};
+    // loadOnto(){
+    // queryOntoList(this.receivedNeoId).then(res => {
+    //   console.log("receivedNeoId.value",this.receivedNeoId)
+    //   console.log("data ",data);
+    //   ontoList.length = 0;
+    //   ontoList.push(...data);
+    //   console.log("ontoList ",ontoList);
+    // })
+    // },
 
-initData();
+    loadRel(){
+      queryRelList().then(({ data }) => {
+        this.insRelList.length = 0;
+        this.insRelList.push(...data);
+        //console.log(insRelList);
+      });
+    },
 
-
-// 创建对象实例
-const handleInsCreate = (ontoId) => {
-  ElMessageBox.confirm("确定创建该本体的实例吗？", "warning", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-    title: "创建确认",
-  }).then(() => {
-    if (ontoId.value === null) {
-      ElMessage.warning("请选择本体源");
-      return;
-    }
-    if (insName.value === "") {
-      ElMessage.warning("请输入实例名");
-      return;
-    }
-
-    createIns(ontoId, insName.value).then(({ data }) => {
-      dialogVisible_create.value = true;
-      console.log("本次创建实例的data : ", data);
-      //创建实例时会返回属性id，属性名，属性值，将propObjList数组放到attrList中
-      attrList.length = 0;
-      attrList.push(...data.propObjList);
-      console.log("data.propObjList.length 是 ",data.propObjList.length);
-      console.log("data.propObjList【0】.neoId 是 ",attrList[0].neoId);
-
-      for (let i in data.propObjList.length){
-        if (attrList[i].value === "null") attrList[i].value = "";
+    //选择本体类型：实体 or 关系？
+    changeType(ontoType){
+      if(ontoType=="object"){
+        this.object=true;
       }
-        console.log("attrList是",attrList);
-        console.log("attrList【0】.value是",attrList[0].value);
-        console.log("attrList【0】.name是",attrList[0].name);
-      console.log("attrList【0】.neoId 是 ",attrList[0].neoId);
-      console.log("attrList【1】.value是",attrList[1].value);
-      console.log("attrList【1】.name是",attrList[1].name);
+      else{
+        this.object=false;
+      }
+
+      if (ontoType=="relation"){
+        this.relation=true;
+        // console.log("this.object="+object);
+        // console.log("this.relation =" + relation );
+      }
+      else{this.relation=false;}
+    },
+
+    handleInsCreate(ontoId){
+      ElMessageBox.confirm("确定创建该本体的实例吗？", "warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        title: "创建确认",
+      }).then(() => {
+        if (ontoId.value === null) {
+          ElMessage.warning("请选择本体源");
+          return;
+        }
+        if (this.insName=== "") {
+          ElMessage.warning("请输入实例名");
+          return;
+        }
+
+        createIns(ontoId, this.insName).then(({ data }) => {
+          this.dialogVisible_create = true;
+          console.log("本次创建实例的data : ", data);
+          //创建实例时会返回属性id，属性名，属性值，将propObjList数组放到attrList中
+          this.attrList.length = 0;
+          this.attrList.push(...data.propObjList);
+          console.log("data.propObjList.length 是 ",data.propObjList.length);
+          console.log("data.propObjList【0】.neoId 是 ",this.attrList[0].neoId);
+
+          for (let i in data.propObjList.length){
+            if (this.attrList[i]=== "null") this.attrList[i] = "";
+          }
+        });
+        this.load();
+        this.loadFatherOnto()
+        this.loadOnto()
+      });
+    },
+
+    //更新实例属性值
+    handleUpdateAtrr(neoId,value){
+      console.log("neoId是", neoId)
+      console.log("value是", value)
+      updateInst(neoId, value).then((res) => {
+        if(res.msg == "更新成功")  this.attUpdated =  true;
+        else  this.attUpdated =  false;
+        this.load()
+        this.loadFatherOnto()
+        this.loadOnto()
+      });
+      this.dialogVisible_create= false;
+    },
+
+
+    //表单选择单个实例修改属性
+    openUpdateDialog(insneoId){
+      console.log("insneoId", insneoId);
+
+      this.dialogVisible_update= true;
+      getInsProp(insneoId).then(({data}) => {
+        console.log("本次修改实例属性所属的本体的ID", this.ontoId);
+        console.log("本次修改实例的实例ID", data.neoId);
+        console.log("data.propObjList" + data.propObjList);
+        this.attrList.length = 0;
+        this.attrList.push(...data.propObjList)
+        for (let i in this.attrList)
+          if (this.attrList[i] === "null") this.attrList[i] = "";
+      });
+    },
+
+    //提交全部属性
+    submitAll(){
+      for (let index in this.attrList){
+        document.getElementById('submit'+ index ).click();
+      }
+      if(this.attUpdated ==  true)
+        ElMessage.success("更新属性成功");
+      else
+        ElMessage.error("存在属性更新失败");
+      this.dialogVisible_update = false;
+      this.dialogVisible_create = false;
+    },
+
+    searchInst(){
+      inslist(["水利对象"], this.searchContent).then(({ data }) => {
+        this.tableData.length = 0;
+        this.tableData.push(...data);
+        console.log("object="+this.object);
+        console.log("relation =" + this.relation );
+      });
+      this.searchContent  = "";
+    },
+
+    deleteObject(neoId){
+      ElMessageBox.confirm("确定删除该实例吗？", "warning", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning",
+        title: "删除确认",
+      }).then(()=>{
+        console.log("要删除的实例id是" + neoId)
+        deleteIns(neoId).then(({ data }) => {
+          ElMessage.success("删除成功");
+          this.load()
+        });
+      });
+    },
+
+    Recreate(){
+      console.log("AID.value:"+this.AId);
+      console.log("BID.value:"+this.BId);
+      console.log("insRelation.value"+insRelation);
+      createRelIns(this.AId,this.BId,this.insRelation).then(({ data })=>{
+        ElMessage.success("构建成功");
+        router.push({ path: "/InstanceWatch"});
+      });
+    },
 
 
 
-          });
-      initData();
+    //每页条数改变时触发 选择一页显示多少行
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.currentPage = 1;
+      this.pageSize = val;
+      this.load()
+    },
+    //当前页改变时触发 跳转其他页
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      this.load()
+    },
 
-    });
-    //changeOnto(ontoId);
-   // console.log("本次创建实例的本体的ID", ontoId);
+    //每页条数改变时触发 选择一页显示多少行
+    handleSizeChange1(val) {
+      console.log(`每页 ${val} 条`);
+      this.currentPage1 = 1;
+      this.pageSize1 = val;
 
+    },
+    //当前页改变时触发 跳转其他页
+    handleCurrentChange1(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage1 = val;
 
-    // getInsProp(ontoId).then(({data}) => {
-    //   console.log("本次创建实例的本体的ID", ontoId);
-    //   console.log("本次创建实例的实例ID", data.neoId);
-    //   console.log("本次创建实例属性返回的data",data);
-    //   console.log("data.propObjList" + data.propClzList);
-    //   attrList.length = 0;
-    //   attrList.push(...data.propClzList);
-    //   console.log("attrList是",attrList);
-    //   console.log("attrList【0】.value是",attrList[0].value);
-    //   console.log("attrList【0】.name是",attrList[0].name);
-    //   for (let i in attrList)
-    //     if (attrList[i].value === "null") attrList[i].value = "";
-    //     });
-  };
+    },
 
+    handleSelectionChange(val) {
+      console.log(val)
+      this.multipleSelection = val
+    },
 
-//创建关系实例
-const Recreate = () => {
-  console.log("AID.value:"+AId.value);
-  console.log("BID.value:"+BId.value);
-  console.log("insRelation.value"+insRelation.value);
-  createRelIns(AId.value,BId.value,insRelation.value).then(({ data })=>{
-    ElMessage.success("构建成功");
-    router.push({ path: "/InstanceWatch"});
-  });
-};
-
-const  changeType = (ontoType) => {
-
-  if(ontoType=="object"){
-    object.value=true;
-  }
-  else{
-    object.value=false;
-  }
-
-   if (ontoType=="relation"){
-    relation.value=true;
-    // console.log("this.object="+object);
-    // console.log("this.relation =" + relation );
-  }else{relation.value=false;}
-
-};
-
-// 打开修改属性的窗口
-const openUpdateDialog = (insneoId) => {
-  console.log("insneoId", insneoId);
-
-  dialogVisible_update.value = true;
-  getInsProp(insneoId).then(({data}) => {
-    console.log("本次修改实例属性所属的本体的ID", ontoId);
-    console.log("本次修改实例的实例ID", data.neoId);
-    console.log("data.propObjList" + data.propObjList);
-    attrList.length = 0;
-    attrList.push(...data.propObjList);
-    console.log("attrList是",attrList);
-    console.log("attrList【0】.value是",attrList[0].value);
-    console.log("attrList【0】.name是",attrList[0].name);
-    for (let i in attrList)
-      if (attrList[i].value === "null") attrList[i].value = "";
-  });
-};
-// 更新实例属性
-const handleUpdateAtrr = (neoId, value) => {
-
-  console.log("neoId是", neoId)
-  console.log("value是", value)
-  udpateInst(neoId, value).then(() => {
-    initData();
-  });
-  dialogVisible_create.value = false;
-};
+    InstanceView(){
+      this.$router.push("InstanceView");
+    },
+    InstanceAdd(){
+      this.$router.push("InstanceAdd");
+    },
+    InstanceWatch(){
+      this.$router.push("InstanceWatch");
+    },
 
 
-const deleteObject = (neoId) => {
-  ElMessageBox.confirm("确定删除该实例吗？", "warning", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-    title: "删除确认",
-  }).then(()=>{
-    console.log("要删除的实例id是" + neoId)
-    deleteIns(neoId).then(({ data }) => {
-      // console.log(data);
-      //ElMessage.success("删除成功");
-      initData();
-    });
-  });
 
 
+  },
+
+  watch:{
+
+  },
 }
 
-//提交全部按钮
-const submitAll = () => {
-  for (let index in attrList){
-    document.getElementById('submit'+ index ).click();
-  }
-  // ElMessage.success("更新属性成功");
-  dialogVisible_update.value = false;
- dialogVisible_create.value = false;
-}
-onMounted(() => {
-  console.log("钩子函数")
-
-  receivedNeoId.value = route.query.neoId;
-  console.log("钩子函数中receivedNeoId.value是",receivedNeoId.value);
-
-  // 在组件挂载后将按钮引用存入 ref
-  const buttons = document.querySelectorAll('[data-hide-on-submit]');
-  buttons.forEach(button => {
-    button.style.display = 'none'; // 隐藏按钮
-
-  });
-});
-// 处理分页
-const pageFunc = (pageData) => {
-  currentPage.value = pageData.pageNum;
-  pageSize.value = pageData.pageSize;
-};
-// 搜索实例
-const searchInst = () => {
-  inslist(["水利对象"], searchContent.value).then(({ data }) => {
-    insList.length = 0;
-    insList.push(...data);
-    console.log("object="+object);
-    console.log("relation =" + relation );
-  });
-  searchContent.value  = "";
-};
 </script>
 
 <style lang="less" scoped>

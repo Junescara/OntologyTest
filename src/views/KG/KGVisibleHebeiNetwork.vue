@@ -23,12 +23,14 @@ import Vis from "vis-network/dist/vis-network.min"
 import VisUtils from "@/api/module/VisUtils.js";
 
 import {getDefaultRelLinks,getHaihePlanLink,getSchedulePlanLink} from "@/api/module/flood.js";
-import relationApi from "../../api/neo4j/relationApi";
-
+import {getWaterHebeiKG,getHebeiNeoid} from "@/api/module/Hebei.js";
+import { ElMessage } from "element-plus";
 export default {
-  name: "KGVisibleRegulationNetwork",
+  name: "KGVisibleHebeiNetwork",
   data() {
     return {
+      empty:false,
+      neoId:"",
       nodes: null,
       edges: null,
       options: null,
@@ -39,6 +41,7 @@ export default {
         length:2,
         relType:[],
       },
+      nodeVos:[],
       loading:true,
       currentNodeType:[],//当前的结点类型，用作图例显示
       currentDbId:null,
@@ -47,9 +50,14 @@ export default {
         width:800,
         height:500,
       }
+      
     }
   },
   props: {
+    stcd:{
+      type: String,
+      default:""
+    },
     currentNode: {
       type: Array,
       default: () => [{}]
@@ -96,6 +104,7 @@ export default {
       type:Object,
       default: () => {}
     }
+   
   },
   created() {
     this.currentDbId = localStorage.getItem('instanceId')
@@ -132,6 +141,7 @@ export default {
       {from: 5, to: 6},
       {from: 6, to: 7},
     ]);
+    
   },
   mounted() {
   },
@@ -139,13 +149,28 @@ export default {
     defaultKG() {
       this.loading = true
       let _this = this
+      
       console.log("defaultKG启动")
-      getDefaultRelLinks("H937377CBD954B169A4F8E97BFA9A1A0")
-      // relationApi.getInstanceKG()
+      getHebeiNeoid(this.stcd).then((data)=>{
+        this.neoId = data.data.neoId;
+        console.log(data.data.neoId)
+    
+     
+      getWaterHebeiKG(data.data.neoId, ["所属河流"])
+      
         .then((data) => {
-          const datas = VisUtils.handleRelLinkVisiblesHashNode2(data)
-          console.log(VisUtils.handleRelLinkVisiblesHashNode2(data))
-          _this.getCurrentNodeType(data.data)
+          this.nodeVos = data.data.nodeVos;
+          if(this.nodeVos.length==0){
+        
+            this.empty = true;
+            this.$emit('childByValue',this.empty)
+
+          }else{
+
+            const datas = VisUtils.handleRelLinkVisiblesHashNodeHebei(data)
+          _this.getCurrentNodeTypeHebei(data.data)
+          console.log(datas)
+
           const container = this.$refs.KGNetwork;
 
           // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
@@ -160,12 +185,18 @@ export default {
           _this.options.groups = groups
           _this.network = new Vis.Network(container, datas, _this.options);
           _this.setLoading()
+          this.$emit('childByValue',this.empty)
+          }
+         
         })
+      })
 
     },
     initKG() {
+      this.empty = false;
       this.loading = true
       let _this = this
+      console.log("initKG启动")
       if(this.currentId == "H937377CBD954B169A4F8E97BFA9A1A0"){
         getHaihePlanLink(this.currentName,this.currentAtt,this.attValue,this.currentId)
           .then((data) => {
@@ -189,26 +220,49 @@ export default {
           })
       }
       else{
-        getSchedulePlanLink(this.currentName,this.currentAtt,this.attValue,this.currentId)
-          .then((data) => {
-            const datas = VisUtils.handleRelLinkVisiblesHashNode2(data)
-            _this.getCurrentNodeType(data.data)
-            const container = this.$refs.KGNetwork;
+        this.empty = false;
+        this.loading = true
+      let _this = this
+      console.log("init启动")
+      getHebeiNeoid(this.stcd).then((data)=>{
+        this.neoId = data.data.neoId;
+        console.log(data.data.neoId)
+     
+      getWaterHebeiKG(data.data.neoId, ["监测","调度"])
+      
+        .then((data) => {
+          this.nodeVos = data.data.nodeVos;
+          if(this.nodeVos.length==0){
+       
+            this.empty = true;
+            this.$emit('childByValue',this.empty)
+          }else{
+            console.log(this.neoId)
+         
+         const datas = VisUtils.handleRelLinkVisiblesHashNodeHebei(data)
+         _this.getCurrentNodeTypeHebei(data.data)
+         console.log(datas)
 
-            // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
-            const groups = {}
-            for (const type in this.typeColors) {
-              if (this.typeColors.hasOwnProperty(type)) {
-                const color = this.typeColors[type]
-                groups[type] = { color }
-              }
-            }
+         const container = this.$refs.KGNetwork;
 
-            _this.options = VisUtils.setVisibleOption(4)
-            _this.options.groups = groups
-            _this.network = new Vis.Network(container, datas, _this.options);
-            _this.setLoading()
-          })
+         // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
+         const groups = {}
+         for (const type in this.typeColors) {
+           if (this.typeColors.hasOwnProperty(type)) {
+             const color = this.typeColors[type]
+             groups[type] = { color }
+           }
+         }
+         _this.options = VisUtils.setVisibleOption(4)
+         _this.options.groups = groups
+         _this.network = new Vis.Network(container, datas, _this.options);
+         _this.setLoading()
+         this.$emit('childByValue',this.empty)
+          }
+       
+        })
+      })
+
       }
 
 
@@ -219,6 +273,22 @@ export default {
         console.log("图像加载完成")
         _this.loading = false
       })
+    },
+    getCurrentNodeTypeHebei(data){
+      let set = new Set();
+
+      if (data.nodeVos !== undefined){
+        for (let item of data.nodeVos){
+          for (let i of item.labels){
+            set.add(i)
+          }
+        }
+      }
+
+      this.currentNodeType = Array.from(set);
+      console.log('当前类型包括：',this.currentNodeType)
+      this.$emit('child-event',this.currentNodeType)
+
     },
     getCurrentNodeType(data){
       let set = new Set();
@@ -289,6 +359,7 @@ export default {
       this.$emit('child-event',this.currentNodeType)
     }
   },
+  
   watch:{
     // currentNode: {
     //   handler(newValue, oldValue) {
@@ -300,6 +371,7 @@ export default {
     //   // 所以这里设置了deep:true，vue文档有说明
     //   deep: true
     // },
+ 
     visibleSettings:{
       handler(newValue,oldValue) {
         this.settings.visibleTypeFlag = newValue.visibleTypeFlag
@@ -326,19 +398,27 @@ export default {
           this.KGSize.height = 800
         }
       },
+    }, 
+    //页面打开时绘制默认图
+     drawDefault: {
+      handler(newValue,oldValue) {
+        this.defaultKG()
+        
+      },
+      immediate:true,
+      deep:true
+   
     },
     //点击查询按钮进行绘图
     drawFlag: {
       handler(newValue,oldValue) {
         this.initKG()
-      }
+      },
+      deep:true,
+  
     },
-    //页面打开时绘制默认图
-    drawDefault: {
-      handler(newValue,oldValue) {
-        this.defaultKG()
-      }
-    },
+    
+  
     //选择了某个流域后，展示该流域的图
     currentId:{
       handler(newValue,oldValue) {

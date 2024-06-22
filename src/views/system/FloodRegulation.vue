@@ -345,12 +345,12 @@ export default {
         this.currentType = value
         
       },
-        getDeafault(){
-          getDefaultRelLinks("H937377CBD954B169A4F8E97BFA9A1A0").then((response) => {
+        // getDeafault(){
+        //   getDefaultRelLinks("H937377CBD954B169A4F8E97BFA9A1A0").then(() => {
           
 
-        });
-        },
+        // });
+        // },
         getNode(name){
           getNodeByName(this.label,name,this.currentId)
           .then((response) => {

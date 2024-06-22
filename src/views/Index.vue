@@ -174,16 +174,16 @@ export default {
     },
     methods:{ 
       load(){
-          this.dataList=[{name:"行政区划本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
-              ,{name:"行政区划实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
-              ,{name:"流域机构本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
-              ,{name:"流域机构实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
-              ,{name:"流域对象本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
-              ,{name:"流域对象实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
+          this.dataList=[{name:"河流本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
+              ,{name:"河流实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
+              ,{name:"湖泊本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
+              ,{name:"湖泊实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
+              ,{name:"测站本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
+              ,{name:"测站实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
               ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
               ,{name:"应急抢险实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
-              ,{name:"抢险技术本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
-              ,{name:"抢险技术实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
+              ,{name:"水库本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
+              ,{name:"水库实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
               ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"本体管理",neoId:"0000"}
               ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"实例管理",neoId:"0000"}]
     },

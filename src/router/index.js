@@ -25,7 +25,7 @@ const routes = [
     component: Layout,
     name: "layout",
     meta: { menuName: "流域水循环关系平台" },
-    redirect: "index",
+    redirect: "Hebei",
     // 页面主体部分组件
     children: [
       {
@@ -72,6 +72,15 @@ const routes = [
         meta: {
           menu: true,
           title: "洪水调度方案库",
+        },
+      },
+      {
+        path: "Hebei",
+        name: "Hebei",
+        component: () => import("@/views/system/Hebei.vue"),
+        meta: {
+          menu: true,
+          title: "知识图谱",
         },
       },
       {

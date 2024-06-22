@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
+import postCssPxToRem from 'postcss-pxtorem';
 
 function resolve(dir) {
   return path.join(__dirname, dir);
@@ -13,6 +14,7 @@ export default defineConfig({
       "@": resolve("/src"),
     },
   },
+  
   server: {
     hmr: true,
     //vue3 vite配置热更新不用手动刷新
@@ -52,4 +54,5 @@ export default defineConfig({
       },
     },
   },
+  
 });

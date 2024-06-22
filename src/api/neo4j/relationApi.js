@@ -46,6 +46,17 @@ export default {
             params: {neoId: NodeId}
             }
         )
+    },
+
+    getInstanceKG(){
+        return request({
+                url: `/kg/inst-kg`,
+                method: 'post',
+                data: {
+                    
+                }
+            }
+        )
     }
 
 }

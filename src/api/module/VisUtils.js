@@ -81,7 +81,28 @@ export default {
     }
 
     return new Vis.DataSet(linkList)
-  },
+  },/**
+  * 河北方案特供
+  * @param rels
+  * @returns {*}
+  */
+ createRelsEdgesHebei(rels) {
+   let linkList = []
+   for (let item of rels) {
+     //这里用结点的name属性来指定关系边的头尾
+     let linkItem = {
+       from: item.from.toString(),
+       to: item.to.toString(),
+       label: item.name
+     }
+
+     linkList.push(linkItem)
+   }
+   console.log(linkList)
+
+   return new Vis.DataSet(linkList)
+ },
+
   /**
    * 创建格式化点数据集
    * @param nodes
@@ -139,6 +160,21 @@ export default {
     for (let item of nodes) {
       let nodeItem = this.switchNodeToItem2(item,false);
       nodeItem.label=item.node.name;
+      nodeList.push(nodeItem)
+    }
+    return new Vis.DataSet(nodeList)
+  },
+  
+  /**
+   * 直接利用转换好的结点生成vis的结点数据集（河北特供）
+   * @param nodes
+   * @returns {*}
+   */
+  createNodesHebei(nodes) {
+    let nodeList = []
+    for (let item of nodes) {
+      let nodeItem = this.switchNodeToItemHebei(item,false);
+      nodeItem.label=item.name;
       nodeList.push(nodeItem)
     }
     return new Vis.DataSet(nodeList)
@@ -536,6 +572,45 @@ export default {
       return nodeItem
     }
   },
+/**
+   * 将HashNode转换为存入datalist的对象元素（河北方案特供）
+   * @param node
+   * @param isStart
+   */
+createHashNodeItemHebei(node,isStart){
+  let nodeTypes = node.labels
+  let nodeType = "hashNode"
+  //挑出一个可能合适的结点类型
+  for(let x = 0;x<nodeTypes.length;x++){
+    const type = nodeTypes[x]
+    for(let i = 0; i< type.length;i++){
+      let ch = type.charAt(i)
+      //如果包含除了字母和数字以外的字符则停在当前的type
+      if(!(/^[^a-zA-Z0-9]*$/.test(ch))) {
+        break
+      }
+    }
+    nodeType = type
+    break;
+  }
+  if (isStart){
+    let nodeItem = {
+      id:node.name,
+      label:node.label,
+      level:1,
+      group: nodeType
+    }
+    return nodeItem
+  }else {
+    let nodeItem = {
+      id:node.neoId,
+      label:node.name,
+      level:2,
+      group: nodeType
+    }
+    return nodeItem
+  }
+},
 
   /**
    * 将河对象本体转换为存入datalist的对象元素
@@ -662,6 +737,11 @@ export default {
 
     //用于处理HashNode结点
     return this.createHashNodeItem2(node,isStart)
+
+  }, switchNodeToItemHebei(node,isStart){
+
+    //用于处理HashNode结点
+    return this.createHashNodeItemHebei(node,isStart)
 
   },
   /**
@@ -920,6 +1000,47 @@ export default {
     const datas = {
       nodes:this.createNodesV3(nodes),
       edges:this.createRelsEdgesV3(rels)
+    }
+
+    return datas
+  },
+  
+  /**
+   * 处理生成包括出边完整图像的数据(处理HashMap版本结点特供，河北特供)
+   * @param data
+   * @returns {{nodes: *, edges: ([]|*)}}
+   */
+  handleRelLinkVisiblesHashNodeHebei(data){
+    let rels = []
+    let nodes = []
+
+    //首先获取出边数据
+    for (let rel of data.data.relVos){
+      rels.push(rel)
+    }
+
+    //获取结点集
+    //首先要维护一个集合，用于结点id去重
+    let idSet = new Set()
+
+    for (let item of data.data.nodeVos){
+      let id = item.neoId
+      if (idSet.has(id)){
+        //如果idset中包含这个元素,则无需再结点集中添加这个元素
+        continue;
+      }else{
+        //idset中不包含这个元素，添加进结点集
+        idSet.add(id)
+        nodes.push(item)  //直接存入提取过的node
+      }
+    }
+    console.log(rels)
+    console.log(nodes)
+
+    //封装最终生成数据的数据集
+    const datas = {
+      nodes:this.createNodesHebei(nodes),
+      edges:this.createRelsEdgesHebei(rels)
     }
 
     return datas

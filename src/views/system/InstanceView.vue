@@ -175,14 +175,15 @@ export default {
         console.log("res.data是");
         //console.log(res.data.subData[0].list);
         // this.tableData = res.data.subData[0].list;
-        console.log("res.data.subData   ",res.data.subData);
+        console.log(res.data.list);
         console.log("subData长度为",res.data.subData.length)
         this.tableData= [];
-        for( let i =  0;i <res.data.subData.length;i++){
-          this.tableData.push(...res.data.subData[i].list)
-        }
+        // for( let i =  0;i <res.data.subData.length;i++){
+        //   this.tableData.push(...res.data.subData[i].list)
+        // }
 
-        // this.tableData=res.data;
+
+        this.tableData=res.data.list;
 
 
 

@@ -174,16 +174,16 @@ export default {
     },
     methods:{ 
       load(){
-          this.dataList=[{name:"河流本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
-              ,{name:"河流实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"行政区划",neoId:"f20aae5d-ef71-471a-8588-0e93c831d4a2"}
-              ,{name:"湖泊本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
-              ,{name:"湖泊实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域机构",neoId:"69556244-00e2-4420-b66e-76e959470c73"}
-              ,{name:"测站本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
-              ,{name:"测站实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"流域对象",neoId:"8f1dfb12-1832-4161-bc53-482ae6c95c53"}
-              ,{name:"应急抢险本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
-              ,{name:"应急抢险实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"应急抢险",neoId:"7e08b5f3-8de5-4312-ae18-44842e9e79fc"}
-              ,{name:"水库本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
-              ,{name:"水库实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"抢险技术",neoId:"bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"}
+          this.dataList=[{name:"河流本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"河流",neoId:"6aec1cfe-b22c-4e2f-abd9-25fa61bfb2d7"}
+              ,{name:"河流实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"河流",neoId:"6aec1cfe-b22c-4e2f-abd9-25fa61bfb2d7"}
+              ,{name:"湖泊本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"湖泊",neoId:"8b5c7f66-395f-4349-a487-88969f3fdda9"}
+              ,{name:"湖泊实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"湖泊",neoId:"8b5c7f66-395f-4349-a487-88969f3fdda9"}
+              ,{name:"测站本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"测站",neoId:"951327b1-2539-4d3b-9e82-48a8cb4ec412"}
+              ,{name:"测站实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"测站",neoId:"951327b1-2539-4d3b-9e82-48a8cb4ec412"}
+              ,{name:"方案本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"方案",neoId:"0a8ec04e-7ed5-4eaf-9c3b-009c89984429"}
+              ,{name:"方案实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"方案",neoId:"0a8ec04e-7ed5-4eaf-9c3b-009c89984429"}
+              ,{name:"水库本体管理",view:"OtherOnto",add:"OntoAdd",watch:"OntoWatch",sname:"水库",neoId:"3569a2ec-66d7-484e-a3d7-7b521b4b4bbc"}
+              ,{name:"水库实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"水库",neoId:"3569a2ec-66d7-484e-a3d7-7b521b4b4bbc"}
               ,{name:"本体管理",view:"OntoView",add:"OntoAdd",watch:"OntoWatch",sname:"本体管理",neoId:"0000"}
               ,{name:"实例管理",view:"InstanceView",add:"InstanceAdd",watch:"InstanceWatch",sname:"实例管理",neoId:"0000"}]
     },

@@ -262,7 +262,7 @@ import MyPagination from "@/components/common/MyPagination.vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useRouter,useRoute} from "vue-router";
 import {createRel} from "@/api/module/ontology.js";
-
+import {Ontolist} from "@/api/module/ontology.js";
 const route = useRoute();
 const router = useRouter();
 
@@ -293,7 +293,7 @@ const insRelList = reactive([{
 }]);//关系本体列表
 const attrList = reactive([]); //当前实例属性列表
 let searchContent = ref("");
-
+let OntoName = ref("");
 const dialogVisible_create = ref(false);
 const dialogVisible_update = ref(false);
 
@@ -306,21 +306,18 @@ let total = computed(() => {
 let pageSize = ref(10);
 let layout = "total, prev, pager, next, jumper, ->, slot"; //分页组件会展示的功能项
 
-let fatherOntoIdList;
-fatherOntoIdList = ["f20aae5d-ef71-471a-8588-0e93c831d4a2", "69556244-00e2-4420-b66e-76e959470c73", "8f1dfb12-1832-4161-bc53-482ae6c95c53", "7e08b5f3-8de5-4312-ae18-44842e9e79fc", "bdc54dab-e7b4-4e1e-8b02-5ab03c3d9ccc"]
-
 
 
 
 // 初始化数据
 const initData = () => {
   receivedNeoId.value = route.query.neoId;
-
-  // 获取本体列表
-  // queryOntoList().then(({ data }) => {
-  //   ontoList.length = 0;
-  //   ontoList.push(...data);
-  // });
+  OntoName.value = route.query.sname;
+  //获取本体列表
+  Ontolist({name:""}).then(({ data }) => {
+    ontoList.length = 0;
+    ontoList.push(...data);
+  });
 
 
 
@@ -347,10 +344,11 @@ const initData = () => {
 
   instanceByFatherId(receivedNeoId.value,0).then(({ data }) => {
     console.log("父本体id是", receivedNeoId.value);
-    console.log(data.subData);
-    for( let i =  0;i <data.subData.length;i++){
-      insList.push(...data.subData[i].list)
+    console.log(data.list);
+    for( let i =  0;i <data.list.length;i++){
+      insList.push(data.list[i])
     }
+   
     // insList.length = 0;
     // insList.push(...data.subData[0].list);
   });
@@ -360,14 +358,16 @@ const initData = () => {
   //   initData();
   // });
 
-  //获取该父本体下的所有本体
-  queryOntoList(receivedNeoId.value).then(({ data }) => {
-    console.log("receivedNeoId.value",receivedNeoId.value)
-    console.log("data ",data);
-    ontoList.length = 0;
-    ontoList.push(...data);
-    console.log("ontoList ",ontoList);
-  });
+  // //获取该父本体下的所有本体
+  // queryOntoList(receivedNeoId.value).then(({ data }) => {
+  //   console.log("receivedNeoId.value",receivedNeoId.value)
+  //   console.log("data ",data);
+  //   ontoList.length = 0;
+  //   ontoList.push(...data);
+  //   console.log("ontoList ",ontoList);
+  // });
+
+  
 
 
 };

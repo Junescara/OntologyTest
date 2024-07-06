@@ -148,6 +148,7 @@
             :visible-settings="visibleSettings"
             :neo-id="this.neoId"
             :stcd="this.stcd"
+            :Skey="this.Skey"
           ></KGVisibleHebeiNetwork>
           <el-empty v-if="empty&&!STCDempty" description="图谱为空"></el-empty>
           <el-empty v-if="STCDempty" description="无此测站数据，请重新选择"></el-empty>
@@ -303,7 +304,8 @@ export default {
       nodeByName:[],
       empty:null,
       currentType:"",
-      drawTag:"流域概化图"
+      drawTag:"流域概化图",
+      Skey:1
 
     };
   },
@@ -363,12 +365,14 @@ export default {
     handleChange(val) {
    
       if (val == 1) {
+        this.Skey = 1
+        console.log(this.key)
         this.empty = false;
         this.Sempty = true;
         this.active = [];
         this.activeProp = [];
         this.drawTag = "流域概化图";
-        this.regulation.drawDefaultFlag = !this.regulation.drawDefaultFlag;
+       
         
         //   this.active=[];
         //   this.active=[{name:"永定河",
@@ -398,7 +402,8 @@ export default {
         });
       }
       if (val == 3) {
-     
+    
+        this.Skey=3
         this.empty = false;
         this.Sempty = true;
         this.active = [];
@@ -427,8 +432,7 @@ export default {
           console.log(this.activeProp);
         });
 
-        this.regulation.drawFlag = !this.regulation.drawFlag;
-    
+      
         console.log(this.regulation.drawFlag);
      
             
@@ -444,7 +448,7 @@ export default {
         });
       }
       console.log(val);
-
+      this.regulation.drawFlag = !this.regulation.drawFlag;
     },
     childByValue(empty) {
       console.log(empty);
@@ -562,6 +566,7 @@ export default {
         this.stcd = to.query.stcd;
       }
     },
+   
   },
 };
 </script>

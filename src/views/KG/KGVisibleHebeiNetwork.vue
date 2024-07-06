@@ -1,5 +1,5 @@
 <!--
- * @author     ：Wangziyi
+ * @author     : bamboo
  * @date       ：Created in 2022/12/2 17:34
  * @description：基于vis-network实现的图谱可视化
  * @modified By：Lyu
@@ -57,6 +57,10 @@ export default {
     stcd:{
       type: String,
       default:""
+    },
+    Skey:{
+      type: Number,
+      default:1
     },
     currentNode: {
       type: Array,
@@ -192,12 +196,59 @@ export default {
       })
 
     },
-    initKG() {
+    initKG(Skey) {
       this.empty = false;
       this.loading = true
       let _this = this
-      console.log("initKG启动")
-      if(this.currentId == "H937377CBD954B169A4F8E97BFA9A1A0"){
+      console.log(this.Skey)
+      if(Skey==1){
+        this.loading = true
+      let _this = this
+      
+      console.log("defaultKG启动")
+      console.log("Visible中的为"+this.stcd)
+      getHebeiNeoid(this.stcd).then((data)=>{
+        this.neoId = data.data.neoId;
+        console.log(data.data.neoId)
+    
+     
+      getWaterHebeiKG(data.data.neoId, ["所属河流"])
+      
+        .then((data) => {
+          this.nodeVos = data.data.nodeVos;
+          if(this.nodeVos.length==0){
+        
+            this.empty = true;
+            this.$emit('childByValue',this.empty)
+
+          }else{
+
+            const datas = VisUtils.handleRelLinkVisiblesHashNodeHebei(data)
+          _this.getCurrentNodeTypeHebei(data.data)
+          console.log(datas)
+
+          const container = this.$refs.KGNetwork;
+
+          // 遍历节点数据，为每一个节点根据其类型名称设置颜色，并将颜色存储到节点数据的color属性中
+          const groups = {}
+          for (const type in this.typeColors) {
+            if (this.typeColors.hasOwnProperty(type)) {
+              const color = this.typeColors[type]
+              groups[type] = { color }
+            }
+          }
+          _this.options = VisUtils.setVisibleOption(4)
+          _this.options.groups = groups
+          _this.network = new Vis.Network(container, datas, _this.options);
+          _this.setLoading()
+          this.$emit('childByValue',this.empty)
+          }
+         
+        })
+      })
+
+      }else if(this.Skey==3){
+        if(this.currentId == "H937377CBD954B169A4F8E97BFA9A1A0"){
         getHaihePlanLink(this.currentName,this.currentAtt,this.attValue,this.currentId)
           .then((data) => {
             const datas = VisUtils.handleRelLinkVisiblesHashNode2(data)
@@ -265,6 +316,8 @@ export default {
 
       }
 
+      }
+     
 
     },
     setLoading(){
@@ -371,7 +424,14 @@ export default {
     //   // 所以这里设置了deep:true，vue文档有说明
     //   deep: true
     // },
- 
+    Skey:{
+      handler(newValue,oldValue){
+     console.log("新职位"+newValue)
+    },
+    deep:true,
+    immediate:true
+    },
+    
     visibleSettings:{
       handler(newValue,oldValue) {
         this.settings.visibleTypeFlag = newValue.visibleTypeFlag
@@ -400,21 +460,22 @@ export default {
       },
     }, 
     //页面打开时绘制默认图
-     drawDefault: {
-      handler(newValue,oldValue) {
-        this.defaultKG()
+    //  drawDefault: {
+    //   handler(newValue,oldValue) {
+    //     this.defaultKG()
         
-      },
-      immediate:true,
-      deep:true
+    //   },
+    //   immediate:true,
+    //   deep:true
    
-    },
+    // },
     //点击查询按钮进行绘图
     drawFlag: {
       handler(newValue,oldValue) {
-        this.initKG()
+        this.initKG(this.Skey)
       },
       deep:true,
+      immediate:true,
   
     },
     

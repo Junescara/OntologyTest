@@ -240,6 +240,7 @@
 </template>
 
 <script>
+
 import {
   getNodesByName,
   getSchedulePlan,
@@ -258,6 +259,7 @@ import {
 } from "@/api/module/Hebei.js";
 import { ElMessage } from "element-plus";
 import axios from "axios";
+
 
 export default {
   components: {
@@ -341,10 +343,26 @@ export default {
   methods: {
     Empty(){
       
-      axios.post('http://10.243.45.129:9022/hbsw/stcd/neoid',{
+      // axios.post('http://10.243.45.129:9022/hbsw/stcd/neoid',{
+      //   stcd:this.stcd
+      // })
+      // .catch(error=>{
+      //   this.STCDempty = true;
+       
+      // })
+      // const agent = new https.Agent({  
+      //   rejectUnauthorized: false
+      // });
+      axios.post('https://10.243.45.129:9022/hbsw/stcd/neoid',{
         stcd:this.stcd
-      })
-      .catch(error=>{
+      },{
+  headers: {
+    'Content-Type': 'application/json',
+    // 其他必要的头信息
+  },
+  // 如果需要在跨域请求中携带cookie，请添加withCredentials: true
+  withCredentials: true 
+}).catch(error=>{
         this.STCDempty = true;
        
       })

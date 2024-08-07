@@ -56,3 +56,16 @@ export default defineConfig({
   },
   
 });
+
+// module.exports = {
+//   devServer: {
+//     proxy: {
+//       '/api': {
+//         target: 'https://10.196.83..com',
+//         changeOrigin: true,
+//         secure: false // 允许自签名证书
+//       }
+//     }
+//   }
+// };
+

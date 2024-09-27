@@ -8,8 +8,6 @@
   </div>
 </template>
 
-<script setup>
+<script setup></script>
 
-</script>
-
-<style lang="scss" scoped></style>
+<style lang="less" scoped></style>

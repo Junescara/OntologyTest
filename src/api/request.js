@@ -24,7 +24,10 @@ service.interceptors.response.use(
       ElMessage.error(msg);
       return Promise.reject(new Error(msg));
     } else {
-      if (res.data.msg && res.data.msg.includes("成功")) ElMessage.success(msg);
+      if (res.data.msg && res.data.msg.includes("成功") && res.data.msg != "更新成功") {
+
+          ElMessage.success(msg);
+      }
       return res.data;
     }
   },
